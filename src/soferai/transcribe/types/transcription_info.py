@@ -30,9 +30,7 @@ class TranscriptionInfo(UniversalBaseModel):
     Primary language of the audio content
     """
 
-    lang_for_hebrew_words: typing.Optional[typing.List[Language]] = pydantic.Field(
-        default=None
-    )
+    lang_for_hebrew_words: typing.Optional[typing.List[Language]] = pydantic.Field(default=None)
     """
     Language setting for Hebrew words processing (only need to be specified if the primary language is English)
     """
@@ -52,6 +50,4 @@ class TranscriptionInfo(UniversalBaseModel):
     Duration of the transcription
     """
 
-    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-        extra="allow", frozen=True
-    )  # type: ignore # Pydantic v2
+    model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

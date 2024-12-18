@@ -14,9 +14,7 @@ class HealthClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_health(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HealthResponse:
+    def get_health(self, *, request_options: typing.Optional[RequestOptions] = None) -> HealthResponse:
         """
         Parameters
         ----------
@@ -29,9 +27,9 @@ class HealthClient:
 
         Examples
         --------
-        from SoferAi import SoferAiApi
+        from soferai import SoferAI
 
-        client = SoferAiApi(
+        client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.health.get_health()
@@ -60,9 +58,7 @@ class AsyncHealthClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_health(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HealthResponse:
+    async def get_health(self, *, request_options: typing.Optional[RequestOptions] = None) -> HealthResponse:
         """
         Parameters
         ----------
@@ -77,9 +73,9 @@ class AsyncHealthClient:
         --------
         import asyncio
 
-        from SoferAi import AsyncSoferAiApi
+        from soferai import AsyncSoferAI
 
-        client = AsyncSoferAiApi(
+        client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
         )
 

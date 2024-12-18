@@ -21,6 +21,8 @@ class BaseClientWrapper:
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
+            "X-Fern-SDK-Name": "soferai",
+            "X-Fern-SDK-Version": "0.0.0",
         }
         api_key = self._get_api_key()
         if api_key is not None:

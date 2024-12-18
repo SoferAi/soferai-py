@@ -53,10 +53,10 @@ class TranscribeClient:
 
         Examples
         --------
-        from SoferAi import SoferAiApi
-        from SoferAi.transcribe import TranscriptionInfo
+        from soferai import SoferAI
+        from soferai.transcribe import TranscriptionInfo
 
-        client = SoferAiApi(
+        client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_transcription(
@@ -91,10 +91,7 @@ class TranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_transcription_status(
-        self,
-        transcription_id: uuid.UUID,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TranscriptionInfo:
         """
         Get transcription status
@@ -115,9 +112,9 @@ class TranscribeClient:
         --------
         import uuid
 
-        from SoferAi import SoferAiApi
+        from soferai import SoferAI
 
-        client = SoferAiApi(
+        client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.get_transcription_status(
@@ -146,10 +143,7 @@ class TranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_transcription(
-        self,
-        transcription_id: uuid.UUID,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Transcription:
         """
         Get transcription
@@ -170,9 +164,9 @@ class TranscribeClient:
         --------
         import uuid
 
-        from SoferAi import SoferAiApi
+        from soferai import SoferAI
 
-        client = SoferAiApi(
+        client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.get_transcription(
@@ -217,9 +211,9 @@ class TranscribeClient:
 
         Examples
         --------
-        from SoferAi import SoferAiApi
+        from soferai import SoferAI
 
-        client = SoferAiApi(
+        client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.get_transcriptions()
@@ -281,10 +275,10 @@ class AsyncTranscribeClient:
         --------
         import asyncio
 
-        from SoferAi import AsyncSoferAiApi
-        from SoferAi.transcribe import TranscriptionInfo
+        from soferai import AsyncSoferAI
+        from soferai.transcribe import TranscriptionInfo
 
-        client = AsyncSoferAiApi(
+        client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
         )
 
@@ -325,10 +319,7 @@ class AsyncTranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_transcription_status(
-        self,
-        transcription_id: uuid.UUID,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> TranscriptionInfo:
         """
         Get transcription status
@@ -350,9 +341,9 @@ class AsyncTranscribeClient:
         import asyncio
         import uuid
 
-        from SoferAi import AsyncSoferAiApi
+        from soferai import AsyncSoferAI
 
-        client = AsyncSoferAiApi(
+        client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
         )
 
@@ -387,10 +378,7 @@ class AsyncTranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_transcription(
-        self,
-        transcription_id: uuid.UUID,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
+        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> Transcription:
         """
         Get transcription
@@ -412,9 +400,9 @@ class AsyncTranscribeClient:
         import asyncio
         import uuid
 
-        from SoferAi import AsyncSoferAiApi
+        from soferai import AsyncSoferAI
 
-        client = AsyncSoferAiApi(
+        client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
         )
 
@@ -467,9 +455,9 @@ class AsyncTranscribeClient:
         --------
         import asyncio
 
-        from SoferAi import AsyncSoferAiApi
+        from soferai import AsyncSoferAI
 
-        client = AsyncSoferAiApi(
+        client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
         )
 
