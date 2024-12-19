@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "{{name}}"
+version = "{{version}}"
+description = "{{description}}"
+readme = "{{readme}}"
+authors = [{ name = "{{author.name}}", email = "{{author.email}}" }]
+keywords = []
+
+classifiers = [
+    {{#classifiers}}
+    "{{.}}",
+    {{/classifiers}}
+]
+
+# unsure if this necessary
+# https://python-poetry.org/docs/pyproject/#packages
+packages = [
+    { include = "{{name}}", from = "src"}
+]
+
+[project.urls]
+{{#urls}}
+"{{name}}" = "{{{url}}}"
+{{/urls}}
+
+[tool.poetry.dependencies]
+# python version is declared here, which is just how poetry works
+python = "{{{python_version}}}"
+{{#dependencies}}
+{{dep}} = "{{{version}}}",
+{{/dependencies}}
+
+[tool.poetry.dev-dependencies]
+{{#dev_dependencies}}
+{{dep}} = "{{{version}}}",
+{{/dev_dependencies}}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
