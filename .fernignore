@@ -13,6 +13,8 @@ nonsense/poetry.json
 nonsense/uv.pyproject.toml
 nonsense/uv.pyproject.toml.mustache
 
+Taskfile.yml
+
 uv.lock
 pyproject.toml
 .python-version
