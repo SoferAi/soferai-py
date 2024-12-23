@@ -282,7 +282,8 @@ client.transcribe.get_transcription(
 </dl>
 </details>
 
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_transcriptions</a>()</code></summary>
+## Usage
+<details><summary><code>client.usage.<a href="src/soferai/usage/client.py">get_usage</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -294,7 +295,7 @@ client.transcribe.get_transcription(
 <dl>
 <dd>
 
-Get transcriptions
+Get usage info
 </dd>
 </dl>
 </dd>
@@ -309,12 +310,18 @@ Get transcriptions
 <dd>
 
 ```python
+import uuid
+
 from soferai import SoferAI
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
-client.transcribe.get_transcriptions()
+client.usage.get_usage(
+    user_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
 
 ```
 </dd>
@@ -326,6 +333,14 @@ client.transcribe.get_transcriptions()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**user_id:** `uuid.UUID` — ID of the user
+    
+</dd>
+</dl>
 
 <dl>
 <dd>

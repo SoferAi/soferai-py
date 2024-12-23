@@ -1,0 +1,35 @@
+[project]
+name = "{{name}}"
+version = "{{version}}"
+description = "{{description}}"
+readme = "README.md"
+authors = [{ name = "{{author.name}}", email = "{{author.email}}" }]
+requires-python = "{{{python_version}}}"
+classifiers = [
+    {{#classifiers}}
+    "{{.}}",
+    {{/classifiers}}
+]
+
+dependencies = [
+    {{#dependencies}}
+    "{{dep}} {{{version}}}",
+    {{/dependencies}}
+]
+
+[dependency-groups]
+dev = [
+    {{#dev_dependencies}}
+    "{{dep}} {{{version}}}",
+    {{/dev_dependencies}}
+]
+
+[project.urls]
+{{#urls}}
+"{{name}}" = "{{{url}}}"
+{{/urls}}
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

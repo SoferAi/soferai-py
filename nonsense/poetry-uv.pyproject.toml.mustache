@@ -1,0 +1,42 @@
+[project]
+name = "{{tool.poetry.name}}"
+version = "{{tool.poetry.version}}"
+description = "{{tool.poetry.description}}"
+readme = "{{tool.poetry.readme}}"
+
+authors = [
+{{#tool.poetry.authors}}
+{ name = "{{name}}", email = "{{email}}" }
+{{/tool.poetry.authors}}
+]
+
+requires-python = "{{{tool.poetry.requires-python}}}"
+
+classifiers = [
+    {{#tool.poetry.classifiers}}
+    "{{.}}",
+    {{/tool.poetry.classifiers}}
+]
+
+dependencies = [
+    {{#tool.poetry.dependencies}}
+    "{{dep}} {{{version}}}",
+    {{/tool.poetry.dependencies}}
+]
+
+[dependency-groups]
+dev = [
+    {{#tool.poetry.dev-dependencies}}
+    "{{dep}} {{{version}}}",
+    {{/tool.poetry.dev-dependencies}}
+]
+
+[project.urls]
+{{#project.urls}}
+"{{name}}" = "{{{url}}}"
+{{/project.urls}}
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
