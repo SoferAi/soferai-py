@@ -63,8 +63,8 @@ jobs:
     - name: "Install uv"
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # - name: Build with uv
-    #     run: uv build
+    - name: Build with uv
+      run: uv build
 
-    # - name: Publish package distributions to PyPI
-    #     uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

@@ -5,9 +5,8 @@ import datetime as dt
 import typing
 from collections import defaultdict
 
-import typing_extensions
-
 import pydantic
+import typing_extensions
 
 from .datetime_utils import serialize_datetime
 from .serialization import convert_and_respect_annotation_metadata
@@ -56,7 +55,7 @@ T = typing.TypeVar("T")
 Model = typing.TypeVar("Model", bound=pydantic.BaseModel)
 
 
-def parse_obj_as(type_: typing.Type[T], object_: typing.Any) -> T:
+def parse_obj_as(type_: type[T], object_: typing.Any) -> T:
     dealiased_object = convert_and_respect_annotation_metadata(object_=object_, annotation=type_, direction="read")
     if IS_PYDANTIC_V2:
         adapter = pydantic.TypeAdapter(type_)  # type: ignore # Pydantic v2
@@ -97,14 +96,14 @@ class UniversalBaseModel(pydantic.BaseModel):
 
     @classmethod
     def model_construct(
-        cls: typing.Type["Model"], _fields_set: typing.Optional[typing.Set[str]] = None, **values: typing.Any
+        cls: type["Model"], _fields_set: typing.Optional[set[str]] = None, **values: typing.Any
     ) -> "Model":
         dealiased_object = convert_and_respect_annotation_metadata(object_=values, annotation=cls, direction="read")
         return cls.construct(_fields_set, **dealiased_object)
 
     @classmethod
     def construct(
-        cls: typing.Type["Model"], _fields_set: typing.Optional[typing.Set[str]] = None, **values: typing.Any
+        cls: type["Model"], _fields_set: typing.Optional[set[str]] = None, **values: typing.Any
     ) -> "Model":
         dealiased_object = convert_and_respect_annotation_metadata(object_=values, annotation=cls, direction="read")
         if IS_PYDANTIC_V2:
@@ -123,7 +122,7 @@ class UniversalBaseModel(pydantic.BaseModel):
         else:
             return super().json(**kwargs_with_defaults)
 
-    def dict(self, **kwargs: typing.Any) -> typing.Dict[str, typing.Any]:
+    def dict(self, **kwargs: typing.Any) -> dict[str, typing.Any]:
         """
         Override the default dict method to `exclude_unset` by default. This function patches
         `exclude_unset` to work include fields within non-None default values.
@@ -181,9 +180,9 @@ class UniversalBaseModel(pydantic.BaseModel):
 
 
 def _union_list_of_pydantic_dicts(
-    source: typing.List[typing.Any], destination: typing.List[typing.Any]
-) -> typing.List[typing.Any]:
-    converted_list: typing.List[typing.Any] = []
+    source: list[typing.Any], destination: list[typing.Any]
+) -> list[typing.Any]:
+    converted_list: list[typing.Any] = []
     for i, item in enumerate(source):
         destination_value = destination[i]  # type: ignore
         if isinstance(item, dict):
@@ -196,8 +195,8 @@ def _union_list_of_pydantic_dicts(
 
 
 def deep_union_pydantic_dicts(
-    source: typing.Dict[str, typing.Any], destination: typing.Dict[str, typing.Any]
-) -> typing.Dict[str, typing.Any]:
+    source: dict[str, typing.Any], destination: dict[str, typing.Any]
+) -> dict[str, typing.Any]:
     for key, value in source.items():
         node = destination.setdefault(key, {})
         if isinstance(value, dict):
@@ -224,7 +223,7 @@ else:
 
 
 def encode_by_type(o: typing.Any) -> typing.Any:
-    encoders_by_class_tuples: typing.Dict[typing.Callable[[typing.Any], typing.Any], typing.Tuple[typing.Any, ...]] = (
+    encoders_by_class_tuples: dict[typing.Callable[[typing.Any], typing.Any], tuple[typing.Any, ...]] = (
         defaultdict(tuple)
     )
     for type_, encoder in encoders_by_type.items():
@@ -237,7 +236,7 @@ def encode_by_type(o: typing.Any) -> typing.Any:
             return encoder(o)
 
 
-def update_forward_refs(model: typing.Type["Model"], **localns: typing.Any) -> None:
+def update_forward_refs(model: type["Model"], **localns: typing.Any) -> None:
     if IS_PYDANTIC_V2:
         model.model_rebuild(raise_errors=False)  # type: ignore # Pydantic v2
     else:
@@ -274,7 +273,7 @@ PydanticField = typing.Union[ModelField, pydantic.fields.FieldInfo]
 
 
 def _get_model_fields(
-    model: typing.Type["Model"],
+    model: type["Model"],
 ) -> typing.Mapping[str, PydanticField]:
     if IS_PYDANTIC_V2:
         return model.model_fields  # type: ignore # Pydantic v2

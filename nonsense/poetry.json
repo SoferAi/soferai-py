@@ -1,0 +1,110 @@
+{
+  "tool": {
+    "poetry": {
+      "name": "soferai",
+      "version": "0.0.0",
+      "description": "",
+      "readme": "README.md",
+      "authors": [],
+      "keywords": [],
+      "classifiers": [
+        "Intended Audience :: Developers",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Operating System :: OS Independent",
+        "Operating System :: POSIX",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: Microsoft :: Windows",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Typing :: Typed"
+      ],
+      "packages": [
+        {
+          "include": "soferai",
+          "from": "src"
+        }
+      ],
+      "dependencies": [
+        {
+          "dep": "httpx",
+          "version": ">=0.21.2"
+        },
+        {
+          "dep": "pydantic",
+          "version": ">= 2.0.0"
+        },
+        {
+          "dep": "pydantic-core",
+          "version": "^2.18.2"
+        },
+        {
+          "dep": "typing_extensions",
+          "version": ">= 4.0.0"
+        }
+      ],
+      "dev-dependencies": [
+        {
+          "dep": "mypy",
+          "version": "1.0.1"
+        },
+        {
+          "dep": "pytest",
+          "version": "^7.4.0"
+        },
+        {
+          "dep": "pytest-asyncio",
+          "version": "^0.23.5"
+        },
+        {
+          "dep": "python-dateutil",
+          "version": "^2.9.0"
+        },
+        {
+          "dep": "types-python-dateutil",
+          "version": "^2.9.0.20240316"
+        },
+        {
+          "dep": "ruff",
+          "version": "^0.5.6"
+        }
+      ],
+      "requires-python": "^3.8"
+    },
+    "pytest": {
+      "ini_options": {
+        "testpaths": [
+          "tests"
+        ],
+        "asyncio_mode": "auto"
+      }
+    },
+    "mypy": {
+      "plugins": [
+        "pydantic.mypy"
+      ]
+    },
+    "ruff": {
+      "line-length": 120
+    }
+  },
+  "project": {
+    "urls": [
+      {
+        "name": "Repository",
+        "url": "https://github.com/soferai/soferai-py"
+      }
+    ]
+  },
+  "build-system": {
+    "requires": [
+      "poetry-core"
+    ],
+    "build-backend": "poetry.core.masonry.api"
+  }
+}

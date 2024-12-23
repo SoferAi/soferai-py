@@ -11,10 +11,11 @@ https://github.com/tiangolo/fastapi/blob/master/fastapi/encoders.py
 import base64
 import dataclasses
 import datetime as dt
+from collections.abc import Callable
 from enum import Enum
 from pathlib import PurePath
 from types import GeneratorType
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Optional, Union
 
 import pydantic
 
@@ -25,11 +26,11 @@ from .pydantic_utilities import (
     to_jsonable_with_fallback,
 )
 
-SetIntStr = Set[Union[int, str]]
-DictIntStrAny = Dict[Union[int, str], Any]
+SetIntStr = set[Union[int, str]]
+DictIntStrAny = dict[Union[int, str], Any]
 
 
-def jsonable_encoder(obj: Any, custom_encoder: Optional[Dict[Any, Callable[[Any], Any]]] = None) -> Any:
+def jsonable_encoder(obj: Any, custom_encoder: Optional[dict[Any, Callable[[Any], Any]]] = None) -> Any:
     custom_encoder = custom_encoder or {}
     if custom_encoder:
         if type(obj) in custom_encoder:
@@ -89,7 +90,7 @@ def jsonable_encoder(obj: Any, custom_encoder: Optional[Dict[Any, Callable[[Any]
         try:
             data = dict(o)
         except Exception as e:
-            errors: List[Exception] = []
+            errors: list[Exception] = []
             errors.append(e)
             try:
                 data = vars(o)
