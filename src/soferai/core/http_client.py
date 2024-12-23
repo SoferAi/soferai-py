@@ -233,21 +233,22 @@ class HttpClient:
         )
 
         max_retries: int = request_options.get("max_retries", 0) if request_options is not None else 0
-        if _should_retry(response=response) and max_retries > retries:
-            time.sleep(_retry_timeout(response=response, retries=retries))
-            return self.request(
-                path=path,
-                method=method,
-                base_url=base_url,
-                params=params,
-                json=json,
-                content=content,
-                files=files,
-                headers=headers,
-                request_options=request_options,
-                retries=retries + 1,
-                omit=omit,
-            )
+        if _should_retry(response=response):
+            if max_retries > retries:
+                time.sleep(_retry_timeout(response=response, retries=retries))
+                return self.request(
+                    path=path,
+                    method=method,
+                    base_url=base_url,
+                    params=params,
+                    json=json,
+                    content=content,
+                    files=files,
+                    headers=headers,
+                    request_options=request_options,
+                    retries=retries + 1,
+                    omit=omit,
+                )
 
         return response
 
@@ -405,21 +406,22 @@ class AsyncHttpClient:
         )
 
         max_retries: int = request_options.get("max_retries", 0) if request_options is not None else 0
-        if _should_retry(response=response) and max_retries > retries:
-            await asyncio.sleep(_retry_timeout(response=response, retries=retries))
-            return await self.request(
-                path=path,
-                method=method,
-                base_url=base_url,
-                params=params,
-                json=json,
-                content=content,
-                files=files,
-                headers=headers,
-                request_options=request_options,
-                retries=retries + 1,
-                omit=omit,
-            )
+        if _should_retry(response=response):
+            if max_retries > retries:
+                await asyncio.sleep(_retry_timeout(response=response, retries=retries))
+                return await self.request(
+                    path=path,
+                    method=method,
+                    base_url=base_url,
+                    params=params,
+                    json=json,
+                    content=content,
+                    files=files,
+                    headers=headers,
+                    request_options=request_options,
+                    retries=retries + 1,
+                    omit=omit,
+                )
         return response
 
     @asynccontextmanager

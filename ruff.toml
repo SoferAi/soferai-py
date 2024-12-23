@@ -34,7 +34,7 @@ line-length = 120
 indent-width = 4
 
 # Assume Python 3.12
-target-version = "py38"
+target-version = "py39"
 
 [lint]
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
@@ -80,6 +80,11 @@ ignore = [
     "E721",
     "E722",
     "UP007",
+    "UP006",
+    "UP035",
+    "SIM101",
+    "SIM108",
+    "SIM102",  
     "TRY003",
     "TRY002",
     "RUF012",
@@ -95,7 +100,12 @@ ignore = [
 fixable = ["ALL"]
 unfixable = []
 # Allow fixing trailing whitespace
-extend-safe-fixes = ["W291", "SIM101", "SIM108", "SIM102"]
+extend-safe-fixes = [
+    "W291",
+    # "SIM101",
+    # "SIM108",
+    # "SIM102",
+]
 
 preview = false
 
