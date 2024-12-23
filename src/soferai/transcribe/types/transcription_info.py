@@ -4,6 +4,7 @@ from ...core.pydantic_utilities import UniversalBaseModel
 import typing
 from .transcription_id import TranscriptionId
 import pydantic
+import uuid
 import datetime as dt
 from .language import Language
 from .status import Status
@@ -13,6 +14,11 @@ class TranscriptionInfo(UniversalBaseModel):
     id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
     """
     ID of the transcription
+    """
+
+    user_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
+    """
+    ID of the user
     """
 
     title: typing.Optional[str] = pydantic.Field(default=None)

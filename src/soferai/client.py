@@ -7,9 +7,11 @@ import httpx
 from .core.client_wrapper import SyncClientWrapper
 from .health.client import HealthClient
 from .transcribe.client import TranscribeClient
+from .usage.client import UsageClient
 from .core.client_wrapper import AsyncClientWrapper
 from .health.client import AsyncHealthClient
 from .transcribe.client import AsyncTranscribeClient
+from .usage.client import AsyncUsageClient
 
 
 class SoferAI:
@@ -72,6 +74,7 @@ class SoferAI:
         )
         self.health = HealthClient(client_wrapper=self._client_wrapper)
         self.transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
+        self.usage = UsageClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSoferAI:
@@ -134,6 +137,7 @@ class AsyncSoferAI:
         )
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
+        self.usage = AsyncUsageClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(*, base_url: typing.Optional[str] = None, environment: SoferAIEnvironment) -> str:
