@@ -7,7 +7,13 @@ mypy.ini
 ruff.toml
 pytest.ini
 
-nonsense/*
+nonsense/convert.sh
+nonsense/poetry-uv.pyproject.toml.mustache
+nonsense/poetry.json
+nonsense/uv.pyproject.toml
+nonsense/uv.pyproject.toml.mustache
 
 uv.lock
 pyproject.toml
+.python-version
+CHANGELOG.md
