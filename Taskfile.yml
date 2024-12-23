@@ -1,0 +1,43 @@
+---
+# This Taskfile defines a set of tasks that can be run using the `task` command.
+# To invoke a task, use the command `task <task_name>`. For example, to run the `init` task, use `task init`.
+
+# This is the version of the Taskfile format being used
+version: '3'
+# Define the tasks that can be run
+tasks:
+  format:
+    desc: Format the codebase
+    aliases: [f]  # Short alias for the format task
+    cmds:
+      - task: format::ruff
+
+  format::ruff:
+    desc: Run the Ruff linter on the entire codebase
+    dir: '{{.TASKFILE_DIR}}'
+    cmds:
+      - uv run ruff format .
+
+  # Task to lint the codebase
+  lint:
+    desc: Lint the codebase
+    aliases: [l]  # Short alias for the lint task
+    cmds:
+      - task: lint::ruff
+
+  lint::ruff:
+    desc: Run the Ruff linter on the entire codebase
+    cmds:
+      - uv run ruff check .
+
+  # Task to fix linting issues in the codebase
+  fix:
+    desc: Fix linting issues in the codebase
+    cmds: [uv run ruff check . --fix]
+
+  do:
+    desc: run all the tasks
+    cmds:
+      - task: format
+      - task: fix
+      - task: lint
