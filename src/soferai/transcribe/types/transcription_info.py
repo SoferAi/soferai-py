@@ -2,7 +2,6 @@
 
 import datetime as dt
 import typing
-import uuid
 
 import pydantic
 
@@ -16,11 +15,6 @@ class TranscriptionInfo(UniversalBaseModel):
     id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
     """
     ID of the transcription
-    """
-
-    user_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
-    """
-    ID of the user
     """
 
     title: typing.Optional[str] = pydantic.Field(default=None)
@@ -38,7 +32,7 @@ class TranscriptionInfo(UniversalBaseModel):
     Primary language of the audio content
     """
 
-    lang_for_hebrew_words: typing.Optional[list[Language]] = pydantic.Field(default=None)
+    lang_for_hebrew_words: typing.Optional[typing.List[Language]] = pydantic.Field(default=None)
     """
     Language setting for Hebrew words processing (only need to be specified if the primary language is English)
     """

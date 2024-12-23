@@ -71,10 +71,10 @@ def convert_and_respect_annotation_metadata(
         return _convert_mapping(object_, clean_type, direction)
 
     if (
-        typing_extensions.get_origin(clean_type) == dict
+        typing_extensions.get_origin(clean_type) == typing.Dict
         or typing_extensions.get_origin(clean_type) == dict
-        or clean_type == dict
-    ) and isinstance(object_, dict):
+        or clean_type == typing.Dict
+    ) and isinstance(object_, typing.Dict):
         key_type = typing_extensions.get_args(clean_type)[0]
         value_type = typing_extensions.get_args(clean_type)[1]
 
@@ -91,10 +91,10 @@ def convert_and_respect_annotation_metadata(
     # If you're iterating on a string, do not bother to coerce it to a sequence.
     if not isinstance(object_, str):
         if (
-            typing_extensions.get_origin(clean_type) == set
+            typing_extensions.get_origin(clean_type) == typing.Set
             or typing_extensions.get_origin(clean_type) == set
-            or clean_type == set
-        ) and isinstance(object_, set):
+            or clean_type == typing.Set
+        ) and isinstance(object_, typing.Set):
             inner_type = typing_extensions.get_args(clean_type)[0]
             return {
                 convert_and_respect_annotation_metadata(
@@ -107,11 +107,11 @@ def convert_and_respect_annotation_metadata(
             }
         elif (
             (
-                typing_extensions.get_origin(clean_type) == list
+                typing_extensions.get_origin(clean_type) == typing.List
                 or typing_extensions.get_origin(clean_type) == list
-                or clean_type == list
+                or clean_type == typing.List
             )
-            and isinstance(object_, list)
+            and isinstance(object_, typing.List)
         ) or (
             (
                 typing_extensions.get_origin(clean_type) == typing.Sequence
@@ -159,7 +159,7 @@ def _convert_mapping(
     expected_type: typing.Any,
     direction: typing.Literal["read", "write"],
 ) -> typing.Mapping[str, object]:
-    converted_object: dict[str, object] = {}
+    converted_object: typing.Dict[str, object] = {}
     annotations = typing_extensions.get_type_hints(expected_type, include_extras=True)
     aliases_to_field_names = _get_alias_to_field_name(annotations)
     for key, value in object_.items():
@@ -215,19 +215,19 @@ def _remove_annotations(type_: typing.Any) -> typing.Any:
     return type_
 
 
-def get_alias_to_field_mapping(type_: typing.Any) -> dict[str, str]:
+def get_alias_to_field_mapping(type_: typing.Any) -> typing.Dict[str, str]:
     annotations = typing_extensions.get_type_hints(type_, include_extras=True)
     return _get_alias_to_field_name(annotations)
 
 
-def get_field_to_alias_mapping(type_: typing.Any) -> dict[str, str]:
+def get_field_to_alias_mapping(type_: typing.Any) -> typing.Dict[str, str]:
     annotations = typing_extensions.get_type_hints(type_, include_extras=True)
     return _get_field_to_alias_name(annotations)
 
 
 def _get_alias_to_field_name(
-    field_to_hint: dict[str, typing.Any],
-) -> dict[str, str]:
+    field_to_hint: typing.Dict[str, typing.Any],
+) -> typing.Dict[str, str]:
     aliases = {}
     for field, hint in field_to_hint.items():
         maybe_alias = _get_alias_from_type(hint)
@@ -237,8 +237,8 @@ def _get_alias_to_field_name(
 
 
 def _get_field_to_alias_name(
-    field_to_hint: dict[str, typing.Any],
-) -> dict[str, str]:
+    field_to_hint: typing.Dict[str, typing.Any],
+) -> typing.Dict[str, str]:
     aliases = {}
     for field, hint in field_to_hint.items():
         maybe_alias = _get_alias_from_type(hint)
@@ -264,7 +264,7 @@ def _alias_key(
     key: str,
     type_: typing.Any,
     direction: typing.Literal["read", "write"],
-    aliases_to_field_names: dict[str, str],
+    aliases_to_field_names: typing.Dict[str, str],
 ) -> str:
     if direction == "read":
         return aliases_to_field_names.get(key, key)

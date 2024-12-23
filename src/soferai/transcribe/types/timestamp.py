@@ -19,7 +19,7 @@ class Timestamp(UniversalBaseModel):
     Punctuated word
     """
 
-    languages: typing.Optional[list[Language]] = pydantic.Field(default=None)
+    languages: typing.Optional[typing.List[Language]] = pydantic.Field(default=None)
     """
     Language for the transcription that this timestamp belongs to
     """

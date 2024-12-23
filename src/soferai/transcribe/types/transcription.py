@@ -19,7 +19,7 @@ class Transcription(UniversalBaseModel):
     If primary language is Hebrew, this is just the Hebrew text.
     """
 
-    timestamps: typing.Optional[list[Timestamp]] = pydantic.Field(default=None)
+    timestamps: typing.Optional[typing.List[Timestamp]] = pydantic.Field(default=None)
     """
     Timestamps for the transcription text
     """

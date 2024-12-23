@@ -19,8 +19,8 @@ class BaseClientWrapper:
         self._base_url = base_url
         self._timeout = timeout
 
-    def get_headers(self) -> dict[str, str]:
-        headers: dict[str, str] = {
+    def get_headers(self) -> typing.Dict[str, str]:
+        headers: typing.Dict[str, str] = {
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "soferai",
             "X-Fern-SDK-Version": "0.0.0",
