@@ -9,7 +9,7 @@ authors = [
     { name = "Zach Fisch", email = "zach@sofer.ai" },
 ]
 
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 classifiers = [
     "Intended Audience :: Developers",
