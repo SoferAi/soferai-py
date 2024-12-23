@@ -23,7 +23,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Lint
-        run: uv run ruff .
+        run: uv run ruff check .
 
   format:
     runs-on: ubuntu-20.04
@@ -59,6 +59,7 @@ jobs:
         run: uv run mypy .
 
   test:
+    needs: [lint, format, compile]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
