@@ -7,8 +7,32 @@ env:
   PYTHON_VERSION: 3.9
 
 jobs:
+  rename-pr:
+    runs-on: ubuntu-20.04
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Rename PR if needed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_TITLE=$(gh pr view --json title -q .title || echo '')
+          if [[ $PR_TITLE =~ Fern[[:space:]]Regeneration[[:space:]]--[[:space:]]([A-Za-z]+)[[:space:]]([0-9]{1,2}),[[:space:]]([0-9]{4})$ ]]; then
+            MONTH=$(echo ${BASH_REMATCH[1]} | tr '[:upper:]' '[:lower:]')
+            DAY=${BASH_REMATCH[2]}
+            YEAR=${BASH_REMATCH[3]}
+            NEW_TITLE="chore(fern): regeneration $MONTH $DAY, $YEAR"
+            gh pr edit --title "$NEW_TITLE"
+          fi
+
   lint:
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -23,22 +47,40 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Lint
-        run: uv run ruff check .
+        run: uv run ruff check . --fix
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(lint): fix linting errors"
 
   format:
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
       - name: Install uv
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
           python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Install the project
         run: uv sync --all-extras --dev
+
       - name: Format
         run: uv run ruff format .
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(fmt): format code"
+
 
   compile:
     runs-on: ubuntu-20.04
