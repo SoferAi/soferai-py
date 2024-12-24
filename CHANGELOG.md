@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/SoferAi/soferai-py/compare/v0.1.0...v0.2.0) (2024-12-23)
+
+
+### Features
+
+* **🌿:** regenerate ([#14](https://github.com/SoferAi/soferai-py/issues/14)) ([82a04fb](https://github.com/SoferAi/soferai-py/commit/82a04fb7c6bdbdb9769981fb75be7a05b525fc7f))
+
+
+### Bug Fixes
+
+* add stuff to fernignore ([#12](https://github.com/SoferAi/soferai-py/issues/12)) ([52aa5a9](https://github.com/SoferAi/soferai-py/commit/52aa5a91c3e89cd1e0c8d42b536b90ac45653fac))
+
 ## 0.1.0 (2024-12-23)
 
 
