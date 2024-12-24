@@ -22,10 +22,10 @@ jobs:
         run: |
           PR_TITLE=$(gh pr view --json title -q .title || echo '')
           if [[ $PR_TITLE =~ Fern[[:space:]]Regeneration[[:space:]]--[[:space:]]([A-Za-z]+)[[:space:]]([0-9]{1,2}),[[:space:]]([0-9]{4})$ ]]; then
-            MONTH=${BASH_REMATCH[1]}
+            MONTH=$(echo ${BASH_REMATCH[1]} | tr '[:upper:]' '[:lower:]')
             DAY=${BASH_REMATCH[2]}
             YEAR=${BASH_REMATCH[3]}
-            NEW_TITLE="chore(:herb:): fern regeneration $MONTH $DAY, $YEAR"
+            NEW_TITLE="chore(🌿): fern regeneration $MONTH $DAY, $YEAR"
             gh pr edit --title "$NEW_TITLE"
           fi
 
