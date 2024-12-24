@@ -2,6 +2,7 @@
 .github/workflows/release.yml
 .github/workflows/conventional-pr.yml
 .github/workflows/ci.yml
+.github/workflows/close-empty-prs.yml
 
 mypy.ini
 ruff.toml
