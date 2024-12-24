@@ -7,6 +7,25 @@ env:
   PYTHON_VERSION: 3.9
 
 jobs:
+  rename-pr:
+    runs-on: ubuntu-20.04
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Rename PR if needed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_TITLE=$(gh pr view --json title -q .title || echo '')
+          if [[ $PR_TITLE =~ Fern[[:space:]]Regeneration[[:space:]]--[[:space:]]([A-Za-z]+)[[:space:]]([0-9]{1,2}),[[:space:]]([0-9]{4})$ ]]; then
+            MONTH=${BASH_REMATCH[1]}
+            DAY=${BASH_REMATCH[2]}
+            YEAR=${BASH_REMATCH[3]}
+            NEW_TITLE="chore(:herb:): fern regeneration $(printf '%d/%d/%d' "$DAY" "$MONTH" "$YEAR")"
+            gh pr edit --title "$NEW_TITLE"
+          fi
+
   lint:
     runs-on: ubuntu-20.04
     permissions:
@@ -29,6 +48,8 @@ jobs:
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(lint): fix linting errors"
 
   format:
     runs-on: ubuntu-20.04
@@ -54,6 +75,8 @@ jobs:
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(fmt): format code"
 
 
   compile:
