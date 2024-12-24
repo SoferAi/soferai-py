@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/SoferAi/soferai-py/compare/v0.2.0...v0.3.0) (2024-12-24)
+
+
+### Features
+
+* **fern:** regeneration december 24, 2024 ([#20](https://github.com/SoferAi/soferai-py/issues/20)) ([e579042](https://github.com/SoferAi/soferai-py/commit/e579042f7c91c14cd9fa5f41eaf5363d8e1f1b8f))
+
+
+### Bug Fixes
+
+* set httpx dependency to something supabase can handle ([#22](https://github.com/SoferAi/soferai-py/issues/22)) ([c626286](https://github.com/SoferAi/soferai-py/commit/c626286dc098f44c6af6c354efe876180c726b8b))
+* update ci and fernignore ([#18](https://github.com/SoferAi/soferai-py/issues/18)) ([53b5a55](https://github.com/SoferAi/soferai-py/commit/53b5a55ff5fe3395d8041fb604f1f35459ea3993))
+
 ## [0.2.0](https://github.com/SoferAi/soferai-py/compare/v0.1.0...v0.2.0) (2024-12-23)
 
 
