@@ -31,11 +31,18 @@ jobs:
 
   lint:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
+
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -56,13 +63,19 @@ jobs:
 
   format:
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
