@@ -13,6 +13,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Rename PR if needed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
