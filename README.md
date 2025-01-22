@@ -21,13 +21,12 @@ Instantiate and use the client with the following:
 
 ```python
 from soferai import SoferAI
-from soferai.transcribe import TranscriptionInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
-client.transcribe.create_transcription(
-    info=TranscriptionInfo(),
+client.link.extract(
+    url="url",
 )
 ```
 
@@ -39,7 +38,6 @@ The SDK also exports an `async` client so that you can make non-blocking calls t
 import asyncio
 
 from soferai import AsyncSoferAI
-from soferai.transcribe import TranscriptionInfo
 
 client = AsyncSoferAI(
     api_key="YOUR_API_KEY",
@@ -47,8 +45,8 @@ client = AsyncSoferAI(
 
 
 async def main() -> None:
-    await client.transcribe.create_transcription(
-        info=TranscriptionInfo(),
+    await client.link.extract(
+        url="url",
     )
 
 
@@ -64,7 +62,7 @@ will be thrown.
 from soferai.core.api_error import ApiError
 
 try:
-    client.transcribe.create_transcription(...)
+    client.link.extract(...)
 except ApiError as e:
     print(e.status_code)
     print(e.body)
@@ -87,7 +85,7 @@ A request is deemed retriable when any of the following HTTP status codes is ret
 Use the `max_retries` request option to configure this behavior.
 
 ```python
-client.transcribe.create_transcription(..., request_options={
+client.link.extract(..., request_options={
     "max_retries": 1
 })
 ```
@@ -107,7 +105,7 @@ client = SoferAI(
 
 
 # Override timeout for a specific method
-client.transcribe.create_transcription(..., request_options={
+client.link.extract(..., request_options={
     "timeout_in_seconds": 1
 })
 ```

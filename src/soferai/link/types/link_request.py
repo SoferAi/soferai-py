@@ -5,10 +5,10 @@ import pydantic
 import typing
 
 
-class HealthResponse(UniversalBaseModel):
-    status: str = pydantic.Field()
+class LinkRequest(UniversalBaseModel):
+    url: str = pydantic.Field()
     """
-    Health status
+    URL to extract the download link from
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
