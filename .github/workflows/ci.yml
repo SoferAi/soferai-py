@@ -8,7 +8,7 @@ env:
 
 jobs:
   rename-pr:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
 
@@ -30,7 +30,7 @@ jobs:
           fi
 
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Generate a token
         id: generate-token
@@ -62,7 +62,7 @@ jobs:
           commit_message: "chore(lint): fix linting errors"
 
   format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Generate a token
         id: generate-token
@@ -96,7 +96,7 @@ jobs:
 
 
   compile:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
