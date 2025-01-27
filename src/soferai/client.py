@@ -8,6 +8,7 @@ import httpx
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import SoferAIEnvironment
 from .health.client import AsyncHealthClient, HealthClient
+from .link.client import AsyncLinkClient, LinkClient
 from .transcribe.client import AsyncTranscribeClient, TranscribeClient
 from .usage.client import AsyncUsageClient, UsageClient
 
@@ -71,6 +72,7 @@ class SoferAI:
             timeout=_defaulted_timeout,
         )
         self.health = HealthClient(client_wrapper=self._client_wrapper)
+        self.link = LinkClient(client_wrapper=self._client_wrapper)
         self.transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
         self.usage = UsageClient(client_wrapper=self._client_wrapper)
 
@@ -134,6 +136,7 @@ class AsyncSoferAI:
             timeout=_defaulted_timeout,
         )
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
+        self.link = AsyncLinkClient(client_wrapper=self._client_wrapper)
         self.transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
         self.usage = AsyncUsageClient(client_wrapper=self._client_wrapper)
 
