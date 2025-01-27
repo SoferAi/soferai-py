@@ -20,3 +20,4 @@ uv.lock
 pyproject.toml
 .python-version
 CHANGELOG.md
+renovate.json
