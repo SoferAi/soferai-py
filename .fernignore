@@ -21,3 +21,4 @@ pyproject.toml
 .python-version
 CHANGELOG.md
 renovate.json
+poetry.lock
