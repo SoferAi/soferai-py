@@ -138,6 +138,7 @@ client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_transcription(
+    audio_url="audio_url",
     info=TranscriptionInfo(),
 )
 
@@ -155,7 +156,7 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionInfo` — Transcription parameters
+**audio_url:** `str` — URL to the audio file
     
 </dd>
 </dl>
@@ -163,7 +164,7 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**audio_url:** `typing.Optional[str]` — URL to the audio file
+**info:** `TranscriptionInfo` — Transcription parameters
     
 </dd>
 </dl>

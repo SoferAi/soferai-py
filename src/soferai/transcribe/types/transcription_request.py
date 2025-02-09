@@ -9,7 +9,7 @@ from .transcription_info import TranscriptionInfo
 
 
 class TranscriptionRequest(UniversalBaseModel):
-    audio_url: typing.Optional[str] = pydantic.Field(default=None)
+    audio_url: str = pydantic.Field()
     """
     URL to the audio file
     """
