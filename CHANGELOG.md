@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/SoferAi/soferai-py/compare/v0.4.0...v0.5.0) (2025-02-13)
+
+
+### Features
+
+* basic tests ([#78](https://github.com/SoferAi/soferai-py/issues/78)) ([e9d044e](https://github.com/SoferAi/soferai-py/commit/e9d044ee45a1697dbd29133a635fbe128b832cdc))
+* **fern:** regeneration february 9, 2025 ([#66](https://github.com/SoferAi/soferai-py/issues/66)) ([a3e6852](https://github.com/SoferAi/soferai-py/commit/a3e6852ecd8ed72c80bf4477a30f274ed3708a0a))
+* **fern:** regeneration january 27, 2025 ([#50](https://github.com/SoferAi/soferai-py/issues/50)) ([ebcad2f](https://github.com/SoferAi/soferai-py/commit/ebcad2f72fd38673f2e7bbb0188305d7ee450648))
+
 ## [0.4.0](https://github.com/SoferAi/soferai-py/compare/v0.3.0...v0.4.0) (2025-01-27)
 
 
