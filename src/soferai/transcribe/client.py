@@ -28,8 +28,8 @@ class TranscribeClient:
     def create_transcription(
         self,
         *,
+        audio_url: str,
         info: TranscriptionInfo,
-        audio_url: typing.Optional[str] = OMIT,
         audio_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
@@ -38,11 +38,11 @@ class TranscribeClient:
 
         Parameters
         ----------
+        audio_url : str
+            URL to the audio file
+
         info : TranscriptionInfo
             Transcription parameters
-
-        audio_url : typing.Optional[str]
-            URL to the audio file
 
         audio_id : typing.Optional[str]
             ID of the audio file (for audio in the S3 bucket, this is the postgres storage metadata id)
@@ -63,6 +63,7 @@ class TranscribeClient:
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_transcription(
+            audio_url="audio_url",
             info=TranscriptionInfo(),
         )
         """
@@ -221,8 +222,8 @@ class AsyncTranscribeClient:
     async def create_transcription(
         self,
         *,
+        audio_url: str,
         info: TranscriptionInfo,
-        audio_url: typing.Optional[str] = OMIT,
         audio_id: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
@@ -231,11 +232,11 @@ class AsyncTranscribeClient:
 
         Parameters
         ----------
+        audio_url : str
+            URL to the audio file
+
         info : TranscriptionInfo
             Transcription parameters
-
-        audio_url : typing.Optional[str]
-            URL to the audio file
 
         audio_id : typing.Optional[str]
             ID of the audio file (for audio in the S3 bucket, this is the postgres storage metadata id)
@@ -261,6 +262,7 @@ class AsyncTranscribeClient:
 
         async def main() -> None:
             await client.transcribe.create_transcription(
+                audio_url="audio_url",
                 info=TranscriptionInfo(),
             )
 
