@@ -116,6 +116,8 @@ jobs:
   test_client:
     needs: [lint, format, compile]
     runs-on: ubuntu-24.04
+    env:
+      SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
