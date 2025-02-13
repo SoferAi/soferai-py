@@ -129,6 +129,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - run: unset SKIP_CLIENT_TESTS
       - name: Test
         run: uv run pytest -rP .
 
