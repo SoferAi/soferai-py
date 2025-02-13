@@ -30,14 +30,14 @@ wheels = [
 
 [[package]]
 name = "basedpyright"
-version = "0.2.2"
+version = "1.27.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "nodejs-bin" },
+    { name = "nodejs-wheel-binaries" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/66/a9519d3d80bb44377f9fd03ba486d4c45edfd38b2d0b7c3f21bfbb6e3205/basedpyright-0.2.2.tar.gz", hash = "sha256:49f3954b4fbf995b35e20359e79c0055705136d55446b4b8b35ed5d5c0b02e7f", size = 7715323 }
+sdist = { url = "https://files.pythonhosted.org/packages/24/d6/13b8c68628ec477a0845e0cb1b653576f4b27cd56aa5b34e773d27b191f1/basedpyright-1.27.0.tar.gz", hash = "sha256:7394c6f8eb08bc8c45caeb00f75bc815b518d1345e25436ae3046b93ba1ddbb0", size = 21496620 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6b/9e/cee89b9fa444c373f262efab4dd854d323cff93d1b3acb7f8fbde7aca60f/basedpyright-0.2.2-py3-none-any.whl", hash = "sha256:4b4b279e66015711c20728f1bb4360924b49769c7df5808ac96369c77be53fdb", size = 9471186 },
+    { url = "https://files.pythonhosted.org/packages/23/da/b90aa61886be7a8eb553ec8816e25e1ec06d25178092be5d5404eac74fdc/basedpyright-1.27.0-py3-none-any.whl", hash = "sha256:4c71641ab808ca5a30fa1df26c9842b870b08847696a8a5f9072a6a4e914542d", size = 11523095 },
 ]
 
 [[package]]
@@ -145,17 +145,19 @@ wheels = [
 ]
 
 [[package]]
-name = "nodejs-bin"
-version = "18.4.0a4"
+name = "nodejs-wheel-binaries"
+version = "22.14.0"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/c7/4fd3871d2b7fd5122216245e273201ab98eda92bbd6fe9ad04846b758c56/nodejs_wheel_binaries-22.14.0.tar.gz", hash = "sha256:c1dc43713598c7310d53795c764beead861b8c5021fe4b1366cb912ce1a4c8bf", size = 8055 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/a9/c679333eb93df04d5d8d005edaeb77013c2b851b30fe30af6f8743c56be4/nodejs_bin-18.4.0a4-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:16cb1abf7fe8c11c574e1e474d9f934a0df49a480290eae6e733d8bb09512e22", size = 44913825 },
-    { url = "https://files.pythonhosted.org/packages/36/21/7bb412b4418385e3d572311b567bfeac3009a24df2e097c1c1c427404a19/nodejs_bin-18.4.0a4-py3-none-macosx_11_0_arm64.whl", hash = "sha256:068ca987ed83ea1123775fafe5dc22d8f2ff920d7d31571e1bfe6fb1093833eb", size = 43294781 },
-    { url = "https://files.pythonhosted.org/packages/14/f5/b85f10ddb2b6bf58395bd08a7794ded91518f7eca1dc771c22c808c44e81/nodejs_bin-18.4.0a4-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:06cfeaa4d26eec94d8edb9927525ce94eb96dadc81f7d1daed42d1a7d003a4c9", size = 47303948 },
-    { url = "https://files.pythonhosted.org/packages/df/66/3a8ae9dde45b2181d9dbfc33dedbefc8c530fb833d90410efb28179af7a5/nodejs_bin-18.4.0a4-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:431ee3529f4fb226ddcfd4f14cb37e7df31238c42dfd051f4bf8f0c21029b133", size = 47142342 },
-    { url = "https://files.pythonhosted.org/packages/20/04/045acf6f5a051f8088619728f822dcbf2af47cfc01ccadf57db672cd547e/nodejs_bin-18.4.0a4-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:21f1f77ddc8fe05353bb6d6ee8e5a62edb3a8dcdb2740a5f9307fd8d9eef6691", size = 44112196 },
-    { url = "https://files.pythonhosted.org/packages/36/7c/9873a1a5d64179513240380474086bc69de72ef3ac27aa00210961d4742b/nodejs_bin-18.4.0a4-py3-none-win32.whl", hash = "sha256:59671fdc563dabb8be8a0b6dae4169d780482b3c9e0fba3f9aa2b7ee8d2261ac", size = 27509663 },
-    { url = "https://files.pythonhosted.org/packages/77/fc/cb203ae648ce1c14954f4752601fb0bf2dd2f627e0e62e4e7aa68b1dc9ac/nodejs_bin-18.4.0a4-py3-none-win_amd64.whl", hash = "sha256:cbd509218b4b17f75ee7841f9c21d5cacc1626d3b823a652a6627dbad18228ec", size = 29356349 },
+    { url = "https://files.pythonhosted.org/packages/61/b6/66ef4ef75ea7389ea788f2d5505bf9a8e5c3806d56c7a90cf46a6942f1cf/nodejs_wheel_binaries-22.14.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:d8ab8690516a3e98458041286e3f0d6458de176d15c14f205c3ea2972131420d", size = 50326597 },
+    { url = "https://files.pythonhosted.org/packages/7d/78/023d91a293ba73572a643bc89d11620d189f35f205a309dd8296aa45e69a/nodejs_wheel_binaries-22.14.0-py2.py3-none-macosx_11_0_x86_64.whl", hash = "sha256:b2f200f23b3610bdbee01cf136279e005ffdf8ee74557aa46c0940a7867956f6", size = 51158258 },
+    { url = "https://files.pythonhosted.org/packages/af/86/324f6342c79e5034a13319b02ba9ed1f4ac8813af567d223c9a9e56cd338/nodejs_wheel_binaries-22.14.0-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d0877832abd7a9c75c8c5caafa37f986c9341ee025043c2771213d70c4c1defa", size = 57180264 },
+    { url = "https://files.pythonhosted.org/packages/6d/9f/42bdaab26137e31732bff00147b9aca2185d475b5752b57a443e6c7ba93f/nodejs_wheel_binaries-22.14.0-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8fded5a70a8a55c2135e67bd580d8b7f2e94fcbafcc679b6a2d5b92f88373d69", size = 57693251 },
+    { url = "https://files.pythonhosted.org/packages/ab/d7/94f8f269aa86cf35f9ed2b70d09aca48dc971fb5656fdc4a3b69364b189f/nodejs_wheel_binaries-22.14.0-py2.py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:c1ade6f3ece458b40c02e89c91d5103792a9f18aaad5026da533eb0dcb87090e", size = 58841717 },
+    { url = "https://files.pythonhosted.org/packages/2d/a0/43b7316eaf22b4ee9bfb897ee36c724efceac7b89d7d1bedca28057b7be1/nodejs_wheel_binaries-22.14.0-py2.py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:34fa5ed4cf3f65cbfbe9b45c407ffc2fc7d97a06cd8993e6162191ff81f29f48", size = 59808791 },
+    { url = "https://files.pythonhosted.org/packages/10/0a/814491f751a25136e37de68a2728c9a9e3c1d20494aba5ff3c230d5f9c2d/nodejs_wheel_binaries-22.14.0-py2.py3-none-win_amd64.whl", hash = "sha256:ca7023276327455988b81390fa6bbfa5191c1da7fc45bc57c7abc281ba9967e9", size = 40478921 },
+    { url = "https://files.pythonhosted.org/packages/f4/5c/cab444afaa387dceac8debb817b52fd00596efcd2d54506c27311c6fe6a8/nodejs_wheel_binaries-22.14.0-py2.py3-none-win_arm64.whl", hash = "sha256:fd59c8e9a202221e316febe1624a1ae3b42775b7fb27737bf12ec79565983eaf", size = 36206637 },
 ]
 
 [[package]]
@@ -456,7 +458,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "basedpyright", specifier = ">=0.2.2" },
+    { name = "basedpyright", specifier = ">=1.27" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
     { name = "pytest-clarity", specifier = ">=1.0.1" },

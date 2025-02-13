@@ -111,7 +111,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Compile
-        run: uv run mypy .
+        run: uv run basedpyright .
 
   test_client:
     needs: [lint, format, compile]

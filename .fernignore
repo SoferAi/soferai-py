@@ -25,3 +25,5 @@ poetry.lock
 
 tests/custom/test_client.py
 tests/conftest.py
+
+.basedpyright/baseline.json
