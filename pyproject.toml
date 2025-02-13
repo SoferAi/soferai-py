@@ -1,7 +1,7 @@
 [project]
 name = "soferai"
 version = "0.4.0"
-description = ""
+description = "Soferai Python Client"
 readme = "README.md"
 
 authors = [
@@ -38,28 +38,29 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy>=1.14.0",
     "pytest-clarity>=1.0.1",
     "pytest>=8.3.4",
     "pytest-asyncio>=0.24.0",
     "python-dateutil>=2.9.0.post0",
     "ruff>=0.8.4",
     "types-python-dateutil>=2.9.0.20241206",
+    "python-decouple>=3.8",
+    "basedpyright>=0.2.2",
 ]
 
 [project.urls]
 "Repository" = "https://github.com/soferai/soferai-py"
 
-
-[tool.mypy]
-plugins = ["pydantic.mypy"]
-
+[tool.uv]
+resolution = "lowest-direct"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-
+markers = [
+    "incremental: marks tests as incremental (deselect with '-m \"not incremental\"')",
+]
 
 [build-system]
 requires = ["hatchling"]

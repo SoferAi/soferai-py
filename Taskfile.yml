@@ -35,6 +35,13 @@ tasks:
     desc: Fix linting issues in the codebase
     cmds: [uv run ruff check . --fix]
 
+  test:
+    desc: "Run the tests"
+    aliases: ["t"]
+    dir: "{{.USER_WORKING_DIR}}"
+    cmds:
+      - uv run pytest -vvv -s
+
   do:
     desc: run all the tasks
     cmds:

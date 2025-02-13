@@ -113,13 +113,34 @@ jobs:
       - name: Compile
         run: uv run mypy .
 
-  test:
+  test_client:
+    needs: [lint, format, compile]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Test
+        run: uv run pytest -rP .
+
+  test_platforms:
     needs: [lint, format, compile]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: ["ubuntu-22.04", "macos-14", "windows-2022"]
     runs-on: ${{ matrix.os }}
+    env:
+      SKIP_CLIENT_TESTS: true
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4

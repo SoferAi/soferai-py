@@ -22,3 +22,6 @@ pyproject.toml
 CHANGELOG.md
 renovate.json
 poetry.lock
+
+tests/custom/test_client.py
+tests/conftest.py
