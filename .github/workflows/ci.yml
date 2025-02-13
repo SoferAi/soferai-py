@@ -131,7 +131,7 @@ jobs:
 
       - run: unset SKIP_CLIENT_TESTS
       - name: Test
-        run: uv run pytest -rP .
+        run: uv run pytest -vvv -s -rP .
 
   test_platforms:
     needs: [lint, format, compile]
