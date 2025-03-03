@@ -5,8 +5,9 @@ import datetime as dt
 import typing
 from collections import defaultdict
 
-import pydantic
 import typing_extensions
+
+import pydantic
 
 from .datetime_utils import serialize_datetime
 from .serialization import convert_and_respect_annotation_metadata
@@ -78,7 +79,7 @@ def to_jsonable_with_fallback(
 class UniversalBaseModel(pydantic.BaseModel):
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
-            # Allow fields begining with `model_` to be used in the model
+            # Allow fields beginning with `model_` to be used in the model
             protected_namespaces=(),
         )  # type: ignore # Pydantic v2
 
@@ -127,7 +128,7 @@ class UniversalBaseModel(pydantic.BaseModel):
         Override the default dict method to `exclude_unset` by default. This function patches
         `exclude_unset` to work include fields within non-None default values.
         """
-        # Note: the logic here is multi-plexed given the levers exposed in Pydantic V1 vs V2
+        # Note: the logic here is multiplexed given the levers exposed in Pydantic V1 vs V2
         # Pydantic V1's .dict can be extremely slow, so we do not want to call it twice.
         #
         # We'd ideally do the same for Pydantic V2, but it shells out to a library to serialize models
