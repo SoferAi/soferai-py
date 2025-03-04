@@ -340,6 +340,94 @@ client.transcribe.get_transcription(
 </dl>
 </details>
 
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">update_transcription_timestamps</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update timestamps for a specific language in a transcription
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.update_transcription_timestamps(
+    transcription_id="transcription_id",
+    edited_transcript="edited_transcript",
+    language_to_update="language_to_update",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `str` — ID of the transcription to update
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**edited_transcript:** `str` — The edited transcript text
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**language_to_update:** `str` — The language for which to update timestamps
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Usage
 <details><summary><code>client.usage.<a href="src/soferai/usage/client.py">get_usage</a>(...)</code></summary>
 <dl>
