@@ -17,6 +17,7 @@ from .transcribe import (
     TranscriptionInfo,
     TranscriptionNotFound,
     TranscriptionRequest,
+    UpdateTimestampsRequest,
 )
 from .usage import Usage, UserNotFound
 from .version import __version__
@@ -42,6 +43,7 @@ __all__ = [
     "TranscriptionInfo",
     "TranscriptionNotFound",
     "TranscriptionRequest",
+    "UpdateTimestampsRequest",
     "Usage",
     "UserNotFound",
     "__version__",

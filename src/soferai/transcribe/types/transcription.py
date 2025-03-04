@@ -24,6 +24,11 @@ class Transcription(UniversalBaseModel):
     Timestamps for the transcription text
     """
 
+    timestamps_edited: typing.Optional[typing.List[Timestamp]] = pydantic.Field(default=None)
+    """
+    If you edited the timestamps, and used the update-timestamps endpoint, this is the edited timestamps
+    """
+
     info: TranscriptionInfo = pydantic.Field()
     """
     Additional information about the transcription
