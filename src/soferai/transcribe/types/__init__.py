@@ -7,6 +7,7 @@ from .transcription import Transcription
 from .transcription_id import TranscriptionId
 from .transcription_info import TranscriptionInfo
 from .transcription_request import TranscriptionRequest
+from .update_timestamps_request import UpdateTimestampsRequest
 
 __all__ = [
     "Language",
@@ -16,4 +17,5 @@ __all__ = [
     "TranscriptionId",
     "TranscriptionInfo",
     "TranscriptionRequest",
+    "UpdateTimestampsRequest",
 ]
