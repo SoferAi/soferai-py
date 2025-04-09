@@ -2,5 +2,6 @@
 
 from .link_request import LinkRequest
 from .link_response import LinkResponse
+from .site import Site
 
-__all__ = ["LinkRequest", "LinkResponse"]
+__all__ = ["LinkRequest", "LinkResponse", "Site"]
