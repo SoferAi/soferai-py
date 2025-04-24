@@ -3,6 +3,7 @@
 from .errors import AuthenticationError, RateLimitError, TranscriptionFailed, TranscriptionNotFound
 from .types import (
     Language,
+    LettersLanguage,
     Status,
     Timestamp,
     Transcription,
@@ -15,6 +16,7 @@ from .types import (
 __all__ = [
     "AuthenticationError",
     "Language",
+    "LettersLanguage",
     "RateLimitError",
     "Status",
     "Timestamp",
