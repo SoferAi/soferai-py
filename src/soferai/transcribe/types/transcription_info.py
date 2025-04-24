@@ -13,6 +13,11 @@ from .transcription_id import TranscriptionId
 
 
 class TranscriptionInfo(UniversalBaseModel):
+    model: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Model to use for the transcription
+    """
+
     id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
     """
     ID of the transcription
