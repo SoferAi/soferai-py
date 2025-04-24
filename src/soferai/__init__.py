@@ -4,10 +4,11 @@ from . import health, link, transcribe, usage
 from .client import AsyncSoferAI, SoferAI
 from .environment import SoferAIEnvironment
 from .health import HealthResponse
-from .link import LinkError, LinkNotFound, LinkNotSupported, LinkRequest, LinkResponse
+from .link import LinkError, LinkNotFound, LinkNotSupported, LinkRequest, LinkResponse, Site
 from .transcribe import (
     AuthenticationError,
     Language,
+    LettersLanguage,
     RateLimitError,
     Status,
     Timestamp,
@@ -27,12 +28,14 @@ __all__ = [
     "AuthenticationError",
     "HealthResponse",
     "Language",
+    "LettersLanguage",
     "LinkError",
     "LinkNotFound",
     "LinkNotSupported",
     "LinkRequest",
     "LinkResponse",
     "RateLimitError",
+    "Site",
     "SoferAI",
     "SoferAIEnvironment",
     "Status",
