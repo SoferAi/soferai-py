@@ -2,4 +2,4 @@
 
 import typing
 
-Language = typing.Union[typing.Literal["en", "he", "yi"], typing.Any]
+LettersLanguage = typing.Union[typing.Literal["en", "he"], typing.Any]
