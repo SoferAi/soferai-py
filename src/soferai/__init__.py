@@ -18,6 +18,7 @@ from .transcribe import (
     TranscriptionInfo,
     TranscriptionNotFound,
     TranscriptionRequest,
+    TranscriptionRequestInfo,
     UpdateTimestampsRequest,
 )
 from .usage import Usage, UserNotFound
@@ -46,6 +47,7 @@ __all__ = [
     "TranscriptionInfo",
     "TranscriptionNotFound",
     "TranscriptionRequest",
+    "TranscriptionRequestInfo",
     "UpdateTimestampsRequest",
     "Usage",
     "UserNotFound",
