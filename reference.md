@@ -103,6 +103,52 @@ client.link.extract(
 </dl>
 </details>
 
+<details><summary><code>client.link.<a href="src/soferai/link/client.py">get_supported_sites</a>()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.link.get_supported_sites()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transcribe
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription</a>(...)</code></summary>
 <dl>
@@ -138,7 +184,6 @@ client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_transcription(
-    audio_url="audio_url",
     info=TranscriptionInfo(),
 )
 
@@ -156,14 +201,6 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**audio_url:** `str` — URL to the audio file
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **info:** `TranscriptionInfo` — Transcription parameters
     
 </dd>
@@ -172,7 +209,15 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**audio_id:** `typing.Optional[str]` — ID of the audio file (for audio in the S3 bucket, this is the postgres storage metadata id)
+**audio_url:** `typing.Optional[str]` — URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audio_file:** `typing.Optional[str]` — Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
     
 </dd>
 </dl>
