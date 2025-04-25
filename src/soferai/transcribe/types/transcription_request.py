@@ -5,7 +5,7 @@ import typing
 import pydantic
 
 from ...core.pydantic_utilities import UniversalBaseModel
-from .transcription_info import TranscriptionInfo
+from .transcription_request_info import TranscriptionRequestInfo
 
 
 class TranscriptionRequest(UniversalBaseModel):
@@ -19,7 +19,7 @@ class TranscriptionRequest(UniversalBaseModel):
     Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
     """
 
-    info: TranscriptionInfo = pydantic.Field()
+    info: TranscriptionRequestInfo = pydantic.Field()
     """
     Transcription parameters
     """

@@ -178,13 +178,13 @@ Create a new transcription
 
 ```python
 from soferai import SoferAI
-from soferai.transcribe import TranscriptionInfo
+from soferai.transcribe import TranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_transcription(
-    info=TranscriptionInfo(),
+    info=TranscriptionRequestInfo(),
 )
 
 ```
@@ -201,7 +201,7 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionInfo` — Transcription parameters
+**info:** `TranscriptionRequestInfo` — Transcription parameters
     
 </dd>
 </dl>

@@ -18,6 +18,7 @@ from .types.timestamp import Timestamp
 from .types.transcription import Transcription
 from .types.transcription_id import TranscriptionId
 from .types.transcription_info import TranscriptionInfo
+from .types.transcription_request_info import TranscriptionRequestInfo
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,7 +31,7 @@ class TranscribeClient:
     def create_transcription(
         self,
         *,
-        info: TranscriptionInfo,
+        info: TranscriptionRequestInfo,
         audio_url: typing.Optional[str] = OMIT,
         audio_file: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -40,7 +41,7 @@ class TranscribeClient:
 
         Parameters
         ----------
-        info : TranscriptionInfo
+        info : TranscriptionRequestInfo
             Transcription parameters
 
         audio_url : typing.Optional[str]
@@ -59,13 +60,13 @@ class TranscribeClient:
         Examples
         --------
         from soferai import SoferAI
-        from soferai.transcribe import TranscriptionInfo
+        from soferai.transcribe import TranscriptionRequestInfo
 
         client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_transcription(
-            info=TranscriptionInfo(),
+            info=TranscriptionRequestInfo(),
         )
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -75,7 +76,7 @@ class TranscribeClient:
                 "audio_url": audio_url,
                 "audio_file": audio_file,
                 "info": convert_and_respect_annotation_metadata(
-                    object_=info, annotation=TranscriptionInfo, direction="write"
+                    object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
             },
             request_options=request_options,
@@ -310,7 +311,7 @@ class AsyncTranscribeClient:
     async def create_transcription(
         self,
         *,
-        info: TranscriptionInfo,
+        info: TranscriptionRequestInfo,
         audio_url: typing.Optional[str] = OMIT,
         audio_file: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
@@ -320,7 +321,7 @@ class AsyncTranscribeClient:
 
         Parameters
         ----------
-        info : TranscriptionInfo
+        info : TranscriptionRequestInfo
             Transcription parameters
 
         audio_url : typing.Optional[str]
@@ -341,7 +342,7 @@ class AsyncTranscribeClient:
         import asyncio
 
         from soferai import AsyncSoferAI
-        from soferai.transcribe import TranscriptionInfo
+        from soferai.transcribe import TranscriptionRequestInfo
 
         client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
@@ -350,7 +351,7 @@ class AsyncTranscribeClient:
 
         async def main() -> None:
             await client.transcribe.create_transcription(
-                info=TranscriptionInfo(),
+                info=TranscriptionRequestInfo(),
             )
 
 
@@ -363,7 +364,7 @@ class AsyncTranscribeClient:
                 "audio_url": audio_url,
                 "audio_file": audio_file,
                 "info": convert_and_respect_annotation_metadata(
-                    object_=info, annotation=TranscriptionInfo, direction="write"
+                    object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
             },
             request_options=request_options,

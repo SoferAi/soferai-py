@@ -10,6 +10,7 @@ from .types import (
     TranscriptionId,
     TranscriptionInfo,
     TranscriptionRequest,
+    TranscriptionRequestInfo,
     UpdateTimestampsRequest,
 )
 
@@ -26,5 +27,6 @@ __all__ = [
     "TranscriptionInfo",
     "TranscriptionNotFound",
     "TranscriptionRequest",
+    "TranscriptionRequestInfo",
     "UpdateTimestampsRequest",
 ]
