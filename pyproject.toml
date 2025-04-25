@@ -1,6 +1,6 @@
 [project]
 name = "soferai"
-version = "0.6.0"
+version = "0.7.0"
 description = "Soferai Python Client"
 readme = "README.md"
 
