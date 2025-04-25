@@ -11,6 +11,7 @@ from .errors.link_error import LinkError
 from .errors.link_not_found import LinkNotFound
 from .errors.link_not_supported import LinkNotSupported
 from .types.link_response import LinkResponse
+from .types.site import Site
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -69,6 +70,45 @@ class LinkClient:
                 raise LinkNotFound()
             if _response.status_code == 500:
                 raise LinkError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_supported_sites(self, *, request_options: typing.Optional[RequestOptions] = None) -> typing.List[Site]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Site]
+
+        Examples
+        --------
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.link.get_supported_sites()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/link/sites",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[Site],
+                    parse_obj_as(
+                        type_=typing.List[Site],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)
@@ -136,6 +176,55 @@ class AsyncLinkClient:
                 raise LinkNotFound()
             if _response.status_code == 500:
                 raise LinkError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_supported_sites(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[Site]:
+        """
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[Site]
+
+        Examples
+        --------
+        import asyncio
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.link.get_supported_sites()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/link/sites",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[Site],
+                    parse_obj_as(
+                        type_=typing.List[Site],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, body=_response.text)

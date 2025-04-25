@@ -5,7 +5,7 @@ import typing
 import pydantic
 
 from ...core.pydantic_utilities import UniversalBaseModel
-from .language import Language
+from .letters_language import LettersLanguage
 
 
 class Timestamp(UniversalBaseModel):
@@ -19,9 +19,9 @@ class Timestamp(UniversalBaseModel):
     Punctuated word
     """
 
-    languages: typing.Optional[typing.List[Language]] = pydantic.Field(default=None)
+    languages: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
     """
-    Language for the transcription that this timestamp belongs to
+    The language(s) for which this timestamp applies. If a word appears in both language versions, this field will include both "he" and "en". If the word is written in Hebrew letters, it will only have "he". If the word is transliterated into English letters, it will only have "en".
     """
 
     start: float = pydantic.Field()

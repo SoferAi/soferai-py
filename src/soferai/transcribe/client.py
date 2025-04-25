@@ -30,9 +30,9 @@ class TranscribeClient:
     def create_transcription(
         self,
         *,
-        audio_url: str,
         info: TranscriptionInfo,
-        audio_id: typing.Optional[str] = OMIT,
+        audio_url: typing.Optional[str] = OMIT,
+        audio_file: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
         """
@@ -40,14 +40,14 @@ class TranscribeClient:
 
         Parameters
         ----------
-        audio_url : str
-            URL to the audio file
-
         info : TranscriptionInfo
             Transcription parameters
 
-        audio_id : typing.Optional[str]
-            ID of the audio file (for audio in the S3 bucket, this is the postgres storage metadata id)
+        audio_url : typing.Optional[str]
+            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+
+        audio_file : typing.Optional[str]
+            Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -65,7 +65,6 @@ class TranscribeClient:
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_transcription(
-            audio_url="audio_url",
             info=TranscriptionInfo(),
         )
         """
@@ -74,7 +73,7 @@ class TranscribeClient:
             method="POST",
             json={
                 "audio_url": audio_url,
-                "audio_id": audio_id,
+                "audio_file": audio_file,
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionInfo, direction="write"
                 ),
@@ -311,9 +310,9 @@ class AsyncTranscribeClient:
     async def create_transcription(
         self,
         *,
-        audio_url: str,
         info: TranscriptionInfo,
-        audio_id: typing.Optional[str] = OMIT,
+        audio_url: typing.Optional[str] = OMIT,
+        audio_file: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
         """
@@ -321,14 +320,14 @@ class AsyncTranscribeClient:
 
         Parameters
         ----------
-        audio_url : str
-            URL to the audio file
-
         info : TranscriptionInfo
             Transcription parameters
 
-        audio_id : typing.Optional[str]
-            ID of the audio file (for audio in the S3 bucket, this is the postgres storage metadata id)
+        audio_url : typing.Optional[str]
+            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+
+        audio_file : typing.Optional[str]
+            Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -351,7 +350,6 @@ class AsyncTranscribeClient:
 
         async def main() -> None:
             await client.transcribe.create_transcription(
-                audio_url="audio_url",
                 info=TranscriptionInfo(),
             )
 
@@ -363,7 +361,7 @@ class AsyncTranscribeClient:
             method="POST",
             json={
                 "audio_url": audio_url,
-                "audio_id": audio_id,
+                "audio_file": audio_file,
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionInfo, direction="write"
                 ),
