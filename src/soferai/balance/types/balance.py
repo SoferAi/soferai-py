@@ -5,10 +5,10 @@ import pydantic
 import typing
 
 
-class HealthResponse(UniversalBaseModel):
-    status: str = pydantic.Field()
+class Balance(UniversalBaseModel):
+    cents_remaining: int = pydantic.Field()
     """
-    Health status
+    Amount of money remaining in cents (integer value, e.g. 100 = $1.00)
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
