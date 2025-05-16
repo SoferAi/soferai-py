@@ -132,7 +132,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Test
-        run: uv run pytest -vvv -s -rP .
+        run: uv run pytest -vvv -s -rP --disable-warnings .
 
   test_platforms:
     needs: [lint, format, compile]
@@ -157,4 +157,4 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Test
-        run: uv run pytest -rP .
+        run: uv run pytest -rP --disable-warnings .
