@@ -1,4 +1,65 @@
 # Reference
+## Balance
+<details><summary><code>client.balance.<a href="src/soferai/balance/client.py">get_balance</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get account balance in cents
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.balance.get_balance()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Health
 <details><summary><code>client.health.<a href="src/soferai/health/client.py">get_health</a>()</code></summary>
 <dl>
@@ -466,81 +527,6 @@ client.transcribe.update_transcription_timestamps(
 <dd>
 
 **language_to_update:** `Language` — Specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Usage
-<details><summary><code>client.usage.<a href="src/soferai/usage/client.py">get_usage</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get usage info
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.usage.get_usage(
-    user_id=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**user_id:** `uuid.UUID` — ID of the user
     
 </dd>
 </dl>
