@@ -8,10 +8,6 @@ import pytest
 from soferai import SoferAI, SoferAIEnvironment
 from soferai.health.types.health_response import HealthResponse
 from soferai.link.types.link_response import LinkResponse
-from soferai.transcribe.types import (
-    Language,
-    LettersLanguage,
-)
 from soferai.transcribe.types.transcription import Transcription
 from soferai.transcribe.types.transcription_id import TranscriptionId
 from soferai.transcribe.types.transcription_info import TranscriptionInfo
