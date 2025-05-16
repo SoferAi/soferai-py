@@ -91,10 +91,10 @@ class TestSoferAIProd:
         info: TranscriptionRequestInfo = TranscriptionRequestInfo(
             id=self.TEST_UUID,
             title=f"test_prod_{datetime.now().strftime('%Y%m%d%H%M%S')}",
-            primary_language=Language.English,
+            primary_language="en",
             lang_for_hebrew_words=[
-                LettersLanguage.English,
-                LettersLanguage.Hebrew,
+                "en",
+                "he",
             ],
             num_speakers=1,
         )
