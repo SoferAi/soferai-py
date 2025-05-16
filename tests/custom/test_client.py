@@ -11,6 +11,9 @@ from soferai.link.types.link_response import LinkResponse
 from soferai.transcribe.types.transcription import Transcription
 from soferai.transcribe.types.transcription_id import TranscriptionId
 from soferai.transcribe.types.transcription_info import TranscriptionInfo
+from soferai.transcribe.types.transcription_request_info import (
+    TranscriptionRequestInfo,
+)
 
 
 @pytest.mark.incremental
@@ -50,7 +53,7 @@ class TestSoferAIProd:
         # this is a simple runthrough of the transcription API, with no fancy features
         transcription_id: TranscriptionId = self.client.transcribe.create_transcription(
             audio_url="https://drive.google.com/uc?export=download&id=1_hSFDw_8Ps8uSMfmR9wgo8Xx92gJj_RA",
-            info={},  # TODO: make this optional # pyright: ignore[reportArgumentType]
+            info=TranscriptionRequestInfo(),
         )
         assert transcription_id is not None
 
@@ -81,11 +84,14 @@ class TestSoferAIProd:
 
     def test_create_transcription(self) -> None:
         # this is the same as the simple transcription test, but with a custom info object
-        info: TranscriptionInfo = TranscriptionInfo(
+        info: TranscriptionRequestInfo = TranscriptionRequestInfo(
             id=self.TEST_UUID,
             title=f"test_prod_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             primary_language="en",
-            lang_for_hebrew_words=["en", "he"],
+            lang_for_hebrew_words=[
+                "en",
+                "he",
+            ],
             num_speakers=1,
         )
         response: TranscriptionId = self.client.transcribe.create_transcription(
