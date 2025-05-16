@@ -5,12 +5,12 @@ import typing
 
 import httpx
 
+from .balance.client import AsyncBalanceClient, BalanceClient
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import SoferAIEnvironment
 from .health.client import AsyncHealthClient, HealthClient
 from .link.client import AsyncLinkClient, LinkClient
 from .transcribe.client import AsyncTranscribeClient, TranscribeClient
-from .usage.client import AsyncUsageClient, UsageClient
 
 
 class SoferAI:
@@ -71,10 +71,10 @@ class SoferAI:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.balance = BalanceClient(client_wrapper=self._client_wrapper)
         self.health = HealthClient(client_wrapper=self._client_wrapper)
         self.link = LinkClient(client_wrapper=self._client_wrapper)
         self.transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
-        self.usage = UsageClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSoferAI:
@@ -135,10 +135,10 @@ class AsyncSoferAI:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
+        self.balance = AsyncBalanceClient(client_wrapper=self._client_wrapper)
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.link = AsyncLinkClient(client_wrapper=self._client_wrapper)
         self.transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
-        self.usage = AsyncUsageClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(*, base_url: typing.Optional[str] = None, environment: SoferAIEnvironment) -> str:
