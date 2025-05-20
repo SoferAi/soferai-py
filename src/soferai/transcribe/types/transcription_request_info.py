@@ -31,7 +31,7 @@ class TranscriptionRequestInfo(UniversalBaseModel):
     Primary language of the audio content
     """
 
-    lang_for_hebrew_words: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
+    hebrew_word_format: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
     """
     Specifies how Hebrew words should be transcribed when the primary language is English. - If you want Hebrew words in Hebrew letters, include "he". - If you want Hebrew words transliterated into English letters, include "en". - If you include both "he" and "en", you will receive both versions back-to-back for each Hebrew word. Transliterated Hebrew words will be surrounded by <i> tags in the text.
     """
