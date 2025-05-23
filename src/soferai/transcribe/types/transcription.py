@@ -12,9 +12,9 @@ from .transcription_info import TranscriptionInfo
 class Transcription(UniversalBaseModel):
     text: str = pydantic.Field()
     """
-    Transcription text. if the `primary_language` was English and only one `lang_for_hebrew_words` was specified,
+    Transcription text. if the `primary_language` was English and only one `hebrew_word_format` was specified,
     this is just the English text with whatever language for the words you specified.
-    If you set multiple `lang_for_hebrew_words`,
+    If you set multiple `hebrew_word_format`,
     this is the text with Hebrew words, with the English text in <i>Italics</i> markup.
     If primary language is Hebrew, this is just the Hebrew text.
     """
