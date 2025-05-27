@@ -21,6 +21,7 @@ from .request_options import RequestOptions
 from .serialization import FieldMetadata, convert_and_respect_annotation_metadata
 
 __all__ = [
+    "IS_PYDANTIC_V2",
     "ApiError",
     "AsyncClientWrapper",
     "AsyncHttpClient",
@@ -28,7 +29,6 @@ __all__ = [
     "FieldMetadata",
     "File",
     "HttpClient",
-    "IS_PYDANTIC_V2",
     "RequestOptions",
     "SyncClientWrapper",
     "UniversalBaseModel",
