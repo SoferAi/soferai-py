@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/SoferAi/soferai-py/compare/v0.10.0...v0.10.1) (2025-05-27)
+
+
+### Bug Fixes
+
+* fixed-test ([#165](https://github.com/SoferAi/soferai-py/issues/165)) ([6367869](https://github.com/SoferAi/soferai-py/commit/6367869054a9eeddeb8f98af849efaf9d1e8b74d))
+
 ## [0.10.0](https://github.com/SoferAi/soferai-py/compare/v0.9.0...v0.10.0) (2025-05-27)
 
 
