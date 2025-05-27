@@ -13,8 +13,6 @@ from ..core.serialization import convert_and_respect_annotation_metadata
 from .errors.authentication_error import AuthenticationError
 from .errors.rate_limit_error import RateLimitError
 from .errors.transcription_not_found import TranscriptionNotFound
-from .types.language import Language
-from .types.timestamp import Timestamp
 from .types.transcription import Transcription
 from .types.transcription_id import TranscriptionId
 from .types.transcription_info import TranscriptionInfo
@@ -45,7 +43,7 @@ class TranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -216,93 +214,6 @@ class TranscribeClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
-    def update_transcription_timestamps(
-        self,
-        *,
-        old_timestamps: typing.Sequence[Timestamp],
-        edited_text: str,
-        language_to_update: Language,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Timestamp]:
-        """
-        Update the timestamps based on edited text. Updates one language at a time.
-
-        Parameters
-        ----------
-        old_timestamps : typing.Sequence[Timestamp]
-            The original timestamps associated with the text before editing. These will be used as reference points to align the new timestamps.
-
-        edited_text : str
-            The modified version of the transcription text that needs updated timestamp alignments. This should be the complete text after your edits.
-
-        language_to_update : Language
-            Specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[Timestamp]
-
-        Examples
-        --------
-        from soferai import SoferAI
-        from soferai.transcribe import Timestamp
-
-        client = SoferAI(
-            api_key="YOUR_API_KEY",
-        )
-        client.transcribe.update_transcription_timestamps(
-            old_timestamps=[
-                Timestamp(
-                    word="word",
-                    start=1.1,
-                    end=1.1,
-                ),
-                Timestamp(
-                    word="word",
-                    start=1.1,
-                    end=1.1,
-                ),
-            ],
-            edited_text="edited_text",
-            language_to_update="en",
-        )
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "v1/transcriptions/update-timestamps",
-            method="POST",
-            json={
-                "old_timestamps": convert_and_respect_annotation_metadata(
-                    object_=old_timestamps, annotation=typing.Sequence[Timestamp], direction="write"
-                ),
-                "edited_text": edited_text,
-                "language_to_update": language_to_update,
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return typing.cast(
-                    typing.List[Timestamp],
-                    parse_obj_as(
-                        type_=typing.List[Timestamp],  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise TranscriptionNotFound()
-            if _response.status_code == 401:
-                raise AuthenticationError()
-            if _response.status_code == 429:
-                raise RateLimitError()
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
 
 class AsyncTranscribeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -325,7 +236,7 @@ class AsyncTranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -504,101 +415,6 @@ class AsyncTranscribeClient:
                     Transcription,
                     parse_obj_as(
                         type_=Transcription,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise TranscriptionNotFound()
-            if _response.status_code == 401:
-                raise AuthenticationError()
-            if _response.status_code == 429:
-                raise RateLimitError()
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, body=_response.text)
-        raise ApiError(status_code=_response.status_code, body=_response_json)
-
-    async def update_transcription_timestamps(
-        self,
-        *,
-        old_timestamps: typing.Sequence[Timestamp],
-        edited_text: str,
-        language_to_update: Language,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> typing.List[Timestamp]:
-        """
-        Update the timestamps based on edited text. Updates one language at a time.
-
-        Parameters
-        ----------
-        old_timestamps : typing.Sequence[Timestamp]
-            The original timestamps associated with the text before editing. These will be used as reference points to align the new timestamps.
-
-        edited_text : str
-            The modified version of the transcription text that needs updated timestamp alignments. This should be the complete text after your edits.
-
-        language_to_update : Language
-            Specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        typing.List[Timestamp]
-
-        Examples
-        --------
-        import asyncio
-
-        from soferai import AsyncSoferAI
-        from soferai.transcribe import Timestamp
-
-        client = AsyncSoferAI(
-            api_key="YOUR_API_KEY",
-        )
-
-
-        async def main() -> None:
-            await client.transcribe.update_transcription_timestamps(
-                old_timestamps=[
-                    Timestamp(
-                        word="word",
-                        start=1.1,
-                        end=1.1,
-                    ),
-                    Timestamp(
-                        word="word",
-                        start=1.1,
-                        end=1.1,
-                    ),
-                ],
-                edited_text="edited_text",
-                language_to_update="en",
-            )
-
-
-        asyncio.run(main())
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "v1/transcriptions/update-timestamps",
-            method="POST",
-            json={
-                "old_timestamps": convert_and_respect_annotation_metadata(
-                    object_=old_timestamps, annotation=typing.Sequence[Timestamp], direction="write"
-                ),
-                "edited_text": edited_text,
-                "language_to_update": language_to_update,
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return typing.cast(
-                    typing.List[Timestamp],
-                    parse_obj_as(
-                        type_=typing.List[Timestamp],  # type: ignore
                         object_=_response.json(),
                     ),
                 )

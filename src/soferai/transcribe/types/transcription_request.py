@@ -11,7 +11,7 @@ from .transcription_request_info import TranscriptionRequestInfo
 class TranscriptionRequest(UniversalBaseModel):
     audio_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+    URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
     """
 
     audio_file: typing.Optional[str] = pydantic.Field(default=None)

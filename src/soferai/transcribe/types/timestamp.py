@@ -14,14 +14,9 @@ class Timestamp(UniversalBaseModel):
     Word
     """
 
-    punctuated_word: typing.Optional[str] = pydantic.Field(default=None)
+    hebrew_word_format: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
     """
-    Punctuated word
-    """
-
-    languages: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
-    """
-    The language(s) for which this timestamp applies. If a word appears in both language versions, this field will include both "he" and "en". If the word is written in Hebrew letters, it will only have "he". If the word is transliterated into English letters, it will only have "en".
+    Specifies the format of Hebrew words in the transcription. Hebrew words are denoted as "he" for Hebrew letters or "en" for English transliteration. Non-Hebrew words are represented by null.
     """
 
     start: float = pydantic.Field()
@@ -36,7 +31,7 @@ class Timestamp(UniversalBaseModel):
 
     speaker: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Speaker (Pro feature)
+    If speaker labeling was requested, indicates which speaker number spoke this word (Pro feature)
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

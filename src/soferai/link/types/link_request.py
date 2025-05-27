@@ -10,7 +10,7 @@ from ...core.pydantic_utilities import UniversalBaseModel
 class LinkRequest(UniversalBaseModel):
     url: str = pydantic.Field()
     """
-    URL to extract the download link from
+    URL to extract the download link from. Must be from a supported site.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

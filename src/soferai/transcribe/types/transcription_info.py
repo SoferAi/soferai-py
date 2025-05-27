@@ -30,17 +30,21 @@ class TranscriptionInfo(UniversalBaseModel):
 
     primary_language: Language = pydantic.Field()
     """
-    Primary language of the audio content
+    The primary language of the audio content, which can be English (en), Hebrew (he), or Yiddish (yi).
     """
 
-    lang_for_hebrew_words: typing.List[LettersLanguage] = pydantic.Field()
+    hebrew_word_format: typing.List[LettersLanguage] = pydantic.Field()
     """
-    Languages used for Hebrew words in the transcription
+    Indicates how Hebrew words are transcribed in the response when the primary language is English.
+    - Hebrew words are in Hebrew letters if "he" is specified.
+    - Hebrew words are transliterated into English letters if "en" is specified.
+    - If both "he" and "en" are specified, both versions are provided back-to-back for each Hebrew word.
+    Transliterated Hebrew words are surrounded by <i> tags in the response text.
     """
 
     num_speakers: int = pydantic.Field()
     """
-    Number of speakers in the audio
+    Number of speakers in the audio. If more than 1, then speaker labeling is enabled (a pro feature).
     """
 
     status: Status = pydantic.Field()
@@ -55,7 +59,7 @@ class TranscriptionInfo(UniversalBaseModel):
 
     model: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Model used for the transcription
+    Model used for the transcription. V1 is the latest and most accurate model, especially for audio with longer stretches of Hebrew. V0 is suitable for audio with fewer Hebrew words.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

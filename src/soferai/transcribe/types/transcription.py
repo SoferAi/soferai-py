@@ -12,16 +12,12 @@ from .transcription_info import TranscriptionInfo
 class Transcription(UniversalBaseModel):
     text: str = pydantic.Field()
     """
-    Transcription text. if the `primary_language` was English and only one `lang_for_hebrew_words` was specified,
-    this is just the English text with whatever language for the words you specified.
-    If you set multiple `lang_for_hebrew_words`,
-    this is the text with Hebrew words, with the English text in <i>Italics</i> markup.
-    If primary language is Hebrew, this is just the Hebrew text.
+    This field contains the transcription text. If the `primary_language` is English and only one `hebrew_word_format` is specified, the text will be in English with Hebrew words in the specified format. If multiple `hebrew_word_format` options are set, Hebrew words will appear in both formats, with the English transliteration in <i>Italics</i>. If the primary language is Hebrew, the text will be in Hebrew.
     """
 
     timestamps: typing.Optional[typing.List[Timestamp]] = pydantic.Field(default=None)
     """
-    Timestamps for the transcription text
+    Timestamps object for the transcription. See the `timestamps` object for more details.
     """
 
     info: TranscriptionInfo = pydantic.Field()

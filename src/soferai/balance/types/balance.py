@@ -10,7 +10,7 @@ from ...core.pydantic_utilities import UniversalBaseModel
 class Balance(UniversalBaseModel):
     cents_remaining: int = pydantic.Field()
     """
-    Amount of money remaining in cents (integer value, e.g. 100 = $1.00)
+    The amount remaining in the billing account associated with the API user, represented in cents.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
