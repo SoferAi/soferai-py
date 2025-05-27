@@ -26,7 +26,7 @@ class LinkClient:
         Parameters
         ----------
         url : str
-            URL to extract the download link from
+            URL to extract the download link from. Must be from a supported site.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -124,7 +124,7 @@ class AsyncLinkClient:
         Parameters
         ----------
         url : str
-            URL to extract the download link from
+            URL to extract the download link from. Must be from a supported site.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

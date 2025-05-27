@@ -144,7 +144,7 @@ client.link.extract(
 <dl>
 <dd>
 
-**url:** `str` — URL to extract the download link from
+**url:** `str` — URL to extract the download link from. Must be from a supported site.
     
 </dd>
 </dl>
@@ -270,7 +270,7 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**audio_url:** `typing.Optional[str]` — URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). Either audio_url or audio_file must be provided, but not both.
+**audio_url:** `typing.Optional[str]` — URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
     
 </dd>
 </dl>
@@ -427,106 +427,6 @@ client.transcribe.get_transcription(
 <dd>
 
 **transcription_id:** `uuid.UUID` — ID of the transcription
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">update_transcription_timestamps</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update the timestamps based on edited text. Updates one language at a time.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from soferai import SoferAI
-from soferai.transcribe import Timestamp
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.update_transcription_timestamps(
-    old_timestamps=[
-        Timestamp(
-            word="word",
-            start=1.1,
-            end=1.1,
-        ),
-        Timestamp(
-            word="word",
-            start=1.1,
-            end=1.1,
-        ),
-    ],
-    edited_text="edited_text",
-    language_to_update="en",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**old_timestamps:** `typing.Sequence[Timestamp]` — The original timestamps associated with the text before editing. These will be used as reference points to align the new timestamps.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**edited_text:** `str` — The modified version of the transcription text that needs updated timestamp alignments. This should be the complete text after your edits.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**language_to_update:** `Language` — Specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
     
 </dd>
 </dl>
