@@ -88,7 +88,7 @@ class TestSoferAIProd:
             id=self.TEST_UUID,
             title=f"test_prod_{datetime.now().strftime('%Y%m%d%H%M%S')}",
             primary_language="en",
-            lang_for_hebrew_words=[
+            hebrew_word_format=[
                 "en",
                 "he",
             ],
