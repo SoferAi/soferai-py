@@ -144,7 +144,7 @@ client.link.extract(
 <dl>
 <dd>
 
-**url:** `str` — URL to extract the download link from. Must be from a supported site.
+**url:** `str` — URL to extract a downloadable link from. This link must originate from a supported site. You can use the get supported sites endpoint to get a list of supported sites.
     
 </dd>
 </dl>
@@ -278,7 +278,37 @@ client.transcribe.create_transcription(
 <dl>
 <dd>
 
-**audio_file:** `typing.Optional[str]` — Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
+**audio_file:** `typing.Optional[str]` 
+
+Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
+
+## Base64 Encoding Example
+
+**Python:**
+```python
+import base64
+from soferai import SoferAI
+
+# Initialize client
+client = SoferAI(api_key="your_api_key_here")
+
+# Read and encode audio file
+with open("audio.mp3", "rb") as f:
+    base64_audio = base64.b64encode(f.read()).decode('utf-8')
+
+# Create transcription request
+response = client.transcribe.create_transcription(
+    audio_file=base64_audio,
+    info={
+        "model": "v1",
+        "primary_language": "en", 
+        "hebrew_word_format": ["he"],
+        "title": "My Shiur Transcription"
+    }
+)
+
+print(f"Transcription ID: {response}")
+```
     
 </dd>
 </dl>
@@ -352,7 +382,7 @@ client.transcribe.get_transcription_status(
 <dl>
 <dd>
 
-**transcription_id:** `uuid.UUID` — ID of the transcription
+**transcription_id:** `uuid.UUID` — ID of the transcription. Use the ID returned from the Create Transcription endpoint.
     
 </dd>
 </dl>
@@ -426,7 +456,7 @@ client.transcribe.get_transcription(
 <dl>
 <dd>
 
-**transcription_id:** `uuid.UUID` — ID of the transcription
+**transcription_id:** `uuid.UUID` — ID of the transcription. Use the ID returned from the Create Transcription endpoint.
     
 </dd>
 </dl>
