@@ -7,7 +7,13 @@ from .environment import SoferAIEnvironment
 from .health import HealthResponse
 from .link import LinkError, LinkNotFound, LinkNotSupported, LinkRequest, LinkResponse, Site
 from .transcribe import (
+    AudioSource,
     AuthenticationError,
+    BatchNotFound,
+    BatchStatus,
+    BatchStatusResponse,
+    BatchTranscriptionRequest,
+    BatchTranscriptionResponse,
     Language,
     LettersLanguage,
     RateLimitError,
@@ -26,8 +32,14 @@ from .version import __version__
 
 __all__ = [
     "AsyncSoferAI",
+    "AudioSource",
     "AuthenticationError",
     "Balance",
+    "BatchNotFound",
+    "BatchStatus",
+    "BatchStatusResponse",
+    "BatchTranscriptionRequest",
+    "BatchTranscriptionResponse",
     "HealthResponse",
     "Language",
     "LettersLanguage",
