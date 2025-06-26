@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Get account balance in cents
+Get account balance showing available balance and pending charges
 </dd>
 </dl>
 </dd>
@@ -301,7 +301,7 @@ response = client.transcribe.create_transcription(
     audio_file=base64_audio,
     info={
         "model": "v1",
-        "primary_language": "en", 
+        "primary_language": "en",
         "hebrew_word_format": ["he"],
         "title": "My Shiur Transcription"
     }
