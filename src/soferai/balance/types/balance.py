@@ -6,9 +6,29 @@ import typing
 
 
 class Balance(UniversalBaseModel):
-    cents_remaining: int = pydantic.Field()
+    total_balance: int = pydantic.Field()
     """
-    The amount remaining in the billing account associated with the API user, represented in cents.
+    The total balance in the account, not subtracting pending charges, represented in cents.
+    """
+
+    available_balance: int = pydantic.Field()
+    """
+    The available balance after accounting for pending charges, represented in cents. This is the amount that can be used for new transcriptions.
+    """
+
+    pending_balance: int = pydantic.Field()
+    """
+    The amount of pending charges from transcriptions that are in progress or queued, represented in cents.
+    """
+
+    all_time_deposits: int = pydantic.Field()
+    """
+    The total amount ever deposited into the account, represented in cents.
+    """
+
+    all_time_spend: int = pydantic.Field()
+    """
+    The total amount ever spent on completed transcriptions, represented in cents.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
