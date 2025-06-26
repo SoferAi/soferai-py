@@ -17,7 +17,7 @@ class BalanceClient:
 
     def get_balance(self, *, request_options: typing.Optional[RequestOptions] = None) -> Balance:
         """
-        Get account balance in cents
+        Get account balance showing available balance and pending charges
 
         Parameters
         ----------
@@ -65,7 +65,7 @@ class AsyncBalanceClient:
 
     async def get_balance(self, *, request_options: typing.Optional[RequestOptions] = None) -> Balance:
         """
-        Get account balance in cents
+        Get account balance showing available balance and pending charges
 
         Parameters
         ----------
