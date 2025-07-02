@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Get account balance in cents
+Get account balance showing available balance and pending charges
 </dd>
 </dl>
 </dd>
@@ -301,7 +301,7 @@ response = client.transcribe.create_transcription(
     audio_file=base64_audio,
     info={
         "model": "v1",
-        "primary_language": "en", 
+        "primary_language": "en",
         "hebrew_word_format": ["he"],
         "title": "My Shiur Transcription"
     }
@@ -630,6 +630,66 @@ client.transcribe.get_transcription(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">list_transcriptions</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get all transcriptions for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.list_transcriptions()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
 
 <dl>
 <dd>
