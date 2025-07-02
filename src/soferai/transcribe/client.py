@@ -20,6 +20,7 @@ from .errors.batch_not_found import BatchNotFound
 from .types.transcription_info import TranscriptionInfo
 from .errors.transcription_not_found import TranscriptionNotFound
 from .types.transcription import Transcription
+from .types.transcription_summary import TranscriptionSummary
 from ..core.client_wrapper import AsyncClientWrapper
 
 # this is used as the default value for optional parameters
@@ -64,7 +65,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -73,8 +74,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -388,6 +389,53 @@ class TranscribeClient:
             raise ApiError(status_code=_response.status_code, body=_response.text)
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
+    def list_transcriptions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[TranscriptionSummary]:
+        """
+        Get all transcriptions for the authenticated user
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[TranscriptionSummary]
+
+        Examples
+        --------
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.list_transcriptions()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[TranscriptionSummary],
+                    parse_obj_as(
+                        type_=typing.List[TranscriptionSummary],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
 
 class AsyncTranscribeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -427,7 +475,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -436,8 +484,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -779,6 +827,61 @@ class AsyncTranscribeClient:
                 )
             if _response.status_code == 404:
                 raise TranscriptionNotFound()
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_transcriptions(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[TranscriptionSummary]:
+        """
+        Get all transcriptions for the authenticated user
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[TranscriptionSummary]
+
+        Examples
+        --------
+        import asyncio
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.list_transcriptions()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    typing.List[TranscriptionSummary],
+                    parse_obj_as(
+                        type_=typing.List[TranscriptionSummary],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
             if _response.status_code == 401:
                 raise AuthenticationError()
             if _response.status_code == 429:

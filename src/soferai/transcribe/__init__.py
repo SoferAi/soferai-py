@@ -15,6 +15,7 @@ from .types import (
     TranscriptionInfo,
     TranscriptionRequest,
     TranscriptionRequestInfo,
+    TranscriptionSummary,
     UpdateTimestampsRequest,
 )
 from .errors import AuthenticationError, BatchNotFound, RateLimitError, TranscriptionFailed, TranscriptionNotFound
@@ -39,5 +40,6 @@ __all__ = [
     "TranscriptionNotFound",
     "TranscriptionRequest",
     "TranscriptionRequestInfo",
+    "TranscriptionSummary",
     "UpdateTimestampsRequest",
 ]
