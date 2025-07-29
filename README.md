@@ -25,8 +25,8 @@ from soferai import SoferAI
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
-client.link.extract(
-    url="url",
+client.categories.create_category(
+    name="name",
 )
 ```
 
@@ -45,8 +45,8 @@ client = AsyncSoferAI(
 
 
 async def main() -> None:
-    await client.link.extract(
-        url="url",
+    await client.categories.create_category(
+        name="name",
     )
 
 
@@ -62,7 +62,7 @@ will be thrown.
 from soferai.core.api_error import ApiError
 
 try:
-    client.link.extract(...)
+    client.categories.create_category(...)
 except ApiError as e:
     print(e.status_code)
     print(e.body)
@@ -85,7 +85,7 @@ A request is deemed retryable when any of the following HTTP status codes is ret
 Use the `max_retries` request option to configure this behavior.
 
 ```python
-client.link.extract(..., request_options={
+client.categories.create_category(..., request_options={
     "max_retries": 1
 })
 ```
@@ -105,7 +105,7 @@ client = SoferAI(
 
 
 # Override timeout for a specific method
-client.link.extract(..., request_options={
+client.categories.create_category(..., request_options={
     "timeout_in_seconds": 1
 })
 ```

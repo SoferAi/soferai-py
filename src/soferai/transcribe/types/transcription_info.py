@@ -52,7 +52,7 @@ class TranscriptionInfo(UniversalBaseModel):
 
     duration: typing.Optional[float] = pydantic.Field(default=None)
     """
-    Duration of the audio in seconds
+    Duration of the audio in seconds. If None, it means the duration was not calculated yet.
     """
 
     model: typing.Optional[str] = pydantic.Field(default=None)
