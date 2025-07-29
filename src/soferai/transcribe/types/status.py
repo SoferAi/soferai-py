@@ -3,5 +3,8 @@
 import typing
 
 Status = typing.Union[
-    typing.Literal["RECEIVED", "PENDING", "PROCESSING", "COMPLETED", "CANCELLED", "FAILED", "UPLOADED"], typing.Any
+    typing.Literal[
+        "RECEIVED", "PENDING", "PROCESSING", "COMPLETED", "CANCELLED", "FAILED", "UPLOADED", "INSUFFICIENT_FUNDS"
+    ],
+    typing.Any,
 ]
