@@ -5,16 +5,15 @@ import pydantic
 import typing
 
 
-class AudioChunk(UniversalBaseModel):
+class CreateCategoryRequest(UniversalBaseModel):
+    name: str = pydantic.Field()
     """
-    Binary chunk of PCM audio streamed from the client.
-    """
-
-    data: str = pydantic.Field()
-    """
-    PCM audio data chunk
+    Name of the category
     """
 
-    mime_type: str
+    color_hex: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Hex color code for the category (e.g.,
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

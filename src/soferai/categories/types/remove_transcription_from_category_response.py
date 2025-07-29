@@ -2,19 +2,24 @@
 
 from ...core.pydantic_utilities import UniversalBaseModel
 import pydantic
+import uuid
 import typing
 
 
-class AudioChunk(UniversalBaseModel):
+class RemoveTranscriptionFromCategoryResponse(UniversalBaseModel):
+    message: str = pydantic.Field()
     """
-    Binary chunk of PCM audio streamed from the client.
-    """
-
-    data: str = pydantic.Field()
-    """
-    PCM audio data chunk
+    Success message
     """
 
-    mime_type: str
+    category_id: uuid.UUID = pydantic.Field()
+    """
+    ID of the category
+    """
+
+    transcription_id: uuid.UUID = pydantic.Field()
+    """
+    ID of the transcription
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
