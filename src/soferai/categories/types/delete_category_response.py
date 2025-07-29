@@ -2,19 +2,19 @@
 
 from ...core.pydantic_utilities import UniversalBaseModel
 import pydantic
+import uuid
 import typing
 
 
-class AudioChunk(UniversalBaseModel):
+class DeleteCategoryResponse(UniversalBaseModel):
+    message: str = pydantic.Field()
     """
-    Binary chunk of PCM audio streamed from the client.
-    """
-
-    data: str = pydantic.Field()
-    """
-    PCM audio data chunk
+    Success message
     """
 
-    mime_type: str
+    deleted_id: uuid.UUID = pydantic.Field()
+    """
+    ID of the deleted category
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
