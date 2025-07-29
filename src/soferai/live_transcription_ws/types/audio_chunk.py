@@ -12,7 +12,7 @@ class AudioChunk(UniversalBaseModel):
 
     data: str = pydantic.Field()
     """
-    Base64‐encoded PCM audio data chunk
+    PCM audio data chunk
     """
 
     mime_type: str
