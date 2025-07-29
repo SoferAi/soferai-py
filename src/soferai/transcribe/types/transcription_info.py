@@ -50,7 +50,7 @@ class TranscriptionInfo(UniversalBaseModel):
     Current status of the transcription
     """
 
-    duration: float = pydantic.Field()
+    duration: typing.Optional[float] = pydantic.Field(default=None)
     """
     Duration of the audio in seconds
     """
