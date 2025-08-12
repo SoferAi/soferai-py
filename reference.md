@@ -913,6 +913,155 @@ client.link.get_supported_sites()
 </dl>
 </details>
 
+## Timestamps
+<details><summary><code>client.timestamps.<a href="src/soferai/timestamps/client.py">align_starting_phrases</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Align topic starting phrases to timestamps within a transcript.
+
+To generate your own list of topics (StartingPhraseTopic), you can use a language model (LLM) with the following prompt:
+
+    Below is a transcript of a shiur.
+    You are an expert at structuring Jewish lectures (shiurim).
+    Based on the following transcription, divide the content into logical chapters.
+    Ensure that the chapter titles sound like a yeshiva student, relevant and human-like.
+
+    For each chapter, provide:
+    1.  A short, clear "title" based upon the content of that section. Should be in English. Up to 10 words.
+    2.  The exact "starting_phrase" that begins the chapter. This needs to be the exact words that are in the document. Give at least 7 words.
+
+    Return only valid JSON. Do NOT include any explanation.
+    Transcript:
+    {full_text}
+
+Replace `{full_text}` with your transcript. The model should return a JSON array of objects, each with a `title` and a `starting_phrase` (at least 7 words, exactly as they appear in the transcript).
+
+Example output:
+    [
+      {
+        "title": "Introduction to the Topic",
+        "starting_phrase": "Today we are going to discuss the laws of Shabbat"
+      },
+      {
+        "title": "Historical Background",
+        "starting_phrase": "In the times of the Talmud, the sages debated"
+      }
+    ]
+
+Use this output as the `topics` field in your request to this endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+from soferai.timestamps import StartingPhraseTopic
+from soferai.transcribe import Timestamp
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.timestamps.align_starting_phrases(
+    transcript_words=[
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+    ],
+    topics=[
+        StartingPhraseTopic(
+            title="title",
+            starting_phrase="starting_phrase",
+        ),
+        StartingPhraseTopic(
+            title="title",
+            starting_phrase="starting_phrase",
+        ),
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcript_words:** `typing.Sequence[Timestamp]` — List of word-level timestamps for the transcript
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**topics:** `typing.Sequence[StartingPhraseTopic]` — List of topics with their expected starting phrases
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**monotone:** `typing.Optional[bool]` — If true, each topic is searched after the previous topic's start (with a small backoff)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conclusion_bias:** `typing.Optional[bool]` — If true and a title includes the word "conclusion", search in the last third of the audio
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transcribe
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription</a>(...)</code></summary>
 <dl>
