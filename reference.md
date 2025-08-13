@@ -913,6 +913,102 @@ client.link.get_supported_sites()
 </dl>
 </details>
 
+## Timestamps
+<details><summary><code>client.timestamps.<a href="src/soferai/timestamps/client.py">outline</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Outline of topics discussed by timestamp, generated end-to-end from a transcription ID.
+
+This endpoint will:
+1) Fetch the transcript and word-level timestamps for the given transcription
+2) Generate chapter topics (title + starting_phrase) using an LLM from the transcript text
+3) Align each topic's starting phrase to timestamps
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.timestamps.outline(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `TranscriptionId` — ID of the transcription to process end-to-end
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**monotone:** `typing.Optional[bool]` — If true, each topic is searched after the previous topic's start (with a small backoff)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conclusion_bias:** `typing.Optional[bool]` — If true and a title includes the word "conclusion", search in the last third of the audio
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transcribe
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription</a>(...)</code></summary>
 <dl>

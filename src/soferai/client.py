@@ -9,12 +9,14 @@ from .balance.client import BalanceClient
 from .categories.client import CategoriesClient
 from .health.client import HealthClient
 from .link.client import LinkClient
+from .timestamps.client import TimestampsClient
 from .transcribe.client import TranscribeClient
 from .core.client_wrapper import AsyncClientWrapper
 from .balance.client import AsyncBalanceClient
 from .categories.client import AsyncCategoriesClient
 from .health.client import AsyncHealthClient
 from .link.client import AsyncLinkClient
+from .timestamps.client import AsyncTimestampsClient
 from .transcribe.client import AsyncTranscribeClient
 
 
@@ -80,6 +82,7 @@ class SoferAI:
         self.categories = CategoriesClient(client_wrapper=self._client_wrapper)
         self.health = HealthClient(client_wrapper=self._client_wrapper)
         self.link = LinkClient(client_wrapper=self._client_wrapper)
+        self.timestamps = TimestampsClient(client_wrapper=self._client_wrapper)
         self.transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
 
 
@@ -145,6 +148,7 @@ class AsyncSoferAI:
         self.categories = AsyncCategoriesClient(client_wrapper=self._client_wrapper)
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         self.link = AsyncLinkClient(client_wrapper=self._client_wrapper)
+        self.timestamps = AsyncTimestampsClient(client_wrapper=self._client_wrapper)
         self.transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
 
 
