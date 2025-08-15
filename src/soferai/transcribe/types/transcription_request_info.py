@@ -13,8 +13,8 @@ class TranscriptionRequestInfo(UniversalBaseModel):
     """
     Model to be used for the transcription. Default is "v1".
     - v1: Our latest and most accurate model, especially for audio with longer stretches of Hebrew.
-    Priced at 1.20 USD per hour of audio transcribed.
-    - v0: Not generally recommended. Cheaper, but less accurate.
+    Priced at 1.50 USD per hour of audio transcribed.
+    - v0: Suitable for audio with fewer Hebrew words.
     Priced at 1.00 USD per hour.
     """
 
