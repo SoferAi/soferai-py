@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.11.0](https://github.com/SoferAi/soferai-py/compare/v0.10.1...v0.11.0) (2025-08-15)
+
+
+### Features
+
+* **fern:** regeneration august 13, 2025 ([#234](https://github.com/SoferAi/soferai-py/issues/234)) ([80e3b31](https://github.com/SoferAi/soferai-py/commit/80e3b3182947ccbba0bcf4a2122e6957c539b60f))
+* **fern:** regeneration august 15, 2025 ([#238](https://github.com/SoferAi/soferai-py/issues/238)) ([396b88f](https://github.com/SoferAi/soferai-py/commit/396b88f8972558830c563aa1abe051620f94469e))
+* **fern:** regeneration july 2, 2025 ([#206](https://github.com/SoferAi/soferai-py/issues/206)) ([4637c16](https://github.com/SoferAi/soferai-py/commit/4637c167067981497c7d72f2f8cda37d0e8181ca))
+* **fern:** regeneration july 29, 2025 ([#214](https://github.com/SoferAi/soferai-py/issues/214)) ([7cc16cb](https://github.com/SoferAi/soferai-py/commit/7cc16cb95a3ef2b274b1978dd5bf93b2ecd3876c))
+* **fern:** regeneration july 29, 2025 ([#220](https://github.com/SoferAi/soferai-py/issues/220)) ([2c85360](https://github.com/SoferAi/soferai-py/commit/2c85360ebb1fa4332683a2e5f2d51e3b9f022685))
+* **fern:** regeneration july 29, 2025 ([#221](https://github.com/SoferAi/soferai-py/issues/221)) ([8dd2c80](https://github.com/SoferAi/soferai-py/commit/8dd2c8053a3ee97d940339b01a783f71caef1b85))
+* **fern:** regeneration july 29, 2025 ([#222](https://github.com/SoferAi/soferai-py/issues/222)) ([9e29d1b](https://github.com/SoferAi/soferai-py/commit/9e29d1bdbba2ef55199904c779e66c9fecbcc718))
+* **fern:** regeneration june 15, 2025 ([#183](https://github.com/SoferAi/soferai-py/issues/183)) ([e64eb56](https://github.com/SoferAi/soferai-py/commit/e64eb569f57092e49e5ec0b7e016d38236268b72))
+* **fern:** regeneration may 27, 2025 ([#168](https://github.com/SoferAi/soferai-py/issues/168)) ([5abd056](https://github.com/SoferAi/soferai-py/commit/5abd05646fea98545b780ce4b7e7a41c59b770fc))
+
+
+### Bug Fixes
+
+* 0.11.0 ([#239](https://github.com/SoferAi/soferai-py/issues/239)) ([61729f9](https://github.com/SoferAi/soferai-py/commit/61729f9487fb693a9e20825c4751de6e0ce6baf4))
+
 ## [0.10.1](https://github.com/SoferAi/soferai-py/compare/v0.10.0...v0.10.1) (2025-05-27)
 
 
