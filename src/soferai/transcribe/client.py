@@ -65,7 +65,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode('utf-8')
+                base64_audio = base64.b64encode(f.read()).decode("utf-8")
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +74,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription"
-                }
+                    "title": "My Shiur Transcription",
+                },
             )
 
             print(f"Transcription ID: {response}")
@@ -475,7 +475,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode('utf-8')
+                base64_audio = base64.b64encode(f.read()).decode("utf-8")
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -484,8 +484,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription"
-                }
+                    "title": "My Shiur Transcription",
+                },
             )
 
             print(f"Transcription ID: {response}")
