@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Rename PR if needed
         env:
@@ -40,7 +40,7 @@ jobs:
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ steps.generate-token.outputs.token }}
 
@@ -72,7 +72,7 @@ jobs:
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ steps.generate-token.outputs.token }}
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -120,7 +120,7 @@ jobs:
       SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -145,7 +145,7 @@ jobs:
       SKIP_CLIENT_TESTS: true
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
