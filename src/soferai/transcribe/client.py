@@ -65,7 +65,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +74,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -332,7 +332,11 @@ class TranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_transcription(
-        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        filter_hebrew_word_format: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Transcription:
         """
         Get transcription
@@ -341,6 +345,9 @@ class TranscribeClient:
         ----------
         transcription_id : uuid.UUID
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
+
+        filter_hebrew_word_format : typing.Optional[str]
+            Optionally filter the response to a single Hebrew word format. If set to "en", the response text will have Hebrew characters removed and timestamps will exclude words tagged with "he". If set to "he", italicized transliterations are removed from the text and timestamps will exclude words tagged only with "en".
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -367,6 +374,9 @@ class TranscribeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"v1/transcriptions/{jsonable_encoder(transcription_id)}",
             method="GET",
+            params={
+                "filter_hebrew_word_format": filter_hebrew_word_format,
+            },
             request_options=request_options,
         )
         try:
@@ -475,7 +485,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -484,8 +494,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -772,7 +782,11 @@ class AsyncTranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_transcription(
-        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        filter_hebrew_word_format: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Transcription:
         """
         Get transcription
@@ -781,6 +795,9 @@ class AsyncTranscribeClient:
         ----------
         transcription_id : uuid.UUID
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
+
+        filter_hebrew_word_format : typing.Optional[str]
+            Optionally filter the response to a single Hebrew word format. If set to "en", the response text will have Hebrew characters removed and timestamps will exclude words tagged with "he". If set to "he", italicized transliterations are removed from the text and timestamps will exclude words tagged only with "en".
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -814,6 +831,9 @@ class AsyncTranscribeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"v1/transcriptions/{jsonable_encoder(transcription_id)}",
             method="GET",
+            params={
+                "filter_hebrew_word_format": filter_hebrew_word_format,
+            },
             request_options=request_options,
         )
         try:
