@@ -199,11 +199,13 @@ class HttpClient:
             method=method,
             url=urllib.parse.urljoin(f"{base_url}/", path),
             headers=jsonable_encoder(
-                remove_none_from_dict({
-                    **self.base_headers(),
-                    **(headers if headers is not None else {}),
-                    **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
-                })
+                remove_none_from_dict(
+                    {
+                        **self.base_headers(),
+                        **(headers if headers is not None else {}),
+                        **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
+                    }
+                )
             ),
             params=encode_query(
                 jsonable_encoder(
@@ -283,11 +285,13 @@ class HttpClient:
             method=method,
             url=urllib.parse.urljoin(f"{base_url}/", path),
             headers=jsonable_encoder(
-                remove_none_from_dict({
-                    **self.base_headers(),
-                    **(headers if headers is not None else {}),
-                    **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                })
+                remove_none_from_dict(
+                    {
+                        **self.base_headers(),
+                        **(headers if headers is not None else {}),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
             ),
             params=encode_query(
                 jsonable_encoder(
@@ -372,11 +376,13 @@ class AsyncHttpClient:
             method=method,
             url=urllib.parse.urljoin(f"{base_url}/", path),
             headers=jsonable_encoder(
-                remove_none_from_dict({
-                    **self.base_headers(),
-                    **(headers if headers is not None else {}),
-                    **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
-                })
+                remove_none_from_dict(
+                    {
+                        **self.base_headers(),
+                        **(headers if headers is not None else {}),
+                        **(request_options.get("additional_headers", {}) or {} if request_options is not None else {}),
+                    }
+                )
             ),
             params=encode_query(
                 jsonable_encoder(
@@ -455,11 +461,13 @@ class AsyncHttpClient:
             method=method,
             url=urllib.parse.urljoin(f"{base_url}/", path),
             headers=jsonable_encoder(
-                remove_none_from_dict({
-                    **self.base_headers(),
-                    **(headers if headers is not None else {}),
-                    **(request_options.get("additional_headers", {}) if request_options is not None else {}),
-                })
+                remove_none_from_dict(
+                    {
+                        **self.base_headers(),
+                        **(headers if headers is not None else {}),
+                        **(request_options.get("additional_headers", {}) if request_options is not None else {}),
+                    }
+                )
             ),
             params=encode_query(
                 jsonable_encoder(
