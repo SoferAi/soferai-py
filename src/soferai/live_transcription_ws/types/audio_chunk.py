@@ -6,15 +6,14 @@ import typing
 
 
 class AudioChunk(UniversalBaseModel):
-    """
-    Binary chunk of PCM audio streamed from the client.
-    """
-
     data: str = pydantic.Field()
     """
-    PCM audio data chunk
+    Base64-encoded audio data
     """
 
-    mime_type: str
+    mime_type: str = pydantic.Field()
+    """
+    MIME type of the audio data (e.g., "audio/pcm", "audio/wav")
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
