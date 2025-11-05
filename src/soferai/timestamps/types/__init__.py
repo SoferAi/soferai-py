@@ -3,5 +3,6 @@
 from .confidence import Confidence
 from .outline_request import OutlineRequest
 from .outline_topic import OutlineTopic
+from .update_timestamps_request import UpdateTimestampsRequest
 
-__all__ = ["Confidence", "OutlineRequest", "OutlineTopic"]
+__all__ = ["Confidence", "OutlineRequest", "OutlineTopic", "UpdateTimestampsRequest"]

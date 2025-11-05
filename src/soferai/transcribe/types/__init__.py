@@ -15,7 +15,6 @@ from .transcription_info import TranscriptionInfo
 from .transcription_request import TranscriptionRequest
 from .transcription_request_info import TranscriptionRequestInfo
 from .transcription_summary import TranscriptionSummary
-from .update_timestamps_request import UpdateTimestampsRequest
 
 __all__ = [
     "AudioSource",
@@ -33,5 +32,4 @@ __all__ = [
     "TranscriptionRequest",
     "TranscriptionRequestInfo",
     "TranscriptionSummary",
-    "UpdateTimestampsRequest",
 ]

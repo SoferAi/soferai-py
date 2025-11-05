@@ -35,7 +35,7 @@ from .maishiv import (
     AddKnowledgeBaseDocumentResponse,
     RemoveKnowledgeBaseDocumentResponse,
 )
-from .timestamps import Confidence, OutlineRequest, OutlineTopic
+from .timestamps import Confidence, OutlineRequest, OutlineTopic, UpdateTimestampsRequest
 from .transcribe import (
     AudioSource,
     AuthenticationError,
@@ -57,7 +57,6 @@ from .transcribe import (
     TranscriptionRequest,
     TranscriptionRequestInfo,
     TranscriptionSummary,
-    UpdateTimestampsRequest,
 )
 from .transformations import GenerateTranscriptSummaryRequest, TranscriptSummaryResponse
 from .utils import DurationRequest, DurationResponse
