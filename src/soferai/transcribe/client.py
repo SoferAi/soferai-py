@@ -347,7 +347,7 @@ class TranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to "en", the response text will have Hebrew characters removed and timestamps will exclude words tagged with "he". If set to "he", italicized transliterations are removed from the text and timestamps will exclude words tagged only with "en".
+            Filter response to a single Hebrew word format (en or he)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -797,7 +797,7 @@ class AsyncTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to "en", the response text will have Hebrew characters removed and timestamps will exclude words tagged with "he". If set to "he", italicized transliterations are removed from the text and timestamps will exclude words tagged only with "en".
+            Filter response to a single Hebrew word format (en or he)
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

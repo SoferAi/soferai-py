@@ -1210,6 +1210,105 @@ client.timestamps.outline(
 </dl>
 </details>
 
+<details><summary><code>client.timestamps.<a href="src/soferai/timestamps/client.py">update_timestamps</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update the timestamps based on edited text.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+from soferai.transcribe import Timestamp
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.timestamps.update_timestamps(
+    old_timestamps=[
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+    ],
+    edited_text="edited_text",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**old_timestamps:** `typing.Sequence[Timestamp]` — The original timestamps associated with the text before editing. These will be used as reference points to align the new timestamps.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**edited_text:** `str` — The modified version of the transcription text that needs updated timestamp alignments. This should be the complete text after your edits.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**language_to_update:** `typing.Optional[Language]` — If hebrew_word_format included both 'en' and 'he' (and therefor, for the same word there is both an English and a Hebrew version),this specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transcribe
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription</a>(...)</code></summary>
 <dl>
@@ -1634,7 +1733,7 @@ client.transcribe.get_transcription(
 <dl>
 <dd>
 
-**filter_hebrew_word_format:** `typing.Optional[str]` — Optionally filter the response to a single Hebrew word format. If set to "en", the response text will have Hebrew characters removed and timestamps will exclude words tagged with "he". If set to "he", italicized transliterations are removed from the text and timestamps will exclude words tagged only with "en".
+**filter_hebrew_word_format:** `typing.Optional[str]` — Filter response to a single Hebrew word format (en or he)
     
 </dd>
 </dl>
