@@ -1733,7 +1733,7 @@ client.transcribe.get_transcription(
 <dl>
 <dd>
 
-**filter_hebrew_word_format:** `typing.Optional[str]` — Filter response to a single Hebrew word format (en or he)
+**filter_hebrew_word_format:** `typing.Optional[str]` — Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
     
 </dd>
 </dl>
