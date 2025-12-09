@@ -11,8 +11,9 @@ from .errors.authentication_error import AuthenticationError
 from .errors.rate_limit_error import RateLimitError
 from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
-from .types.audio_source import AudioSource
+from .types.batch_audio_source import BatchAudioSource
 import uuid
+from .types.processing_mode import ProcessingMode
 from .types.batch_transcription_response import BatchTranscriptionResponse
 from .types.batch_status_response import BatchStatusResponse
 from ..core.jsonable_encoder import jsonable_encoder
@@ -65,7 +66,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +75,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -136,10 +137,11 @@ class TranscribeClient:
     def create_batch_transcription(
         self,
         *,
-        audio_sources: typing.Sequence[AudioSource],
+        audio_sources: typing.Sequence[BatchAudioSource],
         info: TranscriptionRequestInfo,
         batch_title: typing.Optional[str] = OMIT,
         batch_id: typing.Optional[uuid.UUID] = OMIT,
+        processing_mode: typing.Optional[ProcessingMode] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -147,8 +149,8 @@ class TranscribeClient:
 
         Parameters
         ----------
-        audio_sources : typing.Sequence[AudioSource]
-            List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+        audio_sources : typing.Sequence[BatchAudioSource]
+            List of audio sources to transcribe with the same settings.
 
         info : TranscriptionRequestInfo
             Shared transcription parameters for all audio files in the batch
@@ -158,6 +160,11 @@ class TranscribeClient:
 
         batch_id : typing.Optional[uuid.UUID]
             Optional ID for the batch. If not provided, a UUID will be generated.
+
+        processing_mode : typing.Optional[ProcessingMode]
+            Processing speed and cost tier.
+            - standard: (Default) Processed within 24 hours. Lower cost.
+            - express: Processed immediately. Higher cost. Limited to 10 files per batch.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -171,13 +178,20 @@ class TranscribeClient:
         Examples
         --------
         from soferai import SoferAI
-        from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import BatchAudioSource, TranscriptionRequestInfo
 
         client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_batch_transcription(
-            audio_sources=[AudioSource(), AudioSource()],
+            audio_sources=[
+                BatchAudioSource(
+                    audio_url="audio_url",
+                ),
+                BatchAudioSource(
+                    audio_url="audio_url",
+                ),
+            ],
             info=TranscriptionRequestInfo(),
         )
         """
@@ -186,13 +200,14 @@ class TranscribeClient:
             method="POST",
             json={
                 "audio_sources": convert_and_respect_annotation_metadata(
-                    object_=audio_sources, annotation=typing.Sequence[AudioSource], direction="write"
+                    object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
                 "batch_id": batch_id,
+                "processing_mode": processing_mode,
             },
             request_options=request_options,
             omit=OMIT,
@@ -485,7 +500,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -494,8 +509,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -564,10 +579,11 @@ class AsyncTranscribeClient:
     async def create_batch_transcription(
         self,
         *,
-        audio_sources: typing.Sequence[AudioSource],
+        audio_sources: typing.Sequence[BatchAudioSource],
         info: TranscriptionRequestInfo,
         batch_title: typing.Optional[str] = OMIT,
         batch_id: typing.Optional[uuid.UUID] = OMIT,
+        processing_mode: typing.Optional[ProcessingMode] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -575,8 +591,8 @@ class AsyncTranscribeClient:
 
         Parameters
         ----------
-        audio_sources : typing.Sequence[AudioSource]
-            List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+        audio_sources : typing.Sequence[BatchAudioSource]
+            List of audio sources to transcribe with the same settings.
 
         info : TranscriptionRequestInfo
             Shared transcription parameters for all audio files in the batch
@@ -586,6 +602,11 @@ class AsyncTranscribeClient:
 
         batch_id : typing.Optional[uuid.UUID]
             Optional ID for the batch. If not provided, a UUID will be generated.
+
+        processing_mode : typing.Optional[ProcessingMode]
+            Processing speed and cost tier.
+            - standard: (Default) Processed within 24 hours. Lower cost.
+            - express: Processed immediately. Higher cost. Limited to 10 files per batch.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -601,7 +622,7 @@ class AsyncTranscribeClient:
         import asyncio
 
         from soferai import AsyncSoferAI
-        from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import BatchAudioSource, TranscriptionRequestInfo
 
         client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
@@ -610,7 +631,14 @@ class AsyncTranscribeClient:
 
         async def main() -> None:
             await client.transcribe.create_batch_transcription(
-                audio_sources=[AudioSource(), AudioSource()],
+                audio_sources=[
+                    BatchAudioSource(
+                        audio_url="audio_url",
+                    ),
+                    BatchAudioSource(
+                        audio_url="audio_url",
+                    ),
+                ],
                 info=TranscriptionRequestInfo(),
             )
 
@@ -622,13 +650,14 @@ class AsyncTranscribeClient:
             method="POST",
             json={
                 "audio_sources": convert_and_respect_annotation_metadata(
-                    object_=audio_sources, annotation=typing.Sequence[AudioSource], direction="write"
+                    object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
                 "batch_id": batch_id,
+                "processing_mode": processing_mode,
             },
             request_options=request_options,
             omit=OMIT,

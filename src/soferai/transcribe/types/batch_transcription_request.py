@@ -2,16 +2,17 @@
 
 from ...core.pydantic_utilities import UniversalBaseModel
 import typing
-from .audio_source import AudioSource
+from .batch_audio_source import BatchAudioSource
 import pydantic
 from .transcription_request_info import TranscriptionRequestInfo
 import uuid
+from .processing_mode import ProcessingMode
 
 
 class BatchTranscriptionRequest(UniversalBaseModel):
-    audio_sources: typing.List[AudioSource] = pydantic.Field()
+    audio_sources: typing.List[BatchAudioSource] = pydantic.Field()
     """
-    List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+    List of audio sources to transcribe with the same settings.
     """
 
     info: TranscriptionRequestInfo = pydantic.Field()
@@ -27,6 +28,13 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     batch_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
     """
     Optional ID for the batch. If not provided, a UUID will be generated.
+    """
+
+    processing_mode: typing.Optional[ProcessingMode] = pydantic.Field(default=None)
+    """
+    Processing speed and cost tier.
+    - standard: (Default) Processed within 24 hours. Lower cost. 
+    - express: Processed immediately. Higher cost. Limited to 10 files per batch.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
