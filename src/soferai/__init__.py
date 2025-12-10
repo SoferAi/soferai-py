@@ -37,8 +37,8 @@ from .maishiv import (
 )
 from .timestamps import Confidence, OutlineRequest, OutlineTopic, UpdateTimestampsRequest
 from .transcribe import (
-    AudioSource,
     AuthenticationError,
+    BatchAudioSource,
     BatchNotFound,
     BatchStatus,
     BatchStatusResponse,
@@ -46,6 +46,7 @@ from .transcribe import (
     BatchTranscriptionResponse,
     Language,
     LettersLanguage,
+    ProcessingMode,
     RateLimitError,
     Status,
     Timestamp,
@@ -69,9 +70,9 @@ __all__ = [
     "AddTranscriptionToCategoryResponse",
     "AsyncSoferAI",
     "AudioChunk",
-    "AudioSource",
     "AuthenticationError",
     "Balance",
+    "BatchAudioSource",
     "BatchNotFound",
     "BatchStatus",
     "BatchStatusResponse",
@@ -97,6 +98,7 @@ __all__ = [
     "LinkResponse",
     "OutlineRequest",
     "OutlineTopic",
+    "ProcessingMode",
     "RateLimitError",
     "RemoveKnowledgeBaseDocumentResponse",
     "RemoveTranscriptionFromCategoryResponse",
