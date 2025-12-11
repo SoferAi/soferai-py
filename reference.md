@@ -1455,13 +1455,20 @@ Create multiple transcriptions to be processed in batch
 
 ```python
 from soferai import SoferAI
-from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+from soferai.transcribe import BatchAudioSource, TranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_batch_transcription(
-    audio_sources=[AudioSource(), AudioSource()],
+    audio_sources=[
+        BatchAudioSource(
+            audio_url="audio_url",
+        ),
+        BatchAudioSource(
+            audio_url="audio_url",
+        ),
+    ],
     info=TranscriptionRequestInfo(),
 )
 
@@ -1479,7 +1486,7 @@ client.transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**audio_sources:** `typing.Sequence[AudioSource]` — List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+**audio_sources:** `typing.Sequence[BatchAudioSource]` — List of audio sources to transcribe with the same settings.
     
 </dd>
 </dl>
@@ -1504,6 +1511,18 @@ client.transcribe.create_batch_transcription(
 <dd>
 
 **batch_id:** `typing.Optional[uuid.UUID]` — Optional ID for the batch. If not provided, a UUID will be generated.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**processing_mode:** `typing.Optional[ProcessingMode]` 
+
+Processing speed and cost tier.
+- standard: (Default) Processed within 24 hours. Lower cost. 
+- express: Processed immediately. Higher cost. Limited to 10 files per batch.
     
 </dd>
 </dl>
