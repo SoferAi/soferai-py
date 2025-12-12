@@ -1455,13 +1455,12 @@ Create multiple transcriptions to be processed in batch
 
 ```python
 from soferai import SoferAI
-from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+from soferai.transcribe import TranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_batch_transcription(
-    audio_sources=[AudioSource(), AudioSource()],
     info=TranscriptionRequestInfo(),
 )
 
@@ -1479,7 +1478,7 @@ client.transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**audio_sources:** `typing.Sequence[AudioSource]` — List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+**info:** `TranscriptionRequestInfo` — Shared transcription parameters for all audio files in the batch
     
 </dd>
 </dl>
@@ -1487,7 +1486,15 @@ client.transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionRequestInfo` — Shared transcription parameters for all audio files in the batch
+**batch_file_id:** `typing.Optional[uuid.UUID]` — Batch file to process in standard mode. Required when processing_mode is "standard"; not allowed when processing_mode is "express".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audio_sources:** `typing.Optional[typing.Sequence[BatchAudioSource]]` — List of audio sources to transcribe with the same settings. Only allowed when processing_mode is "express"; not allowed when processing_mode is "standard".
     
 </dd>
 </dl>
@@ -1504,6 +1511,246 @@ client.transcribe.create_batch_transcription(
 <dd>
 
 **batch_id:** `typing.Optional[uuid.UUID]` — Optional ID for the batch. If not provided, a UUID will be generated.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**processing_mode:** `typing.Optional[ProcessingMode]` 
+
+Processing speed and cost tier.
+- standard: (Default) Processed within 24 hours. Lower cost. Requires batch_file_id and disallows inline audio_sources.
+- express: Processed immediately. Higher cost. Limited to 10 files per batch. Requires inline audio_sources and disallows batch_file_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">upload_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Upload a batch manifest (JSON array or JSONL)
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.upload_batch_file(
+    content_type="json",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**content_type:** `BatchFileContentType` — Format of the manifest payload. Use "json" for an array and "jsonl" for one JSON object per line separated by \n.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**json_items:** `typing.Optional[typing.Sequence[BatchAudioSource]]` — When content_type is "json", provide the items as an array. Mutually exclusive with jsonl.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**jsonl:** `typing.Optional[str]` — When content_type is "jsonl", provide the raw JSON Lines payload. One JSON object per line separated by \n. Mutually exclusive with json_items.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[BatchFileMetadata]` — Optional metadata to associate with the uploaded batch file.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">list_batch_files</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List uploaded batch files for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.list_batch_files()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get a single batch file's metadata and validation status
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.get_batch_file(
+    batch_file_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_file_id:** `uuid.UUID` — ID of the batch file
     
 </dd>
 </dl>
