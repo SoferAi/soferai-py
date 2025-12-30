@@ -913,6 +913,402 @@ client.link.get_supported_sites()
 </dl>
 </details>
 
+## Maishiv
+<details><summary><code>client.maishiv.<a href="src/soferai/maishiv/client.py">add_to_knowledge_base</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add a document to the knowledge base.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.maishiv.add_to_knowledge_base(
+    document_id="document_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**document_id:** `str` — ID of the document to add to the knowledge base.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.maishiv.<a href="src/soferai/maishiv/client.py">list_knowledge_base_docs</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get all document IDs currently in the knowledge base.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.maishiv.list_knowledge_base_docs()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.maishiv.<a href="src/soferai/maishiv/client.py">remove_from_knowledge_base</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove a document from the knowledge base.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.maishiv.remove_from_knowledge_base(
+    document_id="document_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**document_id:** `str` — ID of the document to remove from the knowledge base.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Timestamps
+<details><summary><code>client.timestamps.<a href="src/soferai/timestamps/client.py">outline</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Outline of topics discussed by timestamp, generated end-to-end from a transcription ID.
+
+This endpoint will:
+1) Fetch the transcript and word-level timestamps for the given transcription
+2) Generate chapter topics (title + starting_phrase) using an LLM from the transcript text
+3) Align each topic's starting phrase to timestamps
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.timestamps.outline(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `TranscriptionId` — ID of the transcription to process end-to-end
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**monotone:** `typing.Optional[bool]` — If true, each topic is searched after the previous topic's start (with a small backoff)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conclusion_bias:** `typing.Optional[bool]` — If true and a title includes the word "conclusion", search in the last third of the audio
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.timestamps.<a href="src/soferai/timestamps/client.py">update_timestamps</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update the timestamps based on edited text.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+from soferai.transcribe import Timestamp
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.timestamps.update_timestamps(
+    old_timestamps=[
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+        Timestamp(
+            word="word",
+            start=1.1,
+            end=1.1,
+        ),
+    ],
+    edited_text="edited_text",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**old_timestamps:** `typing.Sequence[Timestamp]` — The original timestamps associated with the text before editing. These will be used as reference points to align the new timestamps.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**edited_text:** `str` — The modified version of the transcription text that needs updated timestamp alignments. This should be the complete text after your edits.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**language_to_update:** `typing.Optional[Language]` — If hebrew_word_format included both 'en' and 'he' (and therefor, for the same word there is both an English and a Hebrew version),this specifies which language version of the timestamps to update. Must be either 'en' for English or 'he' for Hebrew timestamps.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Transcribe
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription</a>(...)</code></summary>
 <dl>
@@ -1059,13 +1455,12 @@ Create multiple transcriptions to be processed in batch
 
 ```python
 from soferai import SoferAI
-from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+from soferai.transcribe import TranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
 client.transcribe.create_batch_transcription(
-    audio_sources=[AudioSource(), AudioSource()],
     info=TranscriptionRequestInfo(),
 )
 
@@ -1083,7 +1478,7 @@ client.transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**audio_sources:** `typing.Sequence[AudioSource]` — List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
+**info:** `TranscriptionRequestInfo` — Shared transcription parameters for all audio files in the batch
     
 </dd>
 </dl>
@@ -1091,7 +1486,15 @@ client.transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionRequestInfo` — Shared transcription parameters for all audio files in the batch
+**batch_file_id:** `typing.Optional[uuid.UUID]` — Batch file to process in standard mode. Required when processing_mode is "standard"; not allowed when processing_mode is "express".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audio_sources:** `typing.Optional[typing.Sequence[BatchAudioSource]]` — List of audio sources to transcribe with the same settings. Only allowed when processing_mode is "express"; not allowed when processing_mode is "standard".
     
 </dd>
 </dl>
@@ -1108,6 +1511,246 @@ client.transcribe.create_batch_transcription(
 <dd>
 
 **batch_id:** `typing.Optional[uuid.UUID]` — Optional ID for the batch. If not provided, a UUID will be generated.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**processing_mode:** `typing.Optional[ProcessingMode]` 
+
+Processing speed and cost tier.
+- standard: (Default) Processed within 24 hours. Lower cost. Requires batch_file_id and disallows inline audio_sources.
+- express: Processed immediately. Higher cost. Limited to 10 files per batch. Requires inline audio_sources and disallows batch_file_id.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">upload_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Upload a batch manifest (JSON array or JSONL)
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.upload_batch_file(
+    content_type="json",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**content_type:** `BatchFileContentType` — Format of the manifest payload. Use "json" for an array and "jsonl" for one JSON object per line separated by \n.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**json_items:** `typing.Optional[typing.Sequence[BatchAudioSource]]` — When content_type is "json", provide the items as an array. Mutually exclusive with jsonl.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**jsonl:** `typing.Optional[str]` — When content_type is "jsonl", provide the raw JSON Lines payload. One JSON object per line separated by \n. Mutually exclusive with json_items.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[BatchFileMetadata]` — Optional metadata to associate with the uploaded batch file.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">list_batch_files</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List uploaded batch files for the authenticated user
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.list_batch_files()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get a single batch file's metadata and validation status
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.get_batch_file(
+    batch_file_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_file_id:** `uuid.UUID` — ID of the batch file
     
 </dd>
 </dl>
@@ -1337,6 +1980,14 @@ client.transcribe.get_transcription(
 <dl>
 <dd>
 
+**filter_hebrew_word_format:** `typing.Optional[str]` — Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -1393,6 +2044,245 @@ client.transcribe.list_transcriptions()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Transformations
+<details><summary><code>client.transformations.<a href="src/soferai/transformations/client.py">generate_summary</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generate a Markdown summary for a transcription. If a summary already exists, it is returned.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transformations.generate_summary(
+    transcription_id_=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id_:** `uuid.UUID` — ID of the transcription to summarize
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transcription_id:** `uuid.UUID` — ID of the transcription to summarize
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transformations.<a href="src/soferai/transformations/client.py">get_summary</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get the Markdown summary for a transcription if it exists.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transformations.get_summary(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `uuid.UUID` — ID of the transcription to fetch summary for
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Utils
+<details><summary><code>client.utils.<a href="src/soferai/utils/client.py">get_duration</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the audio duration in seconds for a provided URL or base64-encoded file.
+
+Provide either `audio_url` or `audio_file` (base64). If both are provided, the request is invalid.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.utils.get_duration()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**audio_url:** `typing.Optional[str]` — Direct URL to a downloadable audio file.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audio_file:** `typing.Optional[str]` — Base64-encoded audio file content. Do not include a data URI prefix.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
