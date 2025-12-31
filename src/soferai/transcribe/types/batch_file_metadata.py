@@ -5,11 +5,15 @@ import typing
 import pydantic
 
 
-class TranscriptChunk(UniversalBaseModel):
+class BatchFileMetadata(UniversalBaseModel):
+    title: typing.Optional[str] = pydantic.Field(default=None)
     """
-    Partial (or final) transcript text streamed from server.
+    Optional title for this batch file manifest.
     """
 
-    text: str
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional description for this batch file manifest.
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
