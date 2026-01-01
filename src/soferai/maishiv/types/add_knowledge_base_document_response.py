@@ -5,16 +5,15 @@ import pydantic
 import typing
 
 
-class AudioChunk(UniversalBaseModel):
+class AddKnowledgeBaseDocumentResponse(UniversalBaseModel):
+    success: bool = pydantic.Field()
     """
-    Binary chunk of PCM audio streamed from the client.
-    """
-
-    data: str = pydantic.Field()
-    """
-    PCM audio data chunk
+    True if the document was successfully added.
     """
 
-    mime_type: str
+    message: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional message describing the outcome (e.g., already exists).
+    """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
