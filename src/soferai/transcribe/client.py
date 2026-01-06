@@ -11,12 +11,18 @@ from .errors.authentication_error import AuthenticationError
 from .errors.rate_limit_error import RateLimitError
 from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
-from .types.audio_source import AudioSource
 import uuid
+from .types.batch_audio_source import BatchAudioSource
+from .types.processing_mode import ProcessingMode
 from .types.batch_transcription_response import BatchTranscriptionResponse
-from .types.batch_status_response import BatchStatusResponse
+from .types.batch_file_content_type import BatchFileContentType
+from .types.batch_file_metadata import BatchFileMetadata
+from .types.batch_file_upload_response import BatchFileUploadResponse
+from .types.list_batch_files_response import ListBatchFilesResponse
+from .types.batch_file_detail import BatchFileDetail
 from ..core.jsonable_encoder import jsonable_encoder
 from .errors.batch_not_found import BatchNotFound
+from .types.batch_status_response import BatchStatusResponse
 from .types.transcription_info import TranscriptionInfo
 from .errors.transcription_not_found import TranscriptionNotFound
 from .types.transcription import Transcription
@@ -65,7 +71,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +80,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -136,10 +142,12 @@ class TranscribeClient:
     def create_batch_transcription(
         self,
         *,
-        audio_sources: typing.Sequence[AudioSource],
         info: TranscriptionRequestInfo,
+        batch_file_id: typing.Optional[uuid.UUID] = OMIT,
+        audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
         batch_id: typing.Optional[uuid.UUID] = OMIT,
+        processing_mode: typing.Optional[ProcessingMode] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -147,17 +155,25 @@ class TranscribeClient:
 
         Parameters
         ----------
-        audio_sources : typing.Sequence[AudioSource]
-            List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
-
         info : TranscriptionRequestInfo
             Shared transcription parameters for all audio files in the batch
+
+        batch_file_id : typing.Optional[uuid.UUID]
+            Batch file to process in standard mode. Required when processing_mode is "standard"; not allowed when processing_mode is "express".
+
+        audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
+            List of audio sources to transcribe with the same settings. Only allowed when processing_mode is "express"; not allowed when processing_mode is "standard".
 
         batch_title : typing.Optional[str]
             Optional title for the batch. The system will first check for a title in the Audio Source itself. If no title is provided there, it defaults to batch title providded here with "- Batch Item N" appended.
 
         batch_id : typing.Optional[uuid.UUID]
             Optional ID for the batch. If not provided, a UUID will be generated.
+
+        processing_mode : typing.Optional[ProcessingMode]
+            Processing speed and cost tier.
+            - standard: (Default) Processed within 24 hours. Lower cost. Requires batch_file_id and disallows inline audio_sources.
+            - express: Processed immediately. Higher cost. Limited to 10 files per batch. Requires inline audio_sources and disallows batch_file_id.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -171,13 +187,12 @@ class TranscribeClient:
         Examples
         --------
         from soferai import SoferAI
-        from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import TranscriptionRequestInfo
 
         client = SoferAI(
             api_key="YOUR_API_KEY",
         )
         client.transcribe.create_batch_transcription(
-            audio_sources=[AudioSource(), AudioSource()],
             info=TranscriptionRequestInfo(),
         )
         """
@@ -185,14 +200,16 @@ class TranscribeClient:
             "v1/transcriptions/batch",
             method="POST",
             json={
+                "batch_file_id": batch_file_id,
                 "audio_sources": convert_and_respect_annotation_metadata(
-                    object_=audio_sources, annotation=typing.Sequence[AudioSource], direction="write"
+                    object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
                 "batch_id": batch_id,
+                "processing_mode": processing_mode,
             },
             request_options=request_options,
             omit=OMIT,
@@ -206,6 +223,187 @@ class TranscribeClient:
                         object_=_response.json(),
                     ),
                 )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def upload_batch_file(
+        self,
+        *,
+        content_type: BatchFileContentType,
+        json_items: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
+        jsonl: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[BatchFileMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> BatchFileUploadResponse:
+        """
+        Upload a batch manifest (JSON array or JSONL)
+
+        Parameters
+        ----------
+        content_type : BatchFileContentType
+            Format of the manifest payload. Use "json" for an array and "jsonl" for one JSON object per line separated by \n.
+
+        json_items : typing.Optional[typing.Sequence[BatchAudioSource]]
+            When content_type is "json", provide the items as an array. Mutually exclusive with jsonl.
+
+        jsonl : typing.Optional[str]
+            When content_type is "jsonl", provide the raw JSON Lines payload. One JSON object per line separated by \n. Mutually exclusive with json_items.
+
+        metadata : typing.Optional[BatchFileMetadata]
+            Optional metadata to associate with the uploaded batch file.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BatchFileUploadResponse
+
+        Examples
+        --------
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.upload_batch_file(
+            content_type="json",
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files",
+            method="POST",
+            json={
+                "content_type": content_type,
+                "json_items": convert_and_respect_annotation_metadata(
+                    object_=json_items, annotation=typing.Sequence[BatchAudioSource], direction="write"
+                ),
+                "jsonl": jsonl,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=BatchFileMetadata, direction="write"
+                ),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BatchFileUploadResponse,
+                    parse_obj_as(
+                        type_=BatchFileUploadResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def list_batch_files(self, *, request_options: typing.Optional[RequestOptions] = None) -> ListBatchFilesResponse:
+        """
+        List uploaded batch files for the authenticated user
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListBatchFilesResponse
+
+        Examples
+        --------
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.list_batch_files()
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ListBatchFilesResponse,
+                    parse_obj_as(
+                        type_=ListBatchFilesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    def get_batch_file(
+        self, batch_file_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> BatchFileDetail:
+        """
+        Get a single batch file's metadata and validation status
+
+        Parameters
+        ----------
+        batch_file_id : uuid.UUID
+            ID of the batch file
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BatchFileDetail
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.get_batch_file(
+            batch_file_id=uuid.UUID(
+                "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+            ),
+        )
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch-files/{jsonable_encoder(batch_file_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BatchFileDetail,
+                    parse_obj_as(
+                        type_=BatchFileDetail,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise BatchNotFound()
             if _response.status_code == 401:
                 raise AuthenticationError()
             if _response.status_code == 429:
@@ -332,7 +530,11 @@ class TranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     def get_transcription(
-        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        filter_hebrew_word_format: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Transcription:
         """
         Get transcription
@@ -341,6 +543,9 @@ class TranscribeClient:
         ----------
         transcription_id : uuid.UUID
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
+
+        filter_hebrew_word_format : typing.Optional[str]
+            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -367,6 +572,9 @@ class TranscribeClient:
         _response = self._client_wrapper.httpx_client.request(
             f"v1/transcriptions/{jsonable_encoder(transcription_id)}",
             method="GET",
+            params={
+                "filter_hebrew_word_format": filter_hebrew_word_format,
+            },
             request_options=request_options,
         )
         try:
@@ -475,7 +683,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -484,8 +692,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -554,10 +762,12 @@ class AsyncTranscribeClient:
     async def create_batch_transcription(
         self,
         *,
-        audio_sources: typing.Sequence[AudioSource],
         info: TranscriptionRequestInfo,
+        batch_file_id: typing.Optional[uuid.UUID] = OMIT,
+        audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
         batch_id: typing.Optional[uuid.UUID] = OMIT,
+        processing_mode: typing.Optional[ProcessingMode] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -565,17 +775,25 @@ class AsyncTranscribeClient:
 
         Parameters
         ----------
-        audio_sources : typing.Sequence[AudioSource]
-            List of audio sources to transcribe with the same settings. Each item should have either audio_url or audio_file.
-
         info : TranscriptionRequestInfo
             Shared transcription parameters for all audio files in the batch
+
+        batch_file_id : typing.Optional[uuid.UUID]
+            Batch file to process in standard mode. Required when processing_mode is "standard"; not allowed when processing_mode is "express".
+
+        audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
+            List of audio sources to transcribe with the same settings. Only allowed when processing_mode is "express"; not allowed when processing_mode is "standard".
 
         batch_title : typing.Optional[str]
             Optional title for the batch. The system will first check for a title in the Audio Source itself. If no title is provided there, it defaults to batch title providded here with "- Batch Item N" appended.
 
         batch_id : typing.Optional[uuid.UUID]
             Optional ID for the batch. If not provided, a UUID will be generated.
+
+        processing_mode : typing.Optional[ProcessingMode]
+            Processing speed and cost tier.
+            - standard: (Default) Processed within 24 hours. Lower cost. Requires batch_file_id and disallows inline audio_sources.
+            - express: Processed immediately. Higher cost. Limited to 10 files per batch. Requires inline audio_sources and disallows batch_file_id.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -591,7 +809,7 @@ class AsyncTranscribeClient:
         import asyncio
 
         from soferai import AsyncSoferAI
-        from soferai.transcribe import AudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import TranscriptionRequestInfo
 
         client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
@@ -600,7 +818,6 @@ class AsyncTranscribeClient:
 
         async def main() -> None:
             await client.transcribe.create_batch_transcription(
-                audio_sources=[AudioSource(), AudioSource()],
                 info=TranscriptionRequestInfo(),
             )
 
@@ -611,14 +828,16 @@ class AsyncTranscribeClient:
             "v1/transcriptions/batch",
             method="POST",
             json={
+                "batch_file_id": batch_file_id,
                 "audio_sources": convert_and_respect_annotation_metadata(
-                    object_=audio_sources, annotation=typing.Sequence[AudioSource], direction="write"
+                    object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
                 "batch_id": batch_id,
+                "processing_mode": processing_mode,
             },
             request_options=request_options,
             omit=OMIT,
@@ -632,6 +851,212 @@ class AsyncTranscribeClient:
                         object_=_response.json(),
                     ),
                 )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def upload_batch_file(
+        self,
+        *,
+        content_type: BatchFileContentType,
+        json_items: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
+        jsonl: typing.Optional[str] = OMIT,
+        metadata: typing.Optional[BatchFileMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> BatchFileUploadResponse:
+        """
+        Upload a batch manifest (JSON array or JSONL)
+
+        Parameters
+        ----------
+        content_type : BatchFileContentType
+            Format of the manifest payload. Use "json" for an array and "jsonl" for one JSON object per line separated by \n.
+
+        json_items : typing.Optional[typing.Sequence[BatchAudioSource]]
+            When content_type is "json", provide the items as an array. Mutually exclusive with jsonl.
+
+        jsonl : typing.Optional[str]
+            When content_type is "jsonl", provide the raw JSON Lines payload. One JSON object per line separated by \n. Mutually exclusive with json_items.
+
+        metadata : typing.Optional[BatchFileMetadata]
+            Optional metadata to associate with the uploaded batch file.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BatchFileUploadResponse
+
+        Examples
+        --------
+        import asyncio
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.upload_batch_file(
+                content_type="json",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files",
+            method="POST",
+            json={
+                "content_type": content_type,
+                "json_items": convert_and_respect_annotation_metadata(
+                    object_=json_items, annotation=typing.Sequence[BatchAudioSource], direction="write"
+                ),
+                "jsonl": jsonl,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=BatchFileMetadata, direction="write"
+                ),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BatchFileUploadResponse,
+                    parse_obj_as(
+                        type_=BatchFileUploadResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def list_batch_files(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ListBatchFilesResponse:
+        """
+        List uploaded batch files for the authenticated user
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        ListBatchFilesResponse
+
+        Examples
+        --------
+        import asyncio
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.list_batch_files()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    ListBatchFilesResponse,
+                    parse_obj_as(
+                        type_=ListBatchFilesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise AuthenticationError()
+            if _response.status_code == 429:
+                raise RateLimitError()
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, body=_response.text)
+        raise ApiError(status_code=_response.status_code, body=_response_json)
+
+    async def get_batch_file(
+        self, batch_file_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> BatchFileDetail:
+        """
+        Get a single batch file's metadata and validation status
+
+        Parameters
+        ----------
+        batch_file_id : uuid.UUID
+            ID of the batch file
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        BatchFileDetail
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.get_batch_file(
+                batch_file_id=uuid.UUID(
+                    "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+                ),
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch-files/{jsonable_encoder(batch_file_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return typing.cast(
+                    BatchFileDetail,
+                    parse_obj_as(
+                        type_=BatchFileDetail,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise BatchNotFound()
             if _response.status_code == 401:
                 raise AuthenticationError()
             if _response.status_code == 429:
@@ -772,7 +1197,11 @@ class AsyncTranscribeClient:
         raise ApiError(status_code=_response.status_code, body=_response_json)
 
     async def get_transcription(
-        self, transcription_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        filter_hebrew_word_format: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> Transcription:
         """
         Get transcription
@@ -781,6 +1210,9 @@ class AsyncTranscribeClient:
         ----------
         transcription_id : uuid.UUID
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
+
+        filter_hebrew_word_format : typing.Optional[str]
+            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -814,6 +1246,9 @@ class AsyncTranscribeClient:
         _response = await self._client_wrapper.httpx_client.request(
             f"v1/transcriptions/{jsonable_encoder(transcription_id)}",
             method="GET",
+            params={
+                "filter_hebrew_word_format": filter_hebrew_word_format,
+            },
             request_options=request_options,
         )
         try:
