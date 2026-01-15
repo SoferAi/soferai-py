@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.0.0](https://github.com/SoferAi/soferai-py/compare/v0.13.0...v1.0.0) (2026-01-15)
+
+
+### Features
+
+* **fern:** regeneration december 16, 2025 ([#315](https://github.com/SoferAi/soferai-py/issues/315)) ([e85a340](https://github.com/SoferAi/soferai-py/commit/e85a3400c56da3dc84e595df78ce90ad76846b0d))
+* **fern:** regeneration january 15, 2026 ([#354](https://github.com/SoferAi/soferai-py/issues/354)) ([7d39830](https://github.com/SoferAi/soferai-py/commit/7d39830017d4625df9b63885df9b56037bee305f))
+* **fern:** regeneration november 12, 2025 ([#282](https://github.com/SoferAi/soferai-py/issues/282)) ([529ebb8](https://github.com/SoferAi/soferai-py/commit/529ebb8b82a9da134b6f89e1d6f164431a92d353))
+
+
+### Bug Fixes
+
+* increase timeout ([#355](https://github.com/SoferAi/soferai-py/issues/355)) ([588c3c1](https://github.com/SoferAi/soferai-py/commit/588c3c1f1160fe8c4fca41dae3948c8e891534f7))
+
+
+### Miscellaneous Chores
+
+* prep release 1.0.0 ([#356](https://github.com/SoferAi/soferai-py/issues/356)) ([ae0fdd3](https://github.com/SoferAi/soferai-py/commit/ae0fdd370fc1c57d2063505cb71619544f9d3859))
+
 ## [0.13.0](https://github.com/SoferAi/soferai-py/compare/v0.12.0...v0.13.0) (2025-11-05)
 
 
