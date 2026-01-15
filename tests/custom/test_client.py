@@ -58,7 +58,7 @@ class TestSoferAIProd:
         assert transcription_id is not None
 
         # wait for the transcription to complete
-        for _ in range(60):
+        for _ in range(120):
             status_response: TranscriptionInfo = self.client.transcribe.get_transcription_status(
                 transcription_id=transcription_id
             )
@@ -73,7 +73,7 @@ class TestSoferAIProd:
                 break
             time.sleep(2)
         else:
-            raise AssertionError("Transcription did not complete within 60 seconds")
+            raise AssertionError("Transcription did not complete within 120 seconds")
 
         # get the transcription
         response: Transcription = self.client.transcribe.get_transcription(
