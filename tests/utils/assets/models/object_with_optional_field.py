@@ -7,11 +7,12 @@ import typing
 import uuid
 
 import typing_extensions
+
+from soferai.core.serialization import FieldMetadata
+
 from .color import Color
 from .shape import ShapeParams
 from .undiscriminated_shape import UndiscriminatedShapeParams
-
-from soferai.core.serialization import FieldMetadata
 
 
 class ObjectWithOptionalFieldParams(typing_extensions.TypedDict):

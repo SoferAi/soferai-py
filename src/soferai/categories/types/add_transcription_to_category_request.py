@@ -4,6 +4,7 @@ import typing
 import uuid
 
 import pydantic
+
 from ...core.pydantic_utilities import UniversalBaseModel
 
 

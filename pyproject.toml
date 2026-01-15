@@ -46,6 +46,7 @@ dev = [
     "types-python-dateutil>=2.9.0.20241206",
     "python-decouple>=3.8",
     "basedpyright>=1.27",
+    "ty>=0.0.12",
 ]
 
 [project.urls]

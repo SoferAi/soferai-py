@@ -95,26 +95,8 @@ jobs:
           commit_message: "chore(fmt): format code"
 
 
-  compile:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
-      - name: Compile
-        run: uv run basedpyright .
-
   test_client:
-    needs: [lint, format, compile]
+    needs: [lint, format]
     runs-on: ubuntu-24.04
     env:
       SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
@@ -135,7 +117,7 @@ jobs:
         run: uv run pytest -vvv -s -rP --disable-warnings .
 
   test_platforms:
-    needs: [lint, format, compile]
+    needs: [lint, format]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]

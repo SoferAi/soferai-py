@@ -6,6 +6,7 @@ import os
 import typing
 
 import httpx
+
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import SoferAIEnvironment
 
@@ -101,7 +102,7 @@ class SoferAI:
     @property
     def balance(self):
         if self._balance is None:
-            from .balance.client import BalanceClient  # noqa: E402
+            from .balance.client import BalanceClient
 
             self._balance = BalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
@@ -109,7 +110,7 @@ class SoferAI:
     @property
     def categories(self):
         if self._categories is None:
-            from .categories.client import CategoriesClient  # noqa: E402
+            from .categories.client import CategoriesClient
 
             self._categories = CategoriesClient(client_wrapper=self._client_wrapper)
         return self._categories
@@ -117,7 +118,7 @@ class SoferAI:
     @property
     def health(self):
         if self._health is None:
-            from .health.client import HealthClient  # noqa: E402
+            from .health.client import HealthClient
 
             self._health = HealthClient(client_wrapper=self._client_wrapper)
         return self._health
@@ -125,7 +126,7 @@ class SoferAI:
     @property
     def link(self):
         if self._link is None:
-            from .link.client import LinkClient  # noqa: E402
+            from .link.client import LinkClient
 
             self._link = LinkClient(client_wrapper=self._client_wrapper)
         return self._link
@@ -133,7 +134,7 @@ class SoferAI:
     @property
     def maishiv(self):
         if self._maishiv is None:
-            from .maishiv.client import MaishivClient  # noqa: E402
+            from .maishiv.client import MaishivClient
 
             self._maishiv = MaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
@@ -141,7 +142,7 @@ class SoferAI:
     @property
     def ocr(self):
         if self._ocr is None:
-            from .ocr.client import OcrClient  # noqa: E402
+            from .ocr.client import OcrClient
 
             self._ocr = OcrClient(client_wrapper=self._client_wrapper)
         return self._ocr
@@ -149,7 +150,7 @@ class SoferAI:
     @property
     def timestamps(self):
         if self._timestamps is None:
-            from .timestamps.client import TimestampsClient  # noqa: E402
+            from .timestamps.client import TimestampsClient
 
             self._timestamps = TimestampsClient(client_wrapper=self._client_wrapper)
         return self._timestamps
@@ -157,7 +158,7 @@ class SoferAI:
     @property
     def transcribe(self):
         if self._transcribe is None:
-            from .transcribe.client import TranscribeClient  # noqa: E402
+            from .transcribe.client import TranscribeClient
 
             self._transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
@@ -165,7 +166,7 @@ class SoferAI:
     @property
     def transformations(self):
         if self._transformations is None:
-            from .transformations.client import TransformationsClient  # noqa: E402
+            from .transformations.client import TransformationsClient
 
             self._transformations = TransformationsClient(client_wrapper=self._client_wrapper)
         return self._transformations
@@ -173,7 +174,7 @@ class SoferAI:
     @property
     def utils(self):
         if self._utils is None:
-            from .utils.client import UtilsClient  # noqa: E402
+            from .utils.client import UtilsClient
 
             self._utils = UtilsClient(client_wrapper=self._client_wrapper)
         return self._utils
@@ -258,7 +259,7 @@ class AsyncSoferAI:
     @property
     def balance(self):
         if self._balance is None:
-            from .balance.client import AsyncBalanceClient  # noqa: E402
+            from .balance.client import AsyncBalanceClient
 
             self._balance = AsyncBalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
@@ -266,7 +267,7 @@ class AsyncSoferAI:
     @property
     def categories(self):
         if self._categories is None:
-            from .categories.client import AsyncCategoriesClient  # noqa: E402
+            from .categories.client import AsyncCategoriesClient
 
             self._categories = AsyncCategoriesClient(client_wrapper=self._client_wrapper)
         return self._categories
@@ -274,7 +275,7 @@ class AsyncSoferAI:
     @property
     def health(self):
         if self._health is None:
-            from .health.client import AsyncHealthClient  # noqa: E402
+            from .health.client import AsyncHealthClient
 
             self._health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         return self._health
@@ -282,7 +283,7 @@ class AsyncSoferAI:
     @property
     def link(self):
         if self._link is None:
-            from .link.client import AsyncLinkClient  # noqa: E402
+            from .link.client import AsyncLinkClient
 
             self._link = AsyncLinkClient(client_wrapper=self._client_wrapper)
         return self._link
@@ -290,7 +291,7 @@ class AsyncSoferAI:
     @property
     def maishiv(self):
         if self._maishiv is None:
-            from .maishiv.client import AsyncMaishivClient  # noqa: E402
+            from .maishiv.client import AsyncMaishivClient
 
             self._maishiv = AsyncMaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
@@ -298,7 +299,7 @@ class AsyncSoferAI:
     @property
     def ocr(self):
         if self._ocr is None:
-            from .ocr.client import AsyncOcrClient  # noqa: E402
+            from .ocr.client import AsyncOcrClient
 
             self._ocr = AsyncOcrClient(client_wrapper=self._client_wrapper)
         return self._ocr
@@ -306,7 +307,7 @@ class AsyncSoferAI:
     @property
     def timestamps(self):
         if self._timestamps is None:
-            from .timestamps.client import AsyncTimestampsClient  # noqa: E402
+            from .timestamps.client import AsyncTimestampsClient
 
             self._timestamps = AsyncTimestampsClient(client_wrapper=self._client_wrapper)
         return self._timestamps
@@ -314,7 +315,7 @@ class AsyncSoferAI:
     @property
     def transcribe(self):
         if self._transcribe is None:
-            from .transcribe.client import AsyncTranscribeClient  # noqa: E402
+            from .transcribe.client import AsyncTranscribeClient
 
             self._transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
@@ -322,7 +323,7 @@ class AsyncSoferAI:
     @property
     def transformations(self):
         if self._transformations is None:
-            from .transformations.client import AsyncTransformationsClient  # noqa: E402
+            from .transformations.client import AsyncTransformationsClient
 
             self._transformations = AsyncTransformationsClient(client_wrapper=self._client_wrapper)
         return self._transformations
@@ -330,7 +331,7 @@ class AsyncSoferAI:
     @property
     def utils(self):
         if self._utils is None:
-            from .utils.client import AsyncUtilsClient  # noqa: E402
+            from .utils.client import AsyncUtilsClient
 
             self._utils = AsyncUtilsClient(client_wrapper=self._client_wrapper)
         return self._utils
