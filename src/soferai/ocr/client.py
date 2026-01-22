@@ -36,6 +36,7 @@ class OcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
+        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OcrJobResponse:
         """
@@ -57,6 +58,9 @@ class OcrClient:
 
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
+
+        model : typing.Optional[str]
+            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -82,6 +86,7 @@ class OcrClient:
             file_name=file_name,
             content_type=content_type,
             file_kind=file_kind,
+            model=model,
             request_options=request_options,
         )
         return _response.data
@@ -146,6 +151,7 @@ class AsyncOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
+        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OcrJobResponse:
         """
@@ -167,6 +173,9 @@ class AsyncOcrClient:
 
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
+
+        model : typing.Optional[str]
+            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -200,6 +209,7 @@ class AsyncOcrClient:
             file_name=file_name,
             content_type=content_type,
             file_kind=file_kind,
+            model=model,
             request_options=request_options,
         )
         return _response.data

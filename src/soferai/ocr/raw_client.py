@@ -31,6 +31,7 @@ class RawOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
+        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OcrJobResponse]:
         """
@@ -53,6 +54,9 @@ class RawOcrClient:
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
 
+        model : typing.Optional[str]
+            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -69,6 +73,7 @@ class RawOcrClient:
                 "file_name": file_name,
                 "content_type": content_type,
                 "file_kind": file_kind,
+                "model": model,
             },
             request_options=request_options,
             omit=OMIT,
@@ -145,6 +150,7 @@ class AsyncRawOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
+        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OcrJobResponse]:
         """
@@ -167,6 +173,9 @@ class AsyncRawOcrClient:
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
 
+        model : typing.Optional[str]
+            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -183,6 +192,7 @@ class AsyncRawOcrClient:
                 "file_name": file_name,
                 "content_type": content_type,
                 "file_kind": file_kind,
+                "model": model,
             },
             request_options=request_options,
             omit=OMIT,

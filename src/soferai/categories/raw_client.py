@@ -31,6 +31,8 @@ class RawCategoriesClient:
         *,
         name: str,
         color_hex: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        auto_tag_enabled: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Category]:
         """
@@ -43,6 +45,12 @@ class RawCategoriesClient:
 
         color_hex : typing.Optional[str]
             Hex color code for the category (e.g.,
+
+        description : typing.Optional[str]
+            Optional description to help categorize transcripts.
+
+        auto_tag_enabled : typing.Optional[bool]
+            Whether to automatically tag transcripts that match this category.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -57,6 +65,8 @@ class RawCategoriesClient:
             json={
                 "name": name,
                 "color_hex": color_hex,
+                "description": description,
+                "auto_tag_enabled": auto_tag_enabled,
             },
             request_options=request_options,
             omit=OMIT,
@@ -159,6 +169,8 @@ class RawCategoriesClient:
         *,
         name: typing.Optional[str] = OMIT,
         color_hex: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        auto_tag_enabled: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[Category]:
         """
@@ -175,6 +187,12 @@ class RawCategoriesClient:
         color_hex : typing.Optional[str]
             New hex color code for the category (e.g.,
 
+        description : typing.Optional[str]
+            New description for the category
+
+        auto_tag_enabled : typing.Optional[bool]
+            Whether to automatically tag transcripts that match this category
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -188,6 +206,8 @@ class RawCategoriesClient:
             json={
                 "name": name,
                 "color_hex": color_hex,
+                "description": description,
+                "auto_tag_enabled": auto_tag_enabled,
             },
             request_options=request_options,
             omit=OMIT,
@@ -445,6 +465,8 @@ class AsyncRawCategoriesClient:
         *,
         name: str,
         color_hex: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        auto_tag_enabled: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Category]:
         """
@@ -457,6 +479,12 @@ class AsyncRawCategoriesClient:
 
         color_hex : typing.Optional[str]
             Hex color code for the category (e.g.,
+
+        description : typing.Optional[str]
+            Optional description to help categorize transcripts.
+
+        auto_tag_enabled : typing.Optional[bool]
+            Whether to automatically tag transcripts that match this category.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -471,6 +499,8 @@ class AsyncRawCategoriesClient:
             json={
                 "name": name,
                 "color_hex": color_hex,
+                "description": description,
+                "auto_tag_enabled": auto_tag_enabled,
             },
             request_options=request_options,
             omit=OMIT,
@@ -573,6 +603,8 @@ class AsyncRawCategoriesClient:
         *,
         name: typing.Optional[str] = OMIT,
         color_hex: typing.Optional[str] = OMIT,
+        description: typing.Optional[str] = OMIT,
+        auto_tag_enabled: typing.Optional[bool] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[Category]:
         """
@@ -589,6 +621,12 @@ class AsyncRawCategoriesClient:
         color_hex : typing.Optional[str]
             New hex color code for the category (e.g.,
 
+        description : typing.Optional[str]
+            New description for the category
+
+        auto_tag_enabled : typing.Optional[bool]
+            Whether to automatically tag transcripts that match this category
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -602,6 +640,8 @@ class AsyncRawCategoriesClient:
             json={
                 "name": name,
                 "color_hex": color_hex,
+                "description": description,
+                "auto_tag_enabled": auto_tag_enabled,
             },
             request_options=request_options,
             omit=OMIT,

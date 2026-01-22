@@ -4,7 +4,6 @@ import typing
 import uuid
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 
 
@@ -32,6 +31,11 @@ class OcrJobCreateRequest(UniversalBaseModel):
     file_kind: typing.Optional[str] = pydantic.Field(default=None)
     """
     Optional hint for file type (pdf or image).
+    """
+
+    model: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
