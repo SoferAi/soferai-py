@@ -127,6 +127,22 @@ client.categories.create_category(
 <dl>
 <dd>
 
+**description:** `typing.Optional[str]` — Optional description to help categorize transcripts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auto_tag_enabled:** `typing.Optional[bool]` — Whether to automatically tag transcripts that match this category.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
@@ -344,6 +360,22 @@ client.categories.update_category(
 <dd>
 
 **color_hex:** `typing.Optional[str]` — New hex color code for the category (e.g.,
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `typing.Optional[str]` — New description for the category
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auto_tag_enabled:** `typing.Optional[bool]` — Whether to automatically tag transcripts that match this category
     
 </dd>
 </dl>
@@ -1198,6 +1230,14 @@ client.ocr.create_ocr_job(
 <dd>
 
 **file_kind:** `typing.Optional[str]` — Optional hint for file type (pdf or image).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**model:** `typing.Optional[str]` — OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
     
 </dd>
 </dl>

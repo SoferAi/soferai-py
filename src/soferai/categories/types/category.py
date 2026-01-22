@@ -5,7 +5,6 @@ import typing
 import uuid
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 
 
@@ -23,6 +22,16 @@ class Category(UniversalBaseModel):
     color_hex: str = pydantic.Field()
     """
     Hex color code for the category
+    """
+
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional description to help categorize transcripts
+    """
+
+    auto_tag_enabled: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether auto-tagging is enabled for this category
     """
 
     created_at: dt.datetime = pydantic.Field()
