@@ -18,4 +18,14 @@ class CreateCategoryRequest(UniversalBaseModel):
     Hex color code for the category (e.g.,
     """
 
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional description to help categorize transcripts.
+    """
+
+    auto_tag_enabled: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether to automatically tag transcripts that match this category.
+    """
+
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

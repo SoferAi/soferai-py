@@ -25,6 +25,16 @@ class Category(UniversalBaseModel):
     Hex color code for the category
     """
 
+    description: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Optional description to help categorize transcripts
+    """
+
+    auto_tag_enabled: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether auto-tagging is enabled for this category
+    """
+
     created_at: dt.datetime = pydantic.Field()
     """
     When the category was created
