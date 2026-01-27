@@ -145,8 +145,8 @@ class RawTranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here.
+        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -157,8 +157,8 @@ class RawTranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
@@ -673,8 +673,8 @@ class AsyncRawTranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here.
+        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -685,8 +685,8 @@ class AsyncRawTranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
