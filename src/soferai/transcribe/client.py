@@ -74,7 +74,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -83,8 +83,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -132,8 +132,8 @@ class TranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here.
+        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -144,8 +144,8 @@ class TranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
@@ -546,7 +546,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -555,8 +555,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -612,8 +612,8 @@ class AsyncTranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here.
+        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -624,8 +624,8 @@ class AsyncTranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
