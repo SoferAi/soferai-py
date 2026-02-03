@@ -19,15 +19,15 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     processing_mode: typing.Optional[ProcessingMode] = pydantic.Field(default=None)
     """
     Choose how the batch is processed:
-    - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-    - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
+    - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+    - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
     """
 
     batch_file_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
     """
     **For standard mode only.** ID of a previously uploaded batch manifest.
     
-    Get this by calling [Upload Batch File](/api-reference/transcribe/upload-batch-file) first.
+    Get this by calling [Upload Batch File](/api-reference/batch-transcribe/upload-batch-file) first.
     """
 
     audio_sources: typing.Optional[typing.List[BatchAudioSource]] = pydantic.Field(default=None)
