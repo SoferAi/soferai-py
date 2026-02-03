@@ -8,6 +8,7 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from . import (
         balance,
+        batch_transcribe,
         categories,
         health,
         link,
@@ -150,6 +151,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "UserNotFound": ".balance",
     "__version__": ".version",
     "balance": ".balance",
+    "batch_transcribe": ".batch_transcribe",
     "categories": ".categories",
     "health": ".health",
     "link": ".link",
@@ -256,6 +258,7 @@ __all__ = [
     "UserNotFound",
     "__version__",
     "balance",
+    "batch_transcribe",
     "categories",
     "health",
     "link",

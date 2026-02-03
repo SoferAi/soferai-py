@@ -4,7 +4,6 @@ import typing
 import uuid
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .batch_status import BatchStatus
 from .transcription_id import TranscriptionId
@@ -17,7 +16,7 @@ class BatchTranscriptionResponse(UniversalBaseModel):
 
     batch_id: uuid.UUID = pydantic.Field()
     """
-    Use this ID to check batch progress via [Get Batch Status](/api-reference/transcribe/get-batch-status)
+    Use this ID to check batch progress via [Get Batch Status](/api-reference/batch-transcribe/get-batch-status)
     """
 
     transcription_ids: typing.List[TranscriptionId] = pydantic.Field()
