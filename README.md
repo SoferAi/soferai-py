@@ -34,13 +34,26 @@ A full reference for this library is available [here](https://github.com/soferai
 Instantiate and use the client with the following:
 
 ```python
+import uuid
+
 from soferai import SoferAI
+from soferai.transcribe import TranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
 )
-client.categories.create_category(
-    name="name",
+client.batch_transcribe.create_batch_transcription(
+    batch_file_id=uuid.UUID(
+        "f1234567-89ab-cdef-0123-456789abcdef",
+    ),
+    info=TranscriptionRequestInfo(
+        model="v1",
+        primary_language="en",
+        hebrew_word_format=["en", "he"],
+        num_speakers=1,
+    ),
+    batch_title="Weekly Shiurim Collection",
+    processing_mode="standard",
 )
 ```
 
@@ -50,8 +63,10 @@ The SDK also exports an `async` client so that you can make non-blocking calls t
 
 ```python
 import asyncio
+import uuid
 
 from soferai import AsyncSoferAI
+from soferai.transcribe import TranscriptionRequestInfo
 
 client = AsyncSoferAI(
     api_key="YOUR_API_KEY",
@@ -59,8 +74,18 @@ client = AsyncSoferAI(
 
 
 async def main() -> None:
-    await client.categories.create_category(
-        name="name",
+    await client.batch_transcribe.create_batch_transcription(
+        batch_file_id=uuid.UUID(
+            "f1234567-89ab-cdef-0123-456789abcdef",
+        ),
+        info=TranscriptionRequestInfo(
+            model="v1",
+            primary_language="en",
+            hebrew_word_format=["en", "he"],
+            num_speakers=1,
+        ),
+        batch_title="Weekly Shiurim Collection",
+        processing_mode="standard",
     )
 
 
@@ -76,7 +101,7 @@ will be thrown.
 from soferai.core.api_error import ApiError
 
 try:
-    client.categories.create_category(...)
+    client.batch_transcribe.create_batch_transcription(...)
 except ApiError as e:
     print(e.status_code)
     print(e.body)
@@ -95,7 +120,9 @@ from soferai import SoferAI
 client = SoferAI(
     ...,
 )
-response = client.categories.with_raw_response.create_category(...)
+response = client.batch_transcribe.with_raw_response.create_batch_transcription(
+    ...
+)
 print(response.headers)  # access the response headers
 print(response.data)  # access the underlying object
 ```
@@ -115,7 +142,7 @@ A request is deemed retryable when any of the following HTTP status codes is ret
 Use the `max_retries` request option to configure this behavior.
 
 ```python
-client.categories.create_category(..., request_options={
+client.batch_transcribe.create_batch_transcription(..., request_options={
     "max_retries": 1
 })
 ```
@@ -135,7 +162,7 @@ client = SoferAI(
 
 
 # Override timeout for a specific method
-client.categories.create_category(..., request_options={
+client.batch_transcribe.create_batch_transcription(..., request_options={
     "timeout_in_seconds": 1
 })
 ```
