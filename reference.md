@@ -60,6 +60,462 @@ client.balance.get_balance()
 </dl>
 </details>
 
+## BatchTranscribe
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">create_batch_transcription</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create multiple transcriptions in a single batch request.
+
+**Choose a processing mode:**
+
+- **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
+- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+
+All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+from soferai.transcribe import TranscriptionRequestInfo
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.create_batch_transcription(
+    batch_file_id=uuid.UUID(
+        "f1234567-89ab-cdef-0123-456789abcdef",
+    ),
+    info=TranscriptionRequestInfo(
+        model="v1",
+        primary_language="en",
+        hebrew_word_format=["en", "he"],
+        num_speakers=1,
+    ),
+    batch_title="Weekly Shiurim Collection",
+    processing_mode="standard",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**info:** `TranscriptionRequestInfo` — Transcription settings applied to all files in the batch (model, language, etc.)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**processing_mode:** `typing.Optional[ProcessingMode]` 
+
+Choose how the batch is processed:
+- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+- `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**batch_file_id:** `typing.Optional[uuid.UUID]` 
+
+**For standard mode only.** ID of a previously uploaded batch manifest.
+
+Get this by calling [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file) first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audio_sources:** `typing.Optional[typing.Sequence[BatchAudioSource]]` 
+
+**For express mode only.** List of audio URLs to transcribe (max 10).
+
+Each item needs an `audio_url` and can optionally include a `title`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**batch_title:** `typing.Optional[str]` — Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">upload_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Upload a batch manifest containing audio URLs for standard mode batch processing.
+
+**Workflow:**
+1. Upload your manifest here to get a `batch_file_id`
+2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
+
+The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.upload_batch_file(
+    content_type="jsonl",
+    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2"}',
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**content_type:** `BatchFileContentType` — Format of your manifest data
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**json_items:** `typing.Optional[typing.Sequence[BatchManifestAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**jsonl:** `typing.Optional[str]` 
+
+**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+
+Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[BatchFileMetadata]` — Optional title and description for this manifest
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">list_batch_files</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List all batch file manifests you've uploaded. Use this to find a `batch_file_id` for starting a standard mode batch.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.list_batch_files()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">get_batch_file</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get details about a specific batch file manifest, including its validation status. Check this after uploading to ensure your manifest is valid before starting a batch.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.get_batch_file(
+    batch_file_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_file_id:** `uuid.UUID` — The batch file ID returned from [Upload Batch File](/api-reference/batch-transcribe/upload-batch-file)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">get_batch_status</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.get_batch_status(
+    batch_id=uuid.UUID(
+        "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Categories
 <details><summary><code>client.categories.<a href="src/soferai/categories/client.py">create_category</a>(...)</code></summary>
 <dl>
@@ -1625,461 +2081,6 @@ response = client.transcribe.create_transcription(
 
 print(f"Transcription ID: {response}")
 ```
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_batch_transcription</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create multiple transcriptions in a single batch request.
-
-**Choose a processing mode:**
-
-- **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request.
-- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch File](/api-reference/transcribe/upload-batch-file), then pass the `batch_file_id` here.
-
-All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-from soferai.transcribe import TranscriptionRequestInfo
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.create_batch_transcription(
-    batch_file_id=uuid.UUID(
-        "f1234567-89ab-cdef-0123-456789abcdef",
-    ),
-    info=TranscriptionRequestInfo(
-        model="v1",
-        primary_language="en",
-        hebrew_word_format=["en", "he"],
-        num_speakers=1,
-    ),
-    batch_title="Weekly Shiurim Collection",
-    processing_mode="standard",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**info:** `TranscriptionRequestInfo` — Transcription settings applied to all files in the batch (model, language, etc.)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**processing_mode:** `typing.Optional[ProcessingMode]` 
-
-Choose how the batch is processed:
-- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`.
-- `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_file_id:** `typing.Optional[uuid.UUID]` 
-
-**For standard mode only.** ID of a previously uploaded batch manifest.
-
-Get this by calling [Upload Batch File](/api-reference/transcribe/upload-batch-file) first.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**audio_sources:** `typing.Optional[typing.Sequence[BatchAudioSource]]` 
-
-**For express mode only.** List of audio URLs to transcribe (max 10).
-
-Each item needs an `audio_url` and can optionally include a `title`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_title:** `typing.Optional[str]` — Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">upload_batch_file</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Upload a batch manifest containing audio URLs for standard mode batch processing.
-
-**Workflow:**
-1. Upload your manifest here to get a `batch_file_id`
-2. Use that ID in [Create Batch Transcription](/api-reference/transcribe/create-batch-transcription) with `processing_mode: "standard"`
-
-The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.upload_batch_file(
-    content_type="jsonl",
-    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2"}',
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**content_type:** `BatchFileContentType` — Format of your manifest data
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**json_items:** `typing.Optional[typing.Sequence[BatchAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**jsonl:** `typing.Optional[str]` 
-
-**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
-
-Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**metadata:** `typing.Optional[BatchFileMetadata]` — Optional title and description for this manifest
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">list_batch_files</a>()</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-List all batch file manifests you've uploaded. Use this to find a `batch_file_id` for starting a standard mode batch.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.list_batch_files()
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_batch_file</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get details about a specific batch file manifest, including its validation status. Check this after uploading to ensure your manifest is valid before starting a batch.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.get_batch_file(
-    batch_file_id=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**batch_file_id:** `uuid.UUID` — The batch file ID returned from [Upload Batch File](/api-reference/transcribe/upload-batch-file)
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_batch_status</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transcribe.get_batch_status(
-    batch_id=uuid.UUID(
-        "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/transcribe/create-batch-transcription)
     
 </dd>
 </dl>
