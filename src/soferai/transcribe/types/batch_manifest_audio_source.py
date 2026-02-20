@@ -4,12 +4,11 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import UniversalBaseModel
-from .transcription_id import TranscriptionId
 
 
-class BatchAudioSource(UniversalBaseModel):
+class BatchManifestAudioSource(UniversalBaseModel):
     """
-    A single audio file in a batch manifest.
+    A single audio file in a batch manifest upload.
     """
 
     audio_url: str = pydantic.Field()
@@ -20,11 +19,6 @@ class BatchAudioSource(UniversalBaseModel):
     title: typing.Optional[str] = pydantic.Field(default=None)
     """
     Title for this transcription. Falls back to batch_title or auto-generated "Item 1", "Item 2", etc.
-    """
-
-    id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
-    """
-    Custom UUID for this transcription. Auto-generated if not provided.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
