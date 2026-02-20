@@ -12,6 +12,7 @@ from .environment import SoferAIEnvironment
 
 if typing.TYPE_CHECKING:
     from .balance.client import AsyncBalanceClient, BalanceClient
+    from .batch_transcribe.client import AsyncBatchTranscribeClient, BatchTranscribeClient
     from .categories.client import AsyncCategoriesClient, CategoriesClient
     from .health.client import AsyncHealthClient, HealthClient
     from .link.client import AsyncLinkClient, LinkClient
@@ -89,6 +90,7 @@ class SoferAI:
             timeout=_defaulted_timeout,
         )
         self._balance: typing.Optional[BalanceClient] = None
+        self._batch_transcribe: typing.Optional[BatchTranscribeClient] = None
         self._categories: typing.Optional[CategoriesClient] = None
         self._health: typing.Optional[HealthClient] = None
         self._link: typing.Optional[LinkClient] = None
@@ -106,6 +108,14 @@ class SoferAI:
 
             self._balance = BalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
+
+    @property
+    def batch_transcribe(self):
+        if self._batch_transcribe is None:
+            from .batch_transcribe.client import BatchTranscribeClient
+
+            self._batch_transcribe = BatchTranscribeClient(client_wrapper=self._client_wrapper)
+        return self._batch_transcribe
 
     @property
     def categories(self):
@@ -246,6 +256,7 @@ class AsyncSoferAI:
             timeout=_defaulted_timeout,
         )
         self._balance: typing.Optional[AsyncBalanceClient] = None
+        self._batch_transcribe: typing.Optional[AsyncBatchTranscribeClient] = None
         self._categories: typing.Optional[AsyncCategoriesClient] = None
         self._health: typing.Optional[AsyncHealthClient] = None
         self._link: typing.Optional[AsyncLinkClient] = None
@@ -263,6 +274,14 @@ class AsyncSoferAI:
 
             self._balance = AsyncBalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
+
+    @property
+    def batch_transcribe(self):
+        if self._batch_transcribe is None:
+            from .batch_transcribe.client import AsyncBatchTranscribeClient
+
+            self._batch_transcribe = AsyncBatchTranscribeClient(client_wrapper=self._client_wrapper)
+        return self._batch_transcribe
 
     @property
     def categories(self):
