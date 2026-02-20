@@ -5,9 +5,9 @@ import typing
 import pydantic
 
 from ...core.pydantic_utilities import UniversalBaseModel
-from .batch_audio_source import BatchAudioSource
 from .batch_file_content_type import BatchFileContentType
 from .batch_file_metadata import BatchFileMetadata
+from .batch_manifest_audio_source import BatchManifestAudioSource
 
 
 class BatchFileUploadRequest(UniversalBaseModel):
@@ -22,7 +22,7 @@ class BatchFileUploadRequest(UniversalBaseModel):
     Format of your manifest data
     """
 
-    json_items: typing.Optional[typing.List[BatchAudioSource]] = pydantic.Field(default=None)
+    json_items: typing.Optional[typing.List[BatchManifestAudioSource]] = pydantic.Field(default=None)
     """
     **For JSON format.** Array of audio sources to transcribe (max 500).
     """
