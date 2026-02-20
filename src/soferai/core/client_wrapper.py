@@ -3,7 +3,6 @@
 import typing
 
 import httpx
-
 from .http_client import AsyncHttpClient, HttpClient
 
 
@@ -23,10 +22,9 @@ class BaseClientWrapper:
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {
-            "User-Agent": "soferai/1.0.1",
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "soferai",
-            "X-Fern-SDK-Version": "1.0.1",
+            "X-Fern-SDK-Version": "0.0.879",
             **(self.get_custom_headers() or {}),
         }
         api_key = self._get_api_key()
