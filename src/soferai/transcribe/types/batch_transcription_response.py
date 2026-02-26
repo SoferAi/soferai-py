@@ -17,7 +17,7 @@ class BatchTranscriptionResponse(UniversalBaseModel):
 
     batch_id: uuid.UUID = pydantic.Field()
     """
-    Use this ID to check batch progress via [Get Batch Status](/api-reference/transcribe/get-batch-status)
+    Use this ID to check batch progress via [Get Batch Status](/api-reference/batch-transcribe/get-batch-status)
     """
 
     transcription_ids: typing.List[TranscriptionId] = pydantic.Field()
