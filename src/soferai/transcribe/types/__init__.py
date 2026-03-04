@@ -14,6 +14,7 @@ if typing.TYPE_CHECKING:
     from .batch_file_summary import BatchFileSummary
     from .batch_file_upload_request import BatchFileUploadRequest
     from .batch_file_upload_response import BatchFileUploadResponse
+    from .batch_manifest_audio_source import BatchManifestAudioSource
     from .batch_status import BatchStatus
     from .batch_status_response import BatchStatusResponse
     from .batch_transcription_request import BatchTranscriptionRequest
@@ -39,6 +40,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchFileSummary": ".batch_file_summary",
     "BatchFileUploadRequest": ".batch_file_upload_request",
     "BatchFileUploadResponse": ".batch_file_upload_response",
+    "BatchManifestAudioSource": ".batch_manifest_audio_source",
     "BatchStatus": ".batch_status",
     "BatchStatusResponse": ".batch_status_response",
     "BatchTranscriptionRequest": ".batch_transcription_request",
@@ -88,6 +90,7 @@ __all__ = [
     "BatchFileSummary",
     "BatchFileUploadRequest",
     "BatchFileUploadResponse",
+    "BatchManifestAudioSource",
     "BatchStatus",
     "BatchStatusResponse",
     "BatchTranscriptionRequest",
