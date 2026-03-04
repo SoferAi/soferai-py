@@ -17,7 +17,7 @@ class BatchFileUploadResponse(UniversalBaseModel):
 
     batch_file_id: uuid.UUID = pydantic.Field()
     """
-    Use this ID when calling [Create Batch Transcription](/api-reference/transcribe/create-batch-transcription) with standard mode
+    Use this ID when calling [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with standard mode
     """
 
     item_count: int = pydantic.Field()
