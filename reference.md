@@ -183,14 +183,6 @@ Each item needs an `audio_url` and can optionally include a `title`.
 <dl>
 <dd>
 
-**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
     
 </dd>
