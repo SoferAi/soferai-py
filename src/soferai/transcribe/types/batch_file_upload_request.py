@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .batch_file_content_type import BatchFileContentType
 from .batch_file_metadata import BatchFileMetadata
