@@ -47,9 +47,4 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
     """
 
-    batch_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
-    """
-    Custom UUID for this batch. Auto-generated if not provided.
-    """
-
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
