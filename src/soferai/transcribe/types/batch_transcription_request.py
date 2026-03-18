@@ -4,7 +4,6 @@ import typing
 import uuid
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .batch_audio_source import BatchAudioSource
 from .processing_mode import ProcessingMode
@@ -34,7 +33,7 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     """
     **For express mode only.** List of audio URLs to transcribe (max 10).
     
-    Each item needs an `audio_url` and can optionally include a `title`.
+    Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
     """
 
     info: TranscriptionRequestInfo = pydantic.Field()
@@ -45,11 +44,6 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     batch_title: typing.Optional[str] = pydantic.Field(default=None)
     """
     Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    """
-
-    batch_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
-    """
-    Custom UUID for this batch. Auto-generated if not provided.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
