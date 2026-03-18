@@ -42,7 +42,6 @@ class RawBatchTranscribeClient:
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[BatchTranscriptionResponse]:
         """
@@ -73,13 +72,10 @@ class RawBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -102,7 +98,6 @@ class RawBatchTranscribeClient:
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
-                "batch_id": batch_id,
             },
             request_options=request_options,
             omit=OMIT,
@@ -342,7 +337,6 @@ class AsyncRawBatchTranscribeClient:
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[BatchTranscriptionResponse]:
         """
@@ -373,13 +367,10 @@ class AsyncRawBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -402,7 +393,6 @@ class AsyncRawBatchTranscribeClient:
                     object_=info, annotation=TranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
-                "batch_id": batch_id,
             },
             request_options=request_options,
             omit=OMIT,
