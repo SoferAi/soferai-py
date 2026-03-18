@@ -167,7 +167,7 @@ Get this by calling [Upload Batch Manifest File](/api-reference/batch-transcribe
 
 **For express mode only.** List of audio URLs to transcribe (max 10).
 
-Each item needs an `audio_url` and can optionally include a `title`.
+Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
     
 </dd>
 </dl>
@@ -176,14 +176,6 @@ Each item needs an `audio_url` and can optionally include a `title`.
 <dd>
 
 **batch_title:** `typing.Optional[str]` — Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
     
 </dd>
 </dl>
