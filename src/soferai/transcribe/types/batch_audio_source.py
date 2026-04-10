@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .transcription_id import TranscriptionId
 
@@ -26,6 +25,16 @@ class BatchAudioSource(UniversalBaseModel):
     id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
     """
     Custom UUID for this transcription. Auto-generated if not provided.
+    """
+
+    num_speakers: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Expected number of speakers for this specific file. Mutually exclusive with `auto_detect_speakers`.
+    """
+
+    auto_detect_speakers: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Automatically detect the number of speakers for this specific file. Mutually exclusive with `num_speakers`.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
