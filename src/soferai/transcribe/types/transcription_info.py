@@ -42,9 +42,9 @@ class TranscriptionInfo(UniversalBaseModel):
     Transliterated Hebrew words are surrounded by <i> tags in the response text.
     """
 
-    num_speakers: int = pydantic.Field()
+    num_speakers: typing.Optional[int] = pydantic.Field(default=None)
     """
-    Number of speakers in the audio. If more than 1, then speaker labeling is enabled (a pro feature).
+    Number of speakers in the audio. This can be `null` while auto-detection is pending or if no count was determined.
     """
 
     status: Status = pydantic.Field()
