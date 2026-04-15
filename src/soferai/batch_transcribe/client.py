@@ -45,7 +45,6 @@ class BatchTranscribeClient:
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -54,7 +53,7 @@ class BatchTranscribeClient:
         **Choose a processing mode:**
 
         - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -65,7 +64,7 @@ class BatchTranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
             - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
@@ -76,13 +75,10 @@ class BatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -127,7 +123,6 @@ class BatchTranscribeClient:
             batch_file_id=batch_file_id,
             audio_sources=audio_sources,
             batch_title=batch_title,
-            batch_id=batch_id,
             request_options=request_options,
         )
         return _response.data
@@ -148,7 +143,7 @@ class BatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -156,10 +151,10 @@ class BatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
@@ -333,7 +328,6 @@ class AsyncBatchTranscribeClient:
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -342,7 +336,7 @@ class AsyncBatchTranscribeClient:
         **Choose a processing mode:**
 
         - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
@@ -353,7 +347,7 @@ class AsyncBatchTranscribeClient:
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
             - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
@@ -364,13 +358,10 @@ class AsyncBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `num_speakers`, or `auto_detect_speakers`.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -423,7 +414,6 @@ class AsyncBatchTranscribeClient:
             batch_file_id=batch_file_id,
             audio_sources=audio_sources,
             batch_title=batch_title,
-            batch_id=batch_id,
             request_options=request_options,
         )
         return _response.data
@@ -444,7 +434,7 @@ class AsyncBatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -452,10 +442,10 @@ class AsyncBatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
