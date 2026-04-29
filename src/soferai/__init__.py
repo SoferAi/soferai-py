@@ -12,7 +12,6 @@ if typing.TYPE_CHECKING:
         categories,
         health,
         link,
-        live_transcription_ws,
         maishiv,
         ocr,
         timestamps,
@@ -37,7 +36,6 @@ if typing.TYPE_CHECKING:
     from .environment import SoferAIEnvironment
     from .health import HealthResponse
     from .link import LinkError, LinkNotFound, LinkNotSupported, LinkRequest, LinkResponse, Site
-    from .live_transcription_ws import AudioChunk, TranscriptChunk
     from .maishiv import (
         AddKnowledgeBaseDocumentRequest,
         AddKnowledgeBaseDocumentResponse,
@@ -86,7 +84,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "AddTranscriptionToCategoryRequest": ".categories",
     "AddTranscriptionToCategoryResponse": ".categories",
     "AsyncSoferAI": ".client",
-    "AudioChunk": ".live_transcription_ws",
     "AuthenticationError": ".transcribe",
     "Balance": ".balance",
     "BatchAudioSource": ".transcribe",
@@ -138,7 +135,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "SoferAIEnvironment": ".environment",
     "Status": ".transcribe",
     "Timestamp": ".transcribe",
-    "TranscriptChunk": ".live_transcription_ws",
     "TranscriptSummaryResponse": ".transformations",
     "Transcription": ".transcribe",
     "TranscriptionFailed": ".transcribe",
@@ -157,7 +153,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "categories": ".categories",
     "health": ".health",
     "link": ".link",
-    "live_transcription_ws": ".live_transcription_ws",
     "maishiv": ".maishiv",
     "ocr": ".ocr",
     "timestamps": ".timestamps",
@@ -194,7 +189,6 @@ __all__ = [
     "AddTranscriptionToCategoryRequest",
     "AddTranscriptionToCategoryResponse",
     "AsyncSoferAI",
-    "AudioChunk",
     "AuthenticationError",
     "Balance",
     "BatchAudioSource",
@@ -246,7 +240,6 @@ __all__ = [
     "SoferAIEnvironment",
     "Status",
     "Timestamp",
-    "TranscriptChunk",
     "TranscriptSummaryResponse",
     "Transcription",
     "TranscriptionFailed",
@@ -265,7 +258,6 @@ __all__ = [
     "categories",
     "health",
     "link",
-    "live_transcription_ws",
     "maishiv",
     "ocr",
     "timestamps",
