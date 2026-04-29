@@ -33,7 +33,14 @@ if typing.TYPE_CHECKING:
         TranscriptionRequestInfo,
         TranscriptionSummary,
     )
-    from .errors import AuthenticationError, BatchNotFound, RateLimitError, TranscriptionFailed, TranscriptionNotFound
+    from .errors import (
+        AuthenticationError,
+        BatchItemNotFound,
+        BatchNotFound,
+        RateLimitError,
+        TranscriptionFailed,
+        TranscriptionNotFound,
+    )
 _dynamic_imports: typing.Dict[str, str] = {
     "AuthenticationError": ".errors",
     "BatchAudioSource": ".types",
@@ -44,6 +51,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchFileSummary": ".types",
     "BatchFileUploadRequest": ".types",
     "BatchFileUploadResponse": ".types",
+    "BatchItemNotFound": ".errors",
     "BatchManifestAudioSource": ".types",
     "BatchNotFound": ".errors",
     "BatchStatus": ".types",
@@ -99,6 +107,7 @@ __all__ = [
     "BatchFileSummary",
     "BatchFileUploadRequest",
     "BatchFileUploadResponse",
+    "BatchItemNotFound",
     "BatchManifestAudioSource",
     "BatchNotFound",
     "BatchStatus",
