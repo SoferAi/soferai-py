@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 
 
@@ -20,6 +19,21 @@ class BatchManifestAudioSource(UniversalBaseModel):
     title: typing.Optional[str] = pydantic.Field(default=None)
     """
     Title for this transcription. Falls back to batch_title or auto-generated "Item 1", "Item 2", etc.
+    """
+
+    client_item_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Caller-defined identifier for this batch item. Must be unique within the manifest. Use this to map the item back to the resulting transcription later.
+    """
+
+    num_speakers: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Expected number of speakers for this specific file. Mutually exclusive with `auto_detect_speakers`.
+    """
+
+    auto_detect_speakers: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Automatically detect the number of speakers for this specific file. Mutually exclusive with `num_speakers`.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
