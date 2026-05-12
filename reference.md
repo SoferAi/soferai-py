@@ -78,9 +78,11 @@ Create multiple transcriptions in a single batch request.
 **Choose a processing mode:**
 
 - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
 All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
+
+If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
 </dd>
 </dl>
 </dd>
@@ -98,7 +100,7 @@ All files in the batch share the same transcription settings (model, language, e
 import uuid
 
 from soferai import SoferAI
-from soferai.transcribe import TranscriptionRequestInfo
+from soferai.transcribe import BatchTranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
@@ -107,7 +109,7 @@ client.batch_transcribe.create_batch_transcription(
     batch_file_id=uuid.UUID(
         "f1234567-89ab-cdef-0123-456789abcdef",
     ),
-    info=TranscriptionRequestInfo(
+    info=BatchTranscriptionRequestInfo(
         model="v1",
         primary_language="en",
         hebrew_word_format=["en", "he"],
@@ -131,7 +133,7 @@ client.batch_transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionRequestInfo` — Transcription settings applied to all files in the batch (model, language, etc.)
+**info:** `BatchTranscriptionRequestInfo` — Transcription settings applied to all files in the batch (model, language, etc.)
     
 </dd>
 </dl>
@@ -142,7 +144,7 @@ client.batch_transcribe.create_batch_transcription(
 **processing_mode:** `typing.Optional[ProcessingMode]` 
 
 Choose how the batch is processed:
-- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
     
 </dd>
@@ -167,7 +169,9 @@ Get this by calling [Upload Batch Manifest File](/api-reference/batch-transcribe
 
 **For express mode only.** List of audio URLs to transcribe (max 10).
 
-Each item needs an `audio_url` and can optionally include a `title`.
+Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
     
 </dd>
 </dl>
@@ -176,14 +180,6 @@ Each item needs an `audio_url` and can optionally include a `title`.
 <dd>
 
 **batch_title:** `typing.Optional[str]` — Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
     
 </dd>
 </dl>
@@ -221,7 +217,7 @@ Upload a batch manifest containing audio URLs for standard mode batch processing
 1. Upload your manifest here to get a `batch_file_id`
 2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 </dd>
 </dl>
 </dd>
@@ -243,7 +239,7 @@ client = SoferAI(
 )
 client.batch_transcribe.upload_batch_file(
     content_type="jsonl",
-    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2"}',
+    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1", "client_item_id": "shiur_1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2", "client_item_id": "shiur_2"}',
 )
 
 ```
@@ -268,7 +264,7 @@ client.batch_transcribe.upload_batch_file(
 <dl>
 <dd>
 
-**json_items:** `typing.Optional[typing.Sequence[BatchManifestAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500).
+**json_items:** `typing.Optional[typing.Sequence[BatchManifestAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
     
 </dd>
 </dl>
@@ -278,7 +274,7 @@ client.batch_transcribe.upload_batch_file(
 
 **jsonl:** `typing.Optional[str]` 
 
-**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
 Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
     
@@ -455,6 +451,8 @@ client.batch_transcribe.get_batch_file(
 <dd>
 
 Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
+
+If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
 </dd>
 </dl>
 </dd>
@@ -497,6 +495,93 @@ client.batch_transcribe.get_batch_status(
 <dd>
 
 **batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">get_batch_transcription_by_client_item_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resolve a batch item's `client_item_id` to the resulting transcription.
+
+`client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.get_batch_transcription_by_client_item_id(
+    batch_id=uuid.UUID(
+        "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    ),
+    client_item_id="shiur_1",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**client_item_id:** `str` — The caller-defined client_item_id to resolve within this batch.
     
 </dd>
 </dl>
@@ -1282,6 +1367,97 @@ client.health.get_health()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Internal
+<details><summary><code>client.internal.<a href="src/soferai/internal/client.py">auto_generate_title</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Auto-generate and persist a title for a transcription.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.internal.auto_generate_title(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `uuid.UUID` — ID of the transcription to title
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mode:** `typing.Optional[TitleUpdateMode]` — Whether to replace the current title or append the generated title to it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**separator:** `typing.Optional[str]` — Separator used between the existing title and generated title when mode is append.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
