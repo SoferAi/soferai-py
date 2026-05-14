@@ -12,10 +12,11 @@ from ..transcribe.types.batch_file_metadata import BatchFileMetadata
 from ..transcribe.types.batch_file_upload_response import BatchFileUploadResponse
 from ..transcribe.types.batch_manifest_audio_source import BatchManifestAudioSource
 from ..transcribe.types.batch_status_response import BatchStatusResponse
+from ..transcribe.types.batch_transcription_request_info import BatchTranscriptionRequestInfo
 from ..transcribe.types.batch_transcription_response import BatchTranscriptionResponse
 from ..transcribe.types.list_batch_files_response import ListBatchFilesResponse
 from ..transcribe.types.processing_mode import ProcessingMode
-from ..transcribe.types.transcription_request_info import TranscriptionRequestInfo
+from ..transcribe.types.transcription_info import TranscriptionInfo
 from .raw_client import AsyncRawBatchTranscribeClient, RawBatchTranscribeClient
 
 # this is used as the default value for optional parameters
@@ -40,12 +41,11 @@ class BatchTranscribeClient:
     def create_batch_transcription(
         self,
         *,
-        info: TranscriptionRequestInfo,
+        info: BatchTranscriptionRequestInfo,
         processing_mode: typing.Optional[ProcessingMode] = OMIT,
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -54,18 +54,20 @@ class BatchTranscribeClient:
         **Choose a processing mode:**
 
         - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
+        If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
+
         Parameters
         ----------
-        info : TranscriptionRequestInfo
+        info : BatchTranscriptionRequestInfo
             Transcription settings applied to all files in the batch (model, language, etc.)
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
             - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
@@ -76,13 +78,12 @@ class BatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+            If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -95,7 +96,7 @@ class BatchTranscribeClient:
         Examples
         --------
         from soferai import SoferAI
-        from soferai.transcribe import BatchAudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import BatchAudioSource, BatchTranscriptionRequestInfo
 
         client = SoferAI(
             api_key="YOUR_API_KEY",
@@ -105,13 +106,15 @@ class BatchTranscribeClient:
                 BatchAudioSource(
                     audio_url="https://example.com/audio1.mp3",
                     title="Rabbi Cohen's Shiur on Shabbos",
+                    client_item_id="shiur_shabbos",
                 ),
                 BatchAudioSource(
                     audio_url="https://example.com/audio2.mp3",
                     title="Rabbi Cohen's Shiur on Kashrus",
+                    client_item_id="shiur_kashrus",
                 ),
             ],
-            info=TranscriptionRequestInfo(
+            info=BatchTranscriptionRequestInfo(
                 model="v1",
                 primary_language="en",
                 hebrew_word_format=["en", "he"],
@@ -127,7 +130,6 @@ class BatchTranscribeClient:
             batch_file_id=batch_file_id,
             audio_sources=audio_sources,
             batch_title=batch_title,
-            batch_id=batch_id,
             request_options=request_options,
         )
         return _response.data
@@ -148,7 +150,7 @@ class BatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -156,10 +158,10 @@ class BatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
@@ -187,14 +189,17 @@ class BatchTranscribeClient:
                 BatchManifestAudioSource(
                     audio_url="https://example.com/shiur1.mp3",
                     title="Parshas Bereishis - Rabbi Cohen",
+                    client_item_id="bereishis",
                 ),
                 BatchManifestAudioSource(
                     audio_url="https://example.com/shiur2.mp3",
                     title="Parshas Noach - Rabbi Cohen",
+                    client_item_id="noach",
                 ),
                 BatchManifestAudioSource(
                     audio_url="https://example.com/shiur3.mp3",
                     title="Parshas Lech Lecha - Rabbi Cohen",
+                    client_item_id="lech_lecha",
                 ),
             ],
             metadata=BatchFileMetadata(
@@ -279,6 +284,8 @@ class BatchTranscribeClient:
         """
         Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
 
+        If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
+
         Parameters
         ----------
         batch_id : uuid.UUID
@@ -309,6 +316,52 @@ class BatchTranscribeClient:
         _response = self._raw_client.get_batch_status(batch_id, request_options=request_options)
         return _response.data
 
+    def get_batch_transcription_by_client_item_id(
+        self, batch_id: uuid.UUID, *, client_item_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> TranscriptionInfo:
+        """
+        Resolve a batch item's `client_item_id` to the resulting transcription.
+
+        `client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+        The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+
+        Parameters
+        ----------
+        batch_id : uuid.UUID
+            The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+
+        client_item_id : str
+            The caller-defined client_item_id to resolve within this batch.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionInfo
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.batch_transcribe.get_batch_transcription_by_client_item_id(
+            batch_id=uuid.UUID(
+                "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            ),
+            client_item_id="shiur_1",
+        )
+        """
+        _response = self._raw_client.get_batch_transcription_by_client_item_id(
+            batch_id, client_item_id=client_item_id, request_options=request_options
+        )
+        return _response.data
+
 
 class AsyncBatchTranscribeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -328,12 +381,11 @@ class AsyncBatchTranscribeClient:
     async def create_batch_transcription(
         self,
         *,
-        info: TranscriptionRequestInfo,
+        info: BatchTranscriptionRequestInfo,
         processing_mode: typing.Optional[ProcessingMode] = OMIT,
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> BatchTranscriptionResponse:
         """
@@ -342,18 +394,20 @@ class AsyncBatchTranscribeClient:
         **Choose a processing mode:**
 
         - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
+        If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
+
         Parameters
         ----------
-        info : TranscriptionRequestInfo
+        info : BatchTranscriptionRequestInfo
             Transcription settings applied to all files in the batch (model, language, etc.)
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
             - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
@@ -364,13 +418,12 @@ class AsyncBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+            If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -385,7 +438,7 @@ class AsyncBatchTranscribeClient:
         import asyncio
 
         from soferai import AsyncSoferAI
-        from soferai.transcribe import BatchAudioSource, TranscriptionRequestInfo
+        from soferai.transcribe import BatchAudioSource, BatchTranscriptionRequestInfo
 
         client = AsyncSoferAI(
             api_key="YOUR_API_KEY",
@@ -398,13 +451,15 @@ class AsyncBatchTranscribeClient:
                     BatchAudioSource(
                         audio_url="https://example.com/audio1.mp3",
                         title="Rabbi Cohen's Shiur on Shabbos",
+                        client_item_id="shiur_shabbos",
                     ),
                     BatchAudioSource(
                         audio_url="https://example.com/audio2.mp3",
                         title="Rabbi Cohen's Shiur on Kashrus",
+                        client_item_id="shiur_kashrus",
                     ),
                 ],
-                info=TranscriptionRequestInfo(
+                info=BatchTranscriptionRequestInfo(
                     model="v1",
                     primary_language="en",
                     hebrew_word_format=["en", "he"],
@@ -423,7 +478,6 @@ class AsyncBatchTranscribeClient:
             batch_file_id=batch_file_id,
             audio_sources=audio_sources,
             batch_title=batch_title,
-            batch_id=batch_id,
             request_options=request_options,
         )
         return _response.data
@@ -444,7 +498,7 @@ class AsyncBatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -452,10 +506,10 @@ class AsyncBatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
@@ -488,14 +542,17 @@ class AsyncBatchTranscribeClient:
                     BatchManifestAudioSource(
                         audio_url="https://example.com/shiur1.mp3",
                         title="Parshas Bereishis - Rabbi Cohen",
+                        client_item_id="bereishis",
                     ),
                     BatchManifestAudioSource(
                         audio_url="https://example.com/shiur2.mp3",
                         title="Parshas Noach - Rabbi Cohen",
+                        client_item_id="noach",
                     ),
                     BatchManifestAudioSource(
                         audio_url="https://example.com/shiur3.mp3",
                         title="Parshas Lech Lecha - Rabbi Cohen",
+                        client_item_id="lech_lecha",
                     ),
                 ],
                 metadata=BatchFileMetadata(
@@ -600,6 +657,8 @@ class AsyncBatchTranscribeClient:
         """
         Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
 
+        If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
+
         Parameters
         ----------
         batch_id : uuid.UUID
@@ -635,4 +694,57 @@ class AsyncBatchTranscribeClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_batch_status(batch_id, request_options=request_options)
+        return _response.data
+
+    async def get_batch_transcription_by_client_item_id(
+        self, batch_id: uuid.UUID, *, client_item_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> TranscriptionInfo:
+        """
+        Resolve a batch item's `client_item_id` to the resulting transcription.
+
+        `client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+        The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+
+        Parameters
+        ----------
+        batch_id : uuid.UUID
+            The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+
+        client_item_id : str
+            The caller-defined client_item_id to resolve within this batch.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionInfo
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.batch_transcribe.get_batch_transcription_by_client_item_id(
+                batch_id=uuid.UUID(
+                    "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                ),
+                client_item_id="shiur_1",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_batch_transcription_by_client_item_id(
+            batch_id, client_item_id=client_item_id, request_options=request_options
+        )
         return _response.data
