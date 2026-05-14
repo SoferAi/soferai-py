@@ -18,6 +18,7 @@ if typing.TYPE_CHECKING:
     from .batch_status import BatchStatus
     from .batch_status_response import BatchStatusResponse
     from .batch_transcription_request import BatchTranscriptionRequest
+    from .batch_transcription_request_info import BatchTranscriptionRequestInfo
     from .batch_transcription_response import BatchTranscriptionResponse
     from .language import Language
     from .letters_language import LettersLanguage
@@ -44,6 +45,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchStatus": ".batch_status",
     "BatchStatusResponse": ".batch_status_response",
     "BatchTranscriptionRequest": ".batch_transcription_request",
+    "BatchTranscriptionRequestInfo": ".batch_transcription_request_info",
     "BatchTranscriptionResponse": ".batch_transcription_response",
     "Language": ".language",
     "LettersLanguage": ".letters_language",
@@ -94,6 +96,7 @@ __all__ = [
     "BatchStatus",
     "BatchStatusResponse",
     "BatchTranscriptionRequest",
+    "BatchTranscriptionRequestInfo",
     "BatchTranscriptionResponse",
     "Language",
     "LettersLanguage",
