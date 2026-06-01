@@ -23,10 +23,10 @@ class BaseClientWrapper:
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {
-            "User-Agent": "soferai/1.1.1",
+            "User-Agent": "soferai/1.2.1",
             "X-Fern-Language": "Python",
             "X-Fern-SDK-Name": "soferai",
-            "X-Fern-SDK-Version": "1.1.1",
+            "X-Fern-SDK-Version": "1.2.1",
             **(self.get_custom_headers() or {}),
         }
         api_key = self._get_api_key()
