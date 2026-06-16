@@ -15,6 +15,7 @@ if typing.TYPE_CHECKING:
     from .batch_transcribe.client import AsyncBatchTranscribeClient, BatchTranscribeClient
     from .categories.client import AsyncCategoriesClient, CategoriesClient
     from .health.client import AsyncHealthClient, HealthClient
+    from .internal.client import AsyncInternalClient, InternalClient
     from .link.client import AsyncLinkClient, LinkClient
     from .maishiv.client import AsyncMaishivClient, MaishivClient
     from .ocr.client import AsyncOcrClient, OcrClient
@@ -93,6 +94,7 @@ class SoferAI:
         self._batch_transcribe: typing.Optional[BatchTranscribeClient] = None
         self._categories: typing.Optional[CategoriesClient] = None
         self._health: typing.Optional[HealthClient] = None
+        self._internal: typing.Optional[InternalClient] = None
         self._link: typing.Optional[LinkClient] = None
         self._maishiv: typing.Optional[MaishivClient] = None
         self._ocr: typing.Optional[OcrClient] = None
@@ -132,6 +134,14 @@ class SoferAI:
 
             self._health = HealthClient(client_wrapper=self._client_wrapper)
         return self._health
+
+    @property
+    def internal(self):
+        if self._internal is None:
+            from .internal.client import InternalClient
+
+            self._internal = InternalClient(client_wrapper=self._client_wrapper)
+        return self._internal
 
     @property
     def link(self):
@@ -259,6 +269,7 @@ class AsyncSoferAI:
         self._batch_transcribe: typing.Optional[AsyncBatchTranscribeClient] = None
         self._categories: typing.Optional[AsyncCategoriesClient] = None
         self._health: typing.Optional[AsyncHealthClient] = None
+        self._internal: typing.Optional[AsyncInternalClient] = None
         self._link: typing.Optional[AsyncLinkClient] = None
         self._maishiv: typing.Optional[AsyncMaishivClient] = None
         self._ocr: typing.Optional[AsyncOcrClient] = None
@@ -298,6 +309,14 @@ class AsyncSoferAI:
 
             self._health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         return self._health
+
+    @property
+    def internal(self):
+        if self._internal is None:
+            from .internal.client import AsyncInternalClient
+
+            self._internal = AsyncInternalClient(client_wrapper=self._client_wrapper)
+        return self._internal
 
     @property
     def link(self):
