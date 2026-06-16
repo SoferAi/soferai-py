@@ -3,6 +3,7 @@
 import typing
 
 import pydantic
+
 from ...core.pydantic_utilities import UniversalBaseModel
 from .title_update_mode import TitleUpdateMode
 
