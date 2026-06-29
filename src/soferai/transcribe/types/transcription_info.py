@@ -18,6 +18,11 @@ class TranscriptionInfo(UniversalBaseModel):
     ID of the transcription
     """
 
+    client_item_id: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Caller-defined per-item identifier for batch items. This is `null` for single transcriptions and for batch items submitted without a `client_item_id`.
+    """
+
     title: str = pydantic.Field()
     """
     Title of the transcription
@@ -30,7 +35,7 @@ class TranscriptionInfo(UniversalBaseModel):
 
     primary_language: Language = pydantic.Field()
     """
-    The primary language of the audio content, which can be English (en), Hebrew (he), or Yiddish (yi).
+    The primary language of the audio content, which can be English (en), Hebrew (he), Yiddish (yi), or French (fr).
     """
 
     hebrew_word_format: typing.List[LettersLanguage] = pydantic.Field()
@@ -42,9 +47,9 @@ class TranscriptionInfo(UniversalBaseModel):
     Transliterated Hebrew words are surrounded by <i> tags in the response text.
     """
 
-    num_speakers: int = pydantic.Field()
+    num_speakers: typing.Optional[int] = pydantic.Field(default=None)
     """
-    Number of speakers in the audio. If more than 1, then speaker labeling is enabled (a pro feature).
+    Number of speakers in the audio. This can be `null` while auto-detection is pending or if no count was determined.
     """
 
     status: Status = pydantic.Field()
