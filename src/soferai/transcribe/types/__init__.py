@@ -8,6 +8,8 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from .batch_audio_source import BatchAudioSource
     from .batch_file_content_type import BatchFileContentType
+    from .batch_file_create_from_rss_request import BatchFileCreateFromRssRequest
+    from .batch_file_create_from_rss_response import BatchFileCreateFromRssResponse
     from .batch_file_detail import BatchFileDetail
     from .batch_file_metadata import BatchFileMetadata
     from .batch_file_status import BatchFileStatus
@@ -18,6 +20,7 @@ if typing.TYPE_CHECKING:
     from .batch_status import BatchStatus
     from .batch_status_response import BatchStatusResponse
     from .batch_transcription_request import BatchTranscriptionRequest
+    from .batch_transcription_request_info import BatchTranscriptionRequestInfo
     from .batch_transcription_response import BatchTranscriptionResponse
     from .language import Language
     from .letters_language import LettersLanguage
@@ -31,9 +34,14 @@ if typing.TYPE_CHECKING:
     from .transcription_request import TranscriptionRequest
     from .transcription_request_info import TranscriptionRequestInfo
     from .transcription_summary import TranscriptionSummary
+    from .transcription_translation_request import TranscriptionTranslationRequest
+    from .transcription_translation_segment import TranscriptionTranslationSegment
+    from .transcription_translation_status import TranscriptionTranslationStatus
 _dynamic_imports: typing.Dict[str, str] = {
     "BatchAudioSource": ".batch_audio_source",
     "BatchFileContentType": ".batch_file_content_type",
+    "BatchFileCreateFromRssRequest": ".batch_file_create_from_rss_request",
+    "BatchFileCreateFromRssResponse": ".batch_file_create_from_rss_response",
     "BatchFileDetail": ".batch_file_detail",
     "BatchFileMetadata": ".batch_file_metadata",
     "BatchFileStatus": ".batch_file_status",
@@ -44,6 +52,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchStatus": ".batch_status",
     "BatchStatusResponse": ".batch_status_response",
     "BatchTranscriptionRequest": ".batch_transcription_request",
+    "BatchTranscriptionRequestInfo": ".batch_transcription_request_info",
     "BatchTranscriptionResponse": ".batch_transcription_response",
     "Language": ".language",
     "LettersLanguage": ".letters_language",
@@ -57,6 +66,9 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TranscriptionRequest": ".transcription_request",
     "TranscriptionRequestInfo": ".transcription_request_info",
     "TranscriptionSummary": ".transcription_summary",
+    "TranscriptionTranslationRequest": ".transcription_translation_request",
+    "TranscriptionTranslationSegment": ".transcription_translation_segment",
+    "TranscriptionTranslationStatus": ".transcription_translation_status",
 }
 
 
@@ -84,6 +96,8 @@ def __dir__():
 __all__ = [
     "BatchAudioSource",
     "BatchFileContentType",
+    "BatchFileCreateFromRssRequest",
+    "BatchFileCreateFromRssResponse",
     "BatchFileDetail",
     "BatchFileMetadata",
     "BatchFileStatus",
@@ -94,6 +108,7 @@ __all__ = [
     "BatchStatus",
     "BatchStatusResponse",
     "BatchTranscriptionRequest",
+    "BatchTranscriptionRequestInfo",
     "BatchTranscriptionResponse",
     "Language",
     "LettersLanguage",
@@ -107,4 +122,7 @@ __all__ = [
     "TranscriptionRequest",
     "TranscriptionRequestInfo",
     "TranscriptionSummary",
+    "TranscriptionTranslationRequest",
+    "TranscriptionTranslationSegment",
+    "TranscriptionTranslationStatus",
 ]
