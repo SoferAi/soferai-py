@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .language import Language
 from .letters_language import LettersLanguage
@@ -36,6 +35,7 @@ class TranscriptionRequestInfo(UniversalBaseModel):
     - en: English
     - he: Hebrew
     - yi: Yiddish
+    - fr: French
     """
 
     hebrew_word_format: typing.Optional[typing.List[LettersLanguage]] = pydantic.Field(default=None)
@@ -50,7 +50,12 @@ class TranscriptionRequestInfo(UniversalBaseModel):
 
     num_speakers: typing.Optional[int] = pydantic.Field(default=None)
     """
-    Expected number of speakers in the audio. Default is 1. If a number more than 1 is passed, it will be used for speaker labeling (a pro feature).
+    Expected number of speakers in the audio. Default is 1. This field is mutually exclusive with `auto_detect_speakers`. If a number more than 1 is passed, it will be used for speaker labeling and adds **$0.30/hour**.
+    """
+
+    auto_detect_speakers: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Automatically detect the number of speakers in the audio. This field is mutually exclusive with `num_speakers`. If both are provided, the API returns a 400 error. Auto-detection adds **$0.30/hour**.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
