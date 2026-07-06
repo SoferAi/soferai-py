@@ -5,6 +5,7 @@ import typing
 import uuid
 
 import pydantic
+
 from ...core.pydantic_utilities import UniversalBaseModel
 from .ocr_translation_page import OcrTranslationPage
 
