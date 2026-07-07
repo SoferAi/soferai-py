@@ -15,7 +15,7 @@ class OcrPage(UniversalBaseModel):
 
     content: typing.Optional[str] = pydantic.Field(default=None)
     """
-    OCR output for the page (Markdown).
+    OCR output for the page (HTML).
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
