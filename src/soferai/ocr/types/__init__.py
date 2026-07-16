@@ -10,11 +10,17 @@ if typing.TYPE_CHECKING:
     from .ocr_job_response import OcrJobResponse
     from .ocr_job_status import OcrJobStatus
     from .ocr_page import OcrPage
+    from .ocr_translation_page import OcrTranslationPage
+    from .ocr_translation_request import OcrTranslationRequest
+    from .ocr_translation_status import OcrTranslationStatus
 _dynamic_imports: typing.Dict[str, str] = {
     "OcrJobCreateRequest": ".ocr_job_create_request",
     "OcrJobResponse": ".ocr_job_response",
     "OcrJobStatus": ".ocr_job_status",
     "OcrPage": ".ocr_page",
+    "OcrTranslationPage": ".ocr_translation_page",
+    "OcrTranslationRequest": ".ocr_translation_request",
+    "OcrTranslationStatus": ".ocr_translation_status",
 }
 
 
@@ -39,4 +45,12 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["OcrJobCreateRequest", "OcrJobResponse", "OcrJobStatus", "OcrPage"]
+__all__ = [
+    "OcrJobCreateRequest",
+    "OcrJobResponse",
+    "OcrJobStatus",
+    "OcrPage",
+    "OcrTranslationPage",
+    "OcrTranslationRequest",
+    "OcrTranslationStatus",
+]
