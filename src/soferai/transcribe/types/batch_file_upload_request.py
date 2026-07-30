@@ -14,7 +14,7 @@ class BatchFileUploadRequest(UniversalBaseModel):
     """
     Upload a manifest of audio URLs for standard mode batch processing.
     Use either `json_items` (JSON array) or `jsonl` (newline-delimited), not both.
-    Maximum 500 audio sources per manifest.
+    Maximum 500 audio sources per manifest. Each item can optionally include a `client_item_id`, which must be unique within the manifest. If you need higher limits, contact support@sofer.ai.
     """
 
     content_type: BatchFileContentType = pydantic.Field()
@@ -24,12 +24,12 @@ class BatchFileUploadRequest(UniversalBaseModel):
 
     json_items: typing.Optional[typing.List[BatchManifestAudioSource]] = pydantic.Field(default=None)
     """
-    **For JSON format.** Array of audio sources to transcribe (max 500).
+    **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
     """
 
     jsonl: typing.Optional[str] = pydantic.Field(default=None)
     """
-    **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+    **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
     
     Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
     """
