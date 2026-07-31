@@ -6,8 +6,14 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .types import AudioChunk, TranscriptChunk
-_dynamic_imports: typing.Dict[str, str] = {"AudioChunk": ".types", "TranscriptChunk": ".types"}
+    from .auto_generate_title_request import AutoGenerateTitleRequest
+    from .auto_generate_title_response import AutoGenerateTitleResponse
+    from .title_update_mode import TitleUpdateMode
+_dynamic_imports: typing.Dict[str, str] = {
+    "AutoGenerateTitleRequest": ".auto_generate_title_request",
+    "AutoGenerateTitleResponse": ".auto_generate_title_response",
+    "TitleUpdateMode": ".title_update_mode",
+}
 
 
 def __getattr__(attr_name: str) -> typing.Any:
@@ -31,4 +37,4 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["AudioChunk", "TranscriptChunk"]
+__all__ = ["AutoGenerateTitleRequest", "AutoGenerateTitleResponse", "TitleUpdateMode"]
