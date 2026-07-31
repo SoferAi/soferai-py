@@ -8,6 +8,7 @@ from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawOcrClient, RawOcrClient
 from .types.ocr_job_response import OcrJobResponse
 from .types.ocr_job_status import OcrJobStatus
+from .types.ocr_translation_status import OcrTranslationStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -36,7 +37,6 @@ class OcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OcrJobResponse:
         """
@@ -58,9 +58,6 @@ class OcrClient:
 
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
-
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -86,7 +83,6 @@ class OcrClient:
             file_name=file_name,
             content_type=content_type,
             file_kind=file_kind,
-            model=model,
             request_options=request_options,
         )
         return _response.data
@@ -127,6 +123,113 @@ class OcrClient:
         _response = self._raw_client.get_ocr_job(job_id, request_options=request_options)
         return _response.data
 
+    def create_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OcrTranslationStatus:
+        """
+        Start or refresh a whole-document OCR translation.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : typing.Optional[str]
+            Translation target mode. Use "auto" to translate Hebrew pages to English and English pages to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate translated pages even when cached pages are current.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OcrTranslationStatus
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.ocr.create_ocr_translation(
+            job_id=uuid.UUID(
+                "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+            ),
+        )
+        """
+        _response = self._raw_client.create_ocr_translation(
+            job_id,
+            target_mode=target_mode,
+            translation_style=translation_style,
+            force=force,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OcrTranslationStatus:
+        """
+        Get OCR translation status and translated text for each page.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : str
+            Translation target mode (auto, en, or he).
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OcrTranslationStatus
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.ocr.get_ocr_translation(
+            job_id=uuid.UUID(
+                "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+            ),
+            target_mode="target_mode",
+        )
+        """
+        _response = self._raw_client.get_ocr_translation(
+            job_id, target_mode, translation_style=translation_style, request_options=request_options
+        )
+        return _response.data
+
 
 class AsyncOcrClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -151,7 +254,6 @@ class AsyncOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> OcrJobResponse:
         """
@@ -173,9 +275,6 @@ class AsyncOcrClient:
 
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
-
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -209,7 +308,6 @@ class AsyncOcrClient:
             file_name=file_name,
             content_type=content_type,
             file_kind=file_kind,
-            model=model,
             request_options=request_options,
         )
         return _response.data
@@ -255,4 +353,125 @@ class AsyncOcrClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.get_ocr_job(job_id, request_options=request_options)
+        return _response.data
+
+    async def create_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OcrTranslationStatus:
+        """
+        Start or refresh a whole-document OCR translation.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : typing.Optional[str]
+            Translation target mode. Use "auto" to translate Hebrew pages to English and English pages to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate translated pages even when cached pages are current.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OcrTranslationStatus
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.ocr.create_ocr_translation(
+                job_id=uuid.UUID(
+                    "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+                ),
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.create_ocr_translation(
+            job_id,
+            target_mode=target_mode,
+            translation_style=translation_style,
+            force=force,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> OcrTranslationStatus:
+        """
+        Get OCR translation status and translated text for each page.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : str
+            Translation target mode (auto, en, or he).
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        OcrTranslationStatus
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.ocr.get_ocr_translation(
+                job_id=uuid.UUID(
+                    "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+                ),
+                target_mode="target_mode",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_ocr_translation(
+            job_id, target_mode, translation_style=translation_style, request_options=request_options
+        )
         return _response.data
