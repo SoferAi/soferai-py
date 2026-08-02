@@ -14,6 +14,7 @@ from ..transcribe.errors.authentication_error import AuthenticationError
 from .errors.ocr_job_not_found import OcrJobNotFound
 from .types.ocr_job_response import OcrJobResponse
 from .types.ocr_job_status import OcrJobStatus
+from .types.ocr_translation_status import OcrTranslationStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -31,7 +32,6 @@ class RawOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[OcrJobResponse]:
         """
@@ -54,9 +54,6 @@ class RawOcrClient:
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -73,7 +70,6 @@ class RawOcrClient:
                 "file_name": file_name,
                 "content_type": content_type,
                 "file_kind": file_kind,
-                "model": model,
             },
             request_options=request_options,
             omit=OMIT,
@@ -137,6 +133,125 @@ class RawOcrClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def create_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[OcrTranslationStatus]:
+        """
+        Start or refresh a whole-document OCR translation.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : typing.Optional[str]
+            Translation target mode. Use "auto" to translate Hebrew pages to English and English pages to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate translated pages even when cached pages are current.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[OcrTranslationStatus]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/ocr/jobs/{jsonable_encoder(job_id)}/translations",
+            method="POST",
+            json={
+                "target_mode": target_mode,
+                "translation_style": translation_style,
+                "force": force,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OcrTranslationStatus,
+                    parse_obj_as(
+                        type_=OcrTranslationStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise OcrJobNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def get_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[OcrTranslationStatus]:
+        """
+        Get OCR translation status and translated text for each page.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : str
+            Translation target mode (auto, en, or he).
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[OcrTranslationStatus]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/ocr/jobs/{jsonable_encoder(job_id)}/translations/{jsonable_encoder(target_mode)}",
+            method="GET",
+            params={
+                "translation_style": translation_style,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OcrTranslationStatus,
+                    parse_obj_as(
+                        type_=OcrTranslationStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise OcrJobNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawOcrClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -150,7 +265,6 @@ class AsyncRawOcrClient:
         file_name: typing.Optional[str] = OMIT,
         content_type: typing.Optional[str] = OMIT,
         file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[OcrJobResponse]:
         """
@@ -173,9 +287,6 @@ class AsyncRawOcrClient:
         file_kind : typing.Optional[str]
             Optional hint for file type (pdf or image).
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
-
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -192,7 +303,6 @@ class AsyncRawOcrClient:
                 "file_name": file_name,
                 "content_type": content_type,
                 "file_kind": file_kind,
-                "model": model,
             },
             request_options=request_options,
             omit=OMIT,
@@ -243,6 +353,125 @@ class AsyncRawOcrClient:
                     OcrJobStatus,
                     parse_obj_as(
                         type_=OcrJobStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise OcrJobNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def create_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[OcrTranslationStatus]:
+        """
+        Start or refresh a whole-document OCR translation.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : typing.Optional[str]
+            Translation target mode. Use "auto" to translate Hebrew pages to English and English pages to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate translated pages even when cached pages are current.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[OcrTranslationStatus]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/ocr/jobs/{jsonable_encoder(job_id)}/translations",
+            method="POST",
+            json={
+                "target_mode": target_mode,
+                "translation_style": translation_style,
+                "force": force,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OcrTranslationStatus,
+                    parse_obj_as(
+                        type_=OcrTranslationStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise OcrJobNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def get_ocr_translation(
+        self,
+        job_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[OcrTranslationStatus]:
+        """
+        Get OCR translation status and translated text for each page.
+
+        Parameters
+        ----------
+        job_id : uuid.UUID
+            OCR job id.
+
+        target_mode : str
+            Translation target mode (auto, en, or he).
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[OcrTranslationStatus]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/ocr/jobs/{jsonable_encoder(job_id)}/translations/{jsonable_encoder(target_mode)}",
+            method="GET",
+            params={
+                "translation_style": translation_style,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    OcrTranslationStatus,
+                    parse_obj_as(
+                        type_=OcrTranslationStatus,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
