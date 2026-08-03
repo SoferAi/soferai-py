@@ -77,10 +77,14 @@ Create multiple transcriptions in a single batch request.
 
 **Choose a processing mode:**
 
-- **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+- **Express mode**: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.20/hour.
+- **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
 
 All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
+
+Speaker settings can be provided at the batch level or per item. Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`. If an item omits both speaker fields, it inherits the batch-level setting. If neither level provides a speaker setting, the transcription defaults to one speaker. Do not provide both `num_speakers` and `auto_detect_speakers` in the same object.
+
+If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
 </dd>
 </dl>
 </dd>
@@ -98,7 +102,7 @@ All files in the batch share the same transcription settings (model, language, e
 import uuid
 
 from soferai import SoferAI
-from soferai.transcribe import TranscriptionRequestInfo
+from soferai.transcribe import BatchTranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
@@ -107,7 +111,7 @@ client.batch_transcribe.create_batch_transcription(
     batch_file_id=uuid.UUID(
         "f1234567-89ab-cdef-0123-456789abcdef",
     ),
-    info=TranscriptionRequestInfo(
+    info=BatchTranscriptionRequestInfo(
         model="v1",
         primary_language="en",
         hebrew_word_format=["en", "he"],
@@ -131,7 +135,11 @@ client.batch_transcribe.create_batch_transcription(
 <dl>
 <dd>
 
-**info:** `TranscriptionRequestInfo` — Transcription settings applied to all files in the batch (model, language, etc.)
+**info:** `BatchTranscriptionRequestInfo` 
+
+Transcription settings applied to all files in the batch (model, language, etc.).
+
+Batch-level speaker settings are defaults. Per-item `num_speakers` or `auto_detect_speakers` settings in `audio_sources` or a batch manifest take precedence for that item.
     
 </dd>
 </dl>
@@ -142,8 +150,8 @@ client.batch_transcribe.create_batch_transcription(
 **processing_mode:** `typing.Optional[ProcessingMode]` 
 
 Choose how the batch is processed:
-- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
-- `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
+- `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour. If you need higher limits, contact support@sofer.ai.
+- `express`: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.20/hour.
     
 </dd>
 </dl>
@@ -167,7 +175,11 @@ Get this by calling [Upload Batch Manifest File](/api-reference/batch-transcribe
 
 **For express mode only.** List of audio URLs to transcribe (max 10).
 
-Each item needs an `audio_url` and can optionally include a `title`.
+Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`.
+
+If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
     
 </dd>
 </dl>
@@ -176,14 +188,6 @@ Each item needs an `audio_url` and can optionally include a `title`.
 <dd>
 
 **batch_title:** `typing.Optional[str]` — Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**batch_id:** `typing.Optional[uuid.UUID]` — Custom UUID for this batch. Auto-generated if not provided.
     
 </dd>
 </dl>
@@ -221,7 +225,7 @@ Upload a batch manifest containing audio URLs for standard mode batch processing
 1. Upload your manifest here to get a `batch_file_id`
 2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 </dd>
 </dl>
 </dd>
@@ -243,7 +247,7 @@ client = SoferAI(
 )
 client.batch_transcribe.upload_batch_file(
     content_type="jsonl",
-    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2"}',
+    jsonl='{"audio_url": "https://example.com/shiur1.mp3", "title": "Shiur 1", "client_item_id": "shiur_1"}\n{"audio_url": "https://example.com/shiur2.mp3", "title": "Shiur 2", "client_item_id": "shiur_2"}',
 )
 
 ```
@@ -268,7 +272,7 @@ client.batch_transcribe.upload_batch_file(
 <dl>
 <dd>
 
-**json_items:** `typing.Optional[typing.Sequence[BatchManifestAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500).
+**json_items:** `typing.Optional[typing.Sequence[BatchManifestAudioSource]]` — **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
     
 </dd>
 </dl>
@@ -278,7 +282,7 @@ client.batch_transcribe.upload_batch_file(
 
 **jsonl:** `typing.Optional[str]` 
 
-**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+**For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
 Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
     
@@ -289,6 +293,113 @@ Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 <dd>
 
 **metadata:** `typing.Optional[BatchFileMetadata]` — Optional title and description for this manifest
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">create_batch_file_from_rss</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a standard-mode batch manifest from a podcast RSS feed.
+
+The feed is fetched and parsed for podcast episode audio enclosures. Each episode with an audio enclosure becomes one manifest item with `audio_url`, title, and a stable `client_item_id`. The returned `batch_file_id` can be used in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`.
+
+By default, this imports up to the standard batch manifest limit. Use `limit` to import fewer episodes. If the feed has more episodes than one manifest can hold, call this endpoint again with the previous response's `next_offset`.
+
+Need to find the RSS URL for a podcast? Try the [RSS.com Podcast RSS Feed Finder](https://rss.com/tools/find-my-feed/) and use the feed URL it returns.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from soferai import SoferAI
+from soferai.transcribe import BatchFileMetadata
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.create_batch_file_from_rss(
+    rss_url="https://example.com/podcast/feed.xml",
+    limit=100,
+    offset=0,
+    metadata=BatchFileMetadata(
+        title="Weekly Parsha Podcast",
+        description="Imported from RSS",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**rss_url:** `str` — Public RSS feed URL to fetch and parse for podcast episode audio enclosures.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `typing.Optional[int]` — Optional maximum number of episodes to import. Defaults to the standard batch manifest limit.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `typing.Optional[int]` — Number of podcast episode audio enclosures to skip before importing. Use `next_offset` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `typing.Optional[BatchFileMetadata]` — Optional title and description for this manifest. If omitted, the podcast title from the feed is used when available.
     
 </dd>
 </dl>
@@ -455,6 +566,8 @@ client.batch_transcribe.get_batch_file(
 <dd>
 
 Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
+
+If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
 </dd>
 </dl>
 </dd>
@@ -497,6 +610,93 @@ client.batch_transcribe.get_batch_status(
 <dd>
 
 **batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.batch_transcribe.<a href="src/soferai/batch_transcribe/client.py">get_batch_transcription_by_client_item_id</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resolve a batch item's `client_item_id` to the resulting transcription.
+
+`client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.batch_transcribe.get_batch_transcription_by_client_item_id(
+    batch_id=uuid.UUID(
+        "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    ),
+    client_item_id="shiur_1",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**batch_id:** `uuid.UUID` — The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**client_item_id:** `str` — The caller-defined client_item_id to resolve within this batch.
     
 </dd>
 </dl>
@@ -1251,53 +1451,6 @@ client.categories.get_category_transcriptions(
 </dl>
 </details>
 
-## Health
-<details><summary><code>client.health.<a href="src/soferai/health/client.py">get_health</a>()</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.health.get_health()
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Link
 <details><summary><code>client.link.<a href="src/soferai/link/client.py">extract</a>(...)</code></summary>
 <dl>
@@ -1583,191 +1736,6 @@ client.maishiv.remove_from_knowledge_base(
 <dd>
 
 **document_id:** `str` — ID of the document to remove from the knowledge base.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Ocr
-<details><summary><code>client.ocr.<a href="src/soferai/ocr/client.py">create_ocr_job</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create an OCR job for a file already uploaded to Supabase Storage.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.ocr.create_ocr_job(
-    storage_path="storage_path",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**storage_path:** `str` — Path to the uploaded file within the OCR storage bucket.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**job_id:** `typing.Optional[uuid.UUID]` — Optional job id. Provide this when you pre-allocate a storage path using the job id.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**file_name:** `typing.Optional[str]` — Original file name.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**content_type:** `typing.Optional[str]` — MIME type of the uploaded file (e.g., application/pdf, image/png).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**file_kind:** `typing.Optional[str]` — Optional hint for file type (pdf or image).
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**model:** `typing.Optional[str]` — OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.ocr.<a href="src/soferai/ocr/client.py">get_ocr_job</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get OCR job status and extracted text for each page.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.ocr.get_ocr_job(
-    job_id=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**job_id:** `uuid.UUID` — OCR job id.
     
 </dd>
 </dl>
@@ -2256,6 +2224,195 @@ client.transcribe.get_transcription(
 </dl>
 </details>
 
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">create_transcription_translation</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Start a background paragraph-level translation for a completed transcription
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.create_transcription_translation(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `uuid.UUID` — ID of the transcription to translate.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_mode:** `typing.Optional[str]` — Translation target. Use auto to translate Hebrew/Yiddish/Aramaic-heavy segments to English and English-heavy segments to Hebrew.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**translation_style:** `typing.Optional[str]` — Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**force:** `typing.Optional[bool]` — Regenerate the translation even if cached segments already exist.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">get_transcription_translation</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get paragraph-level translation status and translated segments for a transcription
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+import uuid
+
+from soferai import SoferAI
+
+client = SoferAI(
+    api_key="YOUR_API_KEY",
+)
+client.transcribe.get_transcription_translation(
+    transcription_id=uuid.UUID(
+        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+    ),
+    target_mode="target_mode",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**transcription_id:** `uuid.UUID` — ID of the transcription.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**target_mode:** `str` — Translation target mode. Use auto, en, or he.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**translation_style:** `typing.Optional[str]` — Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.transcribe.<a href="src/soferai/transcribe/client.py">list_transcriptions</a>()</code></summary>
 <dl>
 <dd>
@@ -2300,166 +2457,6 @@ client.transcribe.list_transcriptions()
 
 <dl>
 <dd>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-## Transformations
-<details><summary><code>client.transformations.<a href="src/soferai/transformations/client.py">generate_summary</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generate a Markdown summary for a transcription. If a summary already exists, it is returned.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transformations.generate_summary(
-    transcription_id_=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-    transcription_id=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**transcription_id_:** `uuid.UUID` — ID of the transcription to summarize
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**transcription_id:** `uuid.UUID` — ID of the transcription to summarize
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.transformations.<a href="src/soferai/transformations/client.py">get_summary</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get the Markdown summary for a transcription if it exists.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-import uuid
-
-from soferai import SoferAI
-
-client = SoferAI(
-    api_key="YOUR_API_KEY",
-)
-client.transformations.get_summary(
-    transcription_id=uuid.UUID(
-        "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
-    ),
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**transcription_id:** `uuid.UUID` — ID of the transcription to fetch summary for
-    
-</dd>
-</dl>
 
 <dl>
 <dd>
