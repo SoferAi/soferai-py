@@ -14,13 +14,10 @@ if typing.TYPE_CHECKING:
     from .balance.client import AsyncBalanceClient, BalanceClient
     from .batch_transcribe.client import AsyncBatchTranscribeClient, BatchTranscribeClient
     from .categories.client import AsyncCategoriesClient, CategoriesClient
-    from .health.client import AsyncHealthClient, HealthClient
     from .link.client import AsyncLinkClient, LinkClient
     from .maishiv.client import AsyncMaishivClient, MaishivClient
-    from .ocr.client import AsyncOcrClient, OcrClient
     from .timestamps.client import AsyncTimestampsClient, TimestampsClient
     from .transcribe.client import AsyncTranscribeClient, TranscribeClient
-    from .transformations.client import AsyncTransformationsClient, TransformationsClient
     from .utils.client import AsyncUtilsClient, UtilsClient
 
 
@@ -92,13 +89,10 @@ class SoferAI:
         self._balance: typing.Optional[BalanceClient] = None
         self._batch_transcribe: typing.Optional[BatchTranscribeClient] = None
         self._categories: typing.Optional[CategoriesClient] = None
-        self._health: typing.Optional[HealthClient] = None
         self._link: typing.Optional[LinkClient] = None
         self._maishiv: typing.Optional[MaishivClient] = None
-        self._ocr: typing.Optional[OcrClient] = None
         self._timestamps: typing.Optional[TimestampsClient] = None
         self._transcribe: typing.Optional[TranscribeClient] = None
-        self._transformations: typing.Optional[TransformationsClient] = None
         self._utils: typing.Optional[UtilsClient] = None
 
     @property
@@ -126,14 +120,6 @@ class SoferAI:
         return self._categories
 
     @property
-    def health(self):
-        if self._health is None:
-            from .health.client import HealthClient
-
-            self._health = HealthClient(client_wrapper=self._client_wrapper)
-        return self._health
-
-    @property
     def link(self):
         if self._link is None:
             from .link.client import LinkClient
@@ -150,14 +136,6 @@ class SoferAI:
         return self._maishiv
 
     @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import OcrClient
-
-            self._ocr = OcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
-
-    @property
     def timestamps(self):
         if self._timestamps is None:
             from .timestamps.client import TimestampsClient
@@ -172,14 +150,6 @@ class SoferAI:
 
             self._transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
-
-    @property
-    def transformations(self):
-        if self._transformations is None:
-            from .transformations.client import TransformationsClient
-
-            self._transformations = TransformationsClient(client_wrapper=self._client_wrapper)
-        return self._transformations
 
     @property
     def utils(self):
@@ -258,13 +228,10 @@ class AsyncSoferAI:
         self._balance: typing.Optional[AsyncBalanceClient] = None
         self._batch_transcribe: typing.Optional[AsyncBatchTranscribeClient] = None
         self._categories: typing.Optional[AsyncCategoriesClient] = None
-        self._health: typing.Optional[AsyncHealthClient] = None
         self._link: typing.Optional[AsyncLinkClient] = None
         self._maishiv: typing.Optional[AsyncMaishivClient] = None
-        self._ocr: typing.Optional[AsyncOcrClient] = None
         self._timestamps: typing.Optional[AsyncTimestampsClient] = None
         self._transcribe: typing.Optional[AsyncTranscribeClient] = None
-        self._transformations: typing.Optional[AsyncTransformationsClient] = None
         self._utils: typing.Optional[AsyncUtilsClient] = None
 
     @property
@@ -292,14 +259,6 @@ class AsyncSoferAI:
         return self._categories
 
     @property
-    def health(self):
-        if self._health is None:
-            from .health.client import AsyncHealthClient
-
-            self._health = AsyncHealthClient(client_wrapper=self._client_wrapper)
-        return self._health
-
-    @property
     def link(self):
         if self._link is None:
             from .link.client import AsyncLinkClient
@@ -316,14 +275,6 @@ class AsyncSoferAI:
         return self._maishiv
 
     @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import AsyncOcrClient
-
-            self._ocr = AsyncOcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
-
-    @property
     def timestamps(self):
         if self._timestamps is None:
             from .timestamps.client import AsyncTimestampsClient
@@ -338,14 +289,6 @@ class AsyncSoferAI:
 
             self._transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
-
-    @property
-    def transformations(self):
-        if self._transformations is None:
-            from .transformations.client import AsyncTransformationsClient
-
-            self._transformations = AsyncTransformationsClient(client_wrapper=self._client_wrapper)
-        return self._transformations
 
     @property
     def utils(self):
