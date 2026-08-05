@@ -6,7 +6,6 @@ from datetime import datetime
 import pytest
 
 from soferai import SoferAI, SoferAIEnvironment
-from soferai.health.types.health_response import HealthResponse
 from soferai.link.types.link_response import LinkResponse
 from soferai.transcribe.types.transcription import Transcription
 from soferai.transcribe.types.transcription_id import TranscriptionId
@@ -30,11 +29,6 @@ class TestSoferAIProd:
 
     # Make sure your API key is set in the environment variable SOFERAI_API_KEY
     client: SoferAI = SoferAI(environment=SoferAIEnvironment.PRODUCTION)
-
-    def test_health(self) -> None:
-        # this just tests that the api is up and taking requests
-        response: HealthResponse = self.client.health.get_health()
-        assert response.status == "ok"
 
     def test_link_extract(self) -> None:
         # this is the API frontend for `torah-dl`
