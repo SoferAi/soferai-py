@@ -9,9 +9,9 @@ from ...core.pydantic_utilities import UniversalBaseModel
 from .batch_file_status import BatchFileStatus
 
 
-class BatchFileUploadResponse(UniversalBaseModel):
+class BatchFileCreateFromRssResponse(UniversalBaseModel):
     """
-    Response after uploading a batch manifest.
+    Response after creating a batch manifest from a podcast RSS feed.
     """
 
     batch_file_id: uuid.UUID = pydantic.Field()
@@ -21,7 +21,7 @@ class BatchFileUploadResponse(UniversalBaseModel):
 
     item_count: int = pydantic.Field()
     """
-    Number of audio sources in the manifest
+    Number of audio sources imported into this manifest
     """
 
     size_bytes: int = pydantic.Field()
@@ -47,6 +47,26 @@ class BatchFileUploadResponse(UniversalBaseModel):
     validation_errors: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """
     If status is `INVALID`, lists what's wrong with the manifest
+    """
+
+    offset: int = pydantic.Field()
+    """
+    Number of audio enclosures skipped before this import started
+    """
+
+    limit: int = pydantic.Field()
+    """
+    Maximum number of audio enclosures requested for this import
+    """
+
+    has_more: bool = pydantic.Field()
+    """
+    Whether the feed contains more audio enclosures after this page
+    """
+
+    next_offset: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Offset to pass to import the next page. Omitted when `has_more` is false.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
