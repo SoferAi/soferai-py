@@ -17,16 +17,19 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@v3
         with:
-          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+          client-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
-      - uses: CondeNast/conventional-pull-request-action@v0.2.0
+      - name: Validate PR title
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        with:
-          # to override config-conventional rules, specify a relative path to your rules module, actions/checkout is required for this setting!
-          # commitlintRulesPath: './commitlint.rules.js' # default: undefined
-          # if the PR contains a single commit, fail if the commit message and the PR title do not match
-          commitTitleMatch: 'true' # default: 'true'
-          # if you squash merge PRs and enabled "Default to PR title for squash merge commits", you can disable all linting of commits
-          ignoreCommits: 'true' # default: 'false'
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          PR_TITLE=$(gh pr view ${{ github.event.pull_request.number }} --json title -q .title --repo "$GITHUB_REPOSITORY")
+          echo "PR title: $PR_TITLE"
+          if ! echo "$PR_TITLE" | grep -qE '^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\([a-z0-9-]+\))?!?: .+'; then
+            echo "Error: PR title does not conform to the conventional commit spec"
+            echo "Expected format: type(scope): subject"
+            echo "Examples: feat(fern): add new endpoint, fix: resolve null pointer, chore: update deps"
+            exit 1
+          fi
