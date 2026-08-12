@@ -30,7 +30,7 @@ jobs:
       id: generate-token
       uses: actions/create-github-app-token@v3
       with:
-        client-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+        app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
         private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
     - uses: googleapis/release-please-action@v4
