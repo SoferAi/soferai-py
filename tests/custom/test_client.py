@@ -18,7 +18,7 @@ from soferai.transcribe.types.transcription_request_info import (
 
 @pytest.mark.incremental
 @pytest.mark.skipif(
-    condition=os.getenv("SOFERAI_API_KEY") is None,
+    condition=not os.getenv("SOFERAI_API_KEY"),
     reason="This is a test for the production environment, and requires a valid API key",
 )
 @pytest.mark.skipif(
