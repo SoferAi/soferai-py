@@ -1,6 +1,5 @@
 name: ci
 
-
 "on": [push]
 
 env:
@@ -29,7 +28,7 @@ jobs:
             gh pr edit --title "$NEW_TITLE"
           fi
 
-  lint:
+  lint-format:
     runs-on: ubuntu-24.04
     steps:
       - name: Generate a token
@@ -56,47 +55,16 @@ jobs:
       - name: Lint
         run: uv run ruff check . --fix
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore(lint): fix linting errors"
-
-  format:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Generate a token
-        id: generate-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
-
-      - name: Checkout repo
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ steps.generate-token.outputs.token }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
       - name: Format
         run: uv run ruff format .
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: "chore(fmt): format code"
-
+          commit_message: "chore(lint): fix linting and format code"
 
   test_client:
-    needs: [lint, format]
+    needs: [lint-format]
     runs-on: ubuntu-24.04
     env:
       SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
@@ -117,7 +85,7 @@ jobs:
         run: uv run pytest -vvv -s -rP --disable-warnings .
 
   test_platforms:
-    needs: [lint, format]
+    needs: [lint-format]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
