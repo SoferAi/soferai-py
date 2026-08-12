@@ -10,13 +10,14 @@ from contextlib import asynccontextmanager, contextmanager
 from random import random
 
 import httpx
+from httpx._types import RequestFiles
+
 from .file import File, convert_file_dict_to_httpx_tuples
 from .force_multipart import FORCE_MULTIPART
 from .jsonable_encoder import jsonable_encoder
 from .query_encoder import encode_query
 from .remove_none_from_dict import remove_none_from_dict
 from .request_options import RequestOptions
-from httpx._types import RequestFiles
 
 INITIAL_RETRY_DELAY_SECONDS = 0.5
 MAX_RETRY_DELAY_SECONDS = 10
