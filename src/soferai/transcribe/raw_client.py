@@ -19,6 +19,7 @@ from .types.transcription_id import TranscriptionId
 from .types.transcription_info import TranscriptionInfo
 from .types.transcription_request_info import TranscriptionRequestInfo
 from .types.transcription_summary import TranscriptionSummary
+from .types.transcription_translation_status import TranscriptionTranslationStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -202,6 +203,129 @@ class RawTranscribeClient:
                     Transcription,
                     parse_obj_as(
                         type_=Transcription,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise TranscriptionNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def create_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TranscriptionTranslationStatus]:
+        """
+        Start a background paragraph-level translation for a completed transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription to translate.
+
+        target_mode : typing.Optional[str]
+            Translation target. Use auto to translate Hebrew/Yiddish/Aramaic-heavy segments to English and English-heavy segments to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate the translation even if cached segments already exist.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TranscriptionTranslationStatus]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/{jsonable_encoder(transcription_id)}/translations",
+            method="POST",
+            json={
+                "target_mode": target_mode,
+                "translation_style": translation_style,
+                "force": force,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionTranslationStatus,
+                    parse_obj_as(
+                        type_=TranscriptionTranslationStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise TranscriptionNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def get_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[TranscriptionTranslationStatus]:
+        """
+        Get paragraph-level translation status and translated segments for a transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription.
+
+        target_mode : str
+            Translation target mode. Use auto, en, or he.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TranscriptionTranslationStatus]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/{jsonable_encoder(transcription_id)}/translations/{jsonable_encoder(target_mode)}",
+            method="GET",
+            params={
+                "translation_style": translation_style,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionTranslationStatus,
+                    parse_obj_as(
+                        type_=TranscriptionTranslationStatus,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -435,6 +559,129 @@ class AsyncRawTranscribeClient:
                     Transcription,
                     parse_obj_as(
                         type_=Transcription,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise TranscriptionNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def create_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TranscriptionTranslationStatus]:
+        """
+        Start a background paragraph-level translation for a completed transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription to translate.
+
+        target_mode : typing.Optional[str]
+            Translation target. Use auto to translate Hebrew/Yiddish/Aramaic-heavy segments to English and English-heavy segments to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate the translation even if cached segments already exist.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TranscriptionTranslationStatus]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/{jsonable_encoder(transcription_id)}/translations",
+            method="POST",
+            json={
+                "target_mode": target_mode,
+                "translation_style": translation_style,
+                "force": force,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionTranslationStatus,
+                    parse_obj_as(
+                        type_=TranscriptionTranslationStatus,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise TranscriptionNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def get_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[TranscriptionTranslationStatus]:
+        """
+        Get paragraph-level translation status and translated segments for a transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription.
+
+        target_mode : str
+            Translation target mode. Use auto, en, or he.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TranscriptionTranslationStatus]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/{jsonable_encoder(transcription_id)}/translations/{jsonable_encoder(target_mode)}",
+            method="GET",
+            params={
+                "translation_style": translation_style,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionTranslationStatus,
+                    parse_obj_as(
+                        type_=TranscriptionTranslationStatus,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
