@@ -7,20 +7,22 @@ import pydantic
 
 from ...core.pydantic_utilities import UniversalBaseModel
 from .batch_audio_source import BatchAudioSource
+from .batch_transcription_request_info import BatchTranscriptionRequestInfo
 from .processing_mode import ProcessingMode
-from .transcription_request_info import TranscriptionRequestInfo
 
 
 class BatchTranscriptionRequest(UniversalBaseModel):
     """
     Request body for creating a batch transcription. Use either `batch_file_id` (standard mode) or `audio_sources` (express mode), not both.
+
+    Speaker settings can be provided at the batch level in `info` or per item in `audio_sources` / a batch manifest. Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings. If an item omits both speaker fields, it inherits the batch-level setting. If neither level provides a speaker setting, the transcription defaults to one speaker.
     """
 
     processing_mode: typing.Optional[ProcessingMode] = pydantic.Field(default=None)
     """
     Choose how the batch is processed:
-    - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
-    - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
+    - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
+    - `express`: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
     """
 
     batch_file_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
@@ -34,22 +36,23 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     """
     **For express mode only.** List of audio URLs to transcribe (max 10).
     
-    Each item needs an `audio_url` and can optionally include a `title`.
+    Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+    
+    Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`.
+    
+    If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
     """
 
-    info: TranscriptionRequestInfo = pydantic.Field()
+    info: BatchTranscriptionRequestInfo = pydantic.Field()
     """
-    Transcription settings applied to all files in the batch (model, language, etc.)
+    Transcription settings applied to all files in the batch (model, language, etc.).
+    
+    Batch-level speaker settings are defaults. Per-item `num_speakers` or `auto_detect_speakers` settings in `audio_sources` or a batch manifest take precedence for that item.
     """
 
     batch_title: typing.Optional[str] = pydantic.Field(default=None)
     """
     Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-    """
-
-    batch_id: typing.Optional[uuid.UUID] = pydantic.Field(default=None)
-    """
-    Custom UUID for this batch. Auto-generated if not provided.
     """
 
     model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
