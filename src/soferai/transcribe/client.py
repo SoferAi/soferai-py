@@ -11,6 +11,7 @@ from .types.transcription_id import TranscriptionId
 from .types.transcription_info import TranscriptionInfo
 from .types.transcription_request_info import TranscriptionRequestInfo
 from .types.transcription_summary import TranscriptionSummary
+from .types.transcription_translation_status import TranscriptionTranslationStatus
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -65,7 +66,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +75,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -188,6 +189,113 @@ class TranscribeClient:
         )
         return _response.data
 
+    def create_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TranscriptionTranslationStatus:
+        """
+        Start a background paragraph-level translation for a completed transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription to translate.
+
+        target_mode : typing.Optional[str]
+            Translation target. Use auto to translate Hebrew/Yiddish/Aramaic-heavy segments to English and English-heavy segments to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate the translation even if cached segments already exist.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionTranslationStatus
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.create_transcription_translation(
+            transcription_id=uuid.UUID(
+                "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+            ),
+        )
+        """
+        _response = self._raw_client.create_transcription_translation(
+            transcription_id,
+            target_mode=target_mode,
+            translation_style=translation_style,
+            force=force,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def get_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TranscriptionTranslationStatus:
+        """
+        Get paragraph-level translation status and translated segments for a transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription.
+
+        target_mode : str
+            Translation target mode. Use auto, en, or he.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionTranslationStatus
+
+        Examples
+        --------
+        import uuid
+
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.transcribe.get_transcription_translation(
+            transcription_id=uuid.UUID(
+                "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+            ),
+            target_mode="target_mode",
+        )
+        """
+        _response = self._raw_client.get_transcription_translation(
+            transcription_id, target_mode, translation_style=translation_style, request_options=request_options
+        )
+        return _response.data
+
     def list_transcriptions(
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> typing.List[TranscriptionSummary]:
@@ -265,7 +373,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -274,8 +382,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -407,6 +515,127 @@ class AsyncTranscribeClient:
         """
         _response = await self._raw_client.get_transcription(
             transcription_id, filter_hebrew_word_format=filter_hebrew_word_format, request_options=request_options
+        )
+        return _response.data
+
+    async def create_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        *,
+        target_mode: typing.Optional[str] = OMIT,
+        translation_style: typing.Optional[str] = OMIT,
+        force: typing.Optional[bool] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TranscriptionTranslationStatus:
+        """
+        Start a background paragraph-level translation for a completed transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription to translate.
+
+        target_mode : typing.Optional[str]
+            Translation target. Use auto to translate Hebrew/Yiddish/Aramaic-heavy segments to English and English-heavy segments to Hebrew.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        force : typing.Optional[bool]
+            Regenerate the translation even if cached segments already exist.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionTranslationStatus
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.create_transcription_translation(
+                transcription_id=uuid.UUID(
+                    "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+                ),
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.create_transcription_translation(
+            transcription_id,
+            target_mode=target_mode,
+            translation_style=translation_style,
+            force=force,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def get_transcription_translation(
+        self,
+        transcription_id: uuid.UUID,
+        target_mode: str,
+        *,
+        translation_style: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> TranscriptionTranslationStatus:
+        """
+        Get paragraph-level translation status and translated segments for a transcription
+
+        Parameters
+        ----------
+        transcription_id : uuid.UUID
+            ID of the transcription.
+
+        target_mode : str
+            Translation target mode. Use auto, en, or he.
+
+        translation_style : typing.Optional[str]
+            Translation style id. Built-ins include learning_english and sefer_hebrew; saved user guides use custom:<style_id>.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        TranscriptionTranslationStatus
+
+        Examples
+        --------
+        import asyncio
+        import uuid
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.transcribe.get_transcription_translation(
+                transcription_id=uuid.UUID(
+                    "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
+                ),
+                target_mode="target_mode",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.get_transcription_translation(
+            transcription_id, target_mode, translation_style=translation_style, request_options=request_options
         )
         return _response.data
 
