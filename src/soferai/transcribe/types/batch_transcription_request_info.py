@@ -6,10 +6,9 @@ import pydantic
 from ...core.pydantic_utilities import UniversalBaseModel
 from .language import Language
 from .letters_language import LettersLanguage
-from .transcription_id import TranscriptionId
 
 
-class TranscriptionRequestInfo(UniversalBaseModel):
+class BatchTranscriptionRequestInfo(UniversalBaseModel):
     model: typing.Optional[str] = pydantic.Field(default=None)
     """
     Model to be used for the transcription. Default is "v1".
@@ -17,11 +16,6 @@ class TranscriptionRequestInfo(UniversalBaseModel):
     Priced at 1.50 USD per hour of audio transcribed.
     - v0: Not generally recommended. Cheaper, but less accurate.
     Priced at 1.00 USD per hour.
-    """
-
-    id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
-    """
-    ID of the transcription. If passed, it will be set as the ID. If not, a UUID will be generated.
     """
 
     title: typing.Optional[str] = pydantic.Field(default=None)
