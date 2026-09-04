@@ -7,15 +7,17 @@ from importlib import import_module
 
 if typing.TYPE_CHECKING:
     from .authentication_error import AuthenticationError
+    from .batch_item_not_found import BatchItemNotFound
     from .batch_not_found import BatchNotFound
+    from .insufficient_api_balance import InsufficientApiBalance
     from .rate_limit_error import RateLimitError
-    from .transcription_failed import TranscriptionFailed
     from .transcription_not_found import TranscriptionNotFound
 _dynamic_imports: typing.Dict[str, str] = {
     "AuthenticationError": ".authentication_error",
+    "BatchItemNotFound": ".batch_item_not_found",
     "BatchNotFound": ".batch_not_found",
+    "InsufficientApiBalance": ".insufficient_api_balance",
     "RateLimitError": ".rate_limit_error",
-    "TranscriptionFailed": ".transcription_failed",
     "TranscriptionNotFound": ".transcription_not_found",
 }
 
@@ -41,4 +43,11 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["AuthenticationError", "BatchNotFound", "RateLimitError", "TranscriptionFailed", "TranscriptionNotFound"]
+__all__ = [
+    "AuthenticationError",
+    "BatchItemNotFound",
+    "BatchNotFound",
+    "InsufficientApiBalance",
+    "RateLimitError",
+    "TranscriptionNotFound",
+]

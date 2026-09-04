@@ -179,7 +179,12 @@ class RawTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -412,7 +417,12 @@ class AsyncRawTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

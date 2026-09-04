@@ -8,6 +8,8 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from .batch_audio_source import BatchAudioSource
     from .batch_file_content_type import BatchFileContentType
+    from .batch_file_create_from_rss_request import BatchFileCreateFromRssRequest
+    from .batch_file_create_from_rss_response import BatchFileCreateFromRssResponse
     from .batch_file_detail import BatchFileDetail
     from .batch_file_metadata import BatchFileMetadata
     from .batch_file_status import BatchFileStatus
@@ -17,10 +19,13 @@ if typing.TYPE_CHECKING:
     from .batch_manifest_audio_source import BatchManifestAudioSource
     from .batch_status import BatchStatus
     from .batch_status_response import BatchStatusResponse
+    from .batch_summary import BatchSummary
     from .batch_transcription_request import BatchTranscriptionRequest
+    from .batch_transcription_request_info import BatchTranscriptionRequestInfo
     from .batch_transcription_response import BatchTranscriptionResponse
     from .language import Language
     from .letters_language import LettersLanguage
+    from .list_batch_file_batches_response import ListBatchFileBatchesResponse
     from .list_batch_files_response import ListBatchFilesResponse
     from .processing_mode import ProcessingMode
     from .status import Status
@@ -34,6 +39,8 @@ if typing.TYPE_CHECKING:
 _dynamic_imports: typing.Dict[str, str] = {
     "BatchAudioSource": ".batch_audio_source",
     "BatchFileContentType": ".batch_file_content_type",
+    "BatchFileCreateFromRssRequest": ".batch_file_create_from_rss_request",
+    "BatchFileCreateFromRssResponse": ".batch_file_create_from_rss_response",
     "BatchFileDetail": ".batch_file_detail",
     "BatchFileMetadata": ".batch_file_metadata",
     "BatchFileStatus": ".batch_file_status",
@@ -43,10 +50,13 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchManifestAudioSource": ".batch_manifest_audio_source",
     "BatchStatus": ".batch_status",
     "BatchStatusResponse": ".batch_status_response",
+    "BatchSummary": ".batch_summary",
     "BatchTranscriptionRequest": ".batch_transcription_request",
+    "BatchTranscriptionRequestInfo": ".batch_transcription_request_info",
     "BatchTranscriptionResponse": ".batch_transcription_response",
     "Language": ".language",
     "LettersLanguage": ".letters_language",
+    "ListBatchFileBatchesResponse": ".list_batch_file_batches_response",
     "ListBatchFilesResponse": ".list_batch_files_response",
     "ProcessingMode": ".processing_mode",
     "Status": ".status",
@@ -84,6 +94,8 @@ def __dir__():
 __all__ = [
     "BatchAudioSource",
     "BatchFileContentType",
+    "BatchFileCreateFromRssRequest",
+    "BatchFileCreateFromRssResponse",
     "BatchFileDetail",
     "BatchFileMetadata",
     "BatchFileStatus",
@@ -93,10 +105,13 @@ __all__ = [
     "BatchManifestAudioSource",
     "BatchStatus",
     "BatchStatusResponse",
+    "BatchSummary",
     "BatchTranscriptionRequest",
+    "BatchTranscriptionRequestInfo",
     "BatchTranscriptionResponse",
     "Language",
     "LettersLanguage",
+    "ListBatchFileBatchesResponse",
     "ListBatchFilesResponse",
     "ProcessingMode",
     "Status",
