@@ -116,6 +116,9 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [lint.per-file-ignores]
 "tests/*" = ["S101", "RUF012", "E712", "E711"]
+# Fern-generated SDK: API parameter names like `format` and `type` shadow builtins
+# by contract and cannot be renamed without breaking the public client surface.
+"src/**" = ["A002"]
 
 
 [format]
