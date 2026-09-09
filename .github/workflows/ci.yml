@@ -27,6 +27,8 @@ jobs:
             YEAR=${BASH_REMATCH[3]}
             NEW_TITLE="feat(fern): regeneration $MONTH $DAY, $YEAR"
             gh pr edit --title "$NEW_TITLE"
+          elif [[ $PR_TITLE == "SDK regeneration" ]]; then
+            gh pr edit --title "feat(fern): SDK regeneration"
           fi
 
   lint:
@@ -53,15 +55,19 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
-      - name: Lint
-        run: uv run ruff check . --fix
+      - name: Lint (auto-fix)
+        run: uv run ruff check . --fix || true
 
-      - name: Commit changes
+      - name: Commit auto-fixes
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(lint): fix linting errors"
 
+      - name: Lint (gate)
+        run: uv run ruff check .
+
   format:
+    needs: [lint]
     runs-on: ubuntu-24.04
     steps:
       - name: Generate a token
@@ -96,7 +102,7 @@ jobs:
 
 
   test_client:
-    needs: [lint, format]
+    needs: [format]
     runs-on: ubuntu-24.04
     env:
       SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
@@ -117,7 +123,7 @@ jobs:
         run: uv run pytest -vvv -s -rP --disable-warnings .
 
   test_platforms:
-    needs: [lint, format]
+    needs: [format]
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]

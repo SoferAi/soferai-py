@@ -10,6 +10,10 @@ name: conventional-pr
 jobs:
   lint-pr:
     runs-on: ubuntu-latest
+    # Fern and other bots open PRs with fixed titles ("SDK regeneration") that
+    # are not Conventional Commits. Bot-authored PRs are validated by their own
+    # pipelines; skip the title gate for them rather than blocking regeneration.
+    if: ${{ !endsWith(github.actor, '[bot]') }}
     steps:
       - uses: actions/checkout@v6
 
