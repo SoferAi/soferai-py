@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .timestamp import Timestamp
 from .transcription_info import TranscriptionInfo
@@ -12,7 +11,7 @@ from .transcription_info import TranscriptionInfo
 class Transcription(UniversalBaseModel):
     text: str = pydantic.Field()
     """
-    This field contains the transcription text. If the `primary_language` is English and only one `hebrew_word_format` is specified, the text will be in English with Hebrew words in the specified format. If multiple `hebrew_word_format` options are set, Hebrew words will appear in both formats, with the English transliteration in <i>Italics</i>. If the primary language is Hebrew, the text will be in Hebrew.
+    This field contains the transcription text. For English-primary audio, the default `hybrid` format uses italicized English transliteration for short Hebrew phrases and Hebrew letters for longer phrases. With only `en` or `he`, Hebrew words use that format. If both `en` and `he` are requested, Hebrew words appear in both formats with the English transliteration in <i>italics</i>. If the primary language is Hebrew, the text is in Hebrew. If the primary language is French, the text is in French with Hebrew, Yiddish, and Aramaic words in Hebrew letters.
     """
 
     timestamps: typing.Optional[typing.List[Timestamp]] = pydantic.Field(default=None)
