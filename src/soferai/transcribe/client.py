@@ -65,7 +65,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -74,8 +74,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -159,7 +159,12 @@ class TranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -265,7 +270,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -274,8 +279,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -374,7 +379,12 @@ class AsyncTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
