@@ -20,9 +20,9 @@ def test_query_encoding_deep_object_arrays() -> None:
         ("objects[key]", "foo"),
         ("objects[value]", "bar"),
     ]
-    assert encode_query(
-        {"users": [{"name": "string", "tags": ["string"]}, {"name": "string2", "tags": ["string2", "string3"]}]}
-    ) == [
+    assert encode_query({
+        "users": [{"name": "string", "tags": ["string"]}, {"name": "string2", "tags": ["string2", "string3"]}]
+    }) == [
         ("users[name]", "string"),
         ("users[tags]", "string"),
         ("users[name]", "string2"),
