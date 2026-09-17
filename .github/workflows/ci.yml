@@ -31,6 +31,12 @@ jobs:
 
   lint:
     runs-on: ubuntu-24.04
+    # The run is triggered by a push to the branch. The steps below commit and push
+    # their auto-fixes back with the Sofer.Ai bot token, and a push made with that
+    # token starts a new `ci` run on the auto-commit. Skip the jobs on those runs so
+    # the workflow cannot re-trigger itself; the content push that produced them is
+    # still fully verified.
+    if: github.actor != 'sofer-ai-bot[bot]'
     steps:
       - name: Generate a token
         id: generate-token
@@ -63,6 +69,9 @@ jobs:
 
   format:
     runs-on: ubuntu-24.04
+    # Same guard as `lint`: this job pushes a format commit with the Sofer.Ai bot
+    # token, which would otherwise start another `ci` run for the auto-commit.
+    if: github.actor != 'sofer-ai-bot[bot]'
     steps:
       - name: Generate a token
         id: generate-token
