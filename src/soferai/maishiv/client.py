@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from .raw_client import AsyncRawMaishivClient, RawMaishivClient
 from .types.add_knowledge_base_document_response import AddKnowledgeBaseDocumentResponse
+from .types.knowledge_base_search_chunk import KnowledgeBaseSearchChunk
 from .types.remove_knowledge_base_document_response import RemoveKnowledgeBaseDocumentResponse
 
 # this is used as the default value for optional parameters
@@ -31,7 +32,9 @@ class MaishivClient:
         self, *, document_id: str, request_options: typing.Optional[RequestOptions] = None
     ) -> AddKnowledgeBaseDocumentResponse:
         """
-        Add a document to the knowledge base.
+        Add an owned document to the user's knowledge base, shared with the website.
+        All accounts can add unlimited documents; website subscription tiers do not
+        impose a knowledge-base file-count limit. API retrievals are billed separately.
 
         Parameters
         ----------
@@ -82,6 +85,47 @@ class MaishivClient:
         client.maishiv.list_knowledge_base_docs()
         """
         _response = self._raw_client.list_knowledge_base_docs(request_options=request_options)
+        return _response.data
+
+    def search_knowledge_base_chunks(
+        self, *, query: str, n: typing.Optional[int] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[KnowledgeBaseSearchChunk]:
+        """
+        Retrieve up to n passages from the authenticated user's Maishiv knowledge base,
+        without generating an answer. Only owned documents are returned. Times are
+        nullable seconds and are provided only for a unique, reliable audio alignment.
+        Each completed search costs $0.01 from the user's prepaid API balance,
+        regardless of n or the number of matches. Zero-match searches are billable.
+        Invalid requests, missing knowledge bases, and failed searches are not charged.
+        Website subscriptions and daily question allowances do not apply.
+
+        Parameters
+        ----------
+        query : str
+            Search query, trimmed before use; must contain 1 to 8000 characters after trimming.
+
+        n : typing.Optional[int]
+            Maximum passages to return; an integer from 1 to 50. Defaults to 10 when omitted or null.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[KnowledgeBaseSearchChunk]
+
+        Examples
+        --------
+        from soferai import SoferAI
+
+        client = SoferAI(
+            api_key="YOUR_API_KEY",
+        )
+        client.maishiv.search_knowledge_base_chunks(
+            query="query",
+        )
+        """
+        _response = self._raw_client.search_knowledge_base_chunks(query=query, n=n, request_options=request_options)
         return _response.data
 
     def remove_from_knowledge_base(
@@ -136,7 +180,9 @@ class AsyncMaishivClient:
         self, *, document_id: str, request_options: typing.Optional[RequestOptions] = None
     ) -> AddKnowledgeBaseDocumentResponse:
         """
-        Add a document to the knowledge base.
+        Add an owned document to the user's knowledge base, shared with the website.
+        All accounts can add unlimited documents; website subscription tiers do not
+        impose a knowledge-base file-count limit. API retrievals are billed separately.
 
         Parameters
         ----------
@@ -207,6 +253,57 @@ class AsyncMaishivClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.list_knowledge_base_docs(request_options=request_options)
+        return _response.data
+
+    async def search_knowledge_base_chunks(
+        self, *, query: str, n: typing.Optional[int] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[KnowledgeBaseSearchChunk]:
+        """
+        Retrieve up to n passages from the authenticated user's Maishiv knowledge base,
+        without generating an answer. Only owned documents are returned. Times are
+        nullable seconds and are provided only for a unique, reliable audio alignment.
+        Each completed search costs $0.01 from the user's prepaid API balance,
+        regardless of n or the number of matches. Zero-match searches are billable.
+        Invalid requests, missing knowledge bases, and failed searches are not charged.
+        Website subscriptions and daily question allowances do not apply.
+
+        Parameters
+        ----------
+        query : str
+            Search query, trimmed before use; must contain 1 to 8000 characters after trimming.
+
+        n : typing.Optional[int]
+            Maximum passages to return; an integer from 1 to 50. Defaults to 10 when omitted or null.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[KnowledgeBaseSearchChunk]
+
+        Examples
+        --------
+        import asyncio
+
+        from soferai import AsyncSoferAI
+
+        client = AsyncSoferAI(
+            api_key="YOUR_API_KEY",
+        )
+
+
+        async def main() -> None:
+            await client.maishiv.search_knowledge_base_chunks(
+                query="query",
+            )
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.search_knowledge_base_chunks(
+            query=query, n=n, request_options=request_options
+        )
         return _response.data
 
     async def remove_from_knowledge_base(
