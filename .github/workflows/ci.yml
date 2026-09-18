@@ -8,7 +8,7 @@ env:
 
 jobs:
   rename-pr:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       pull-requests: write
 
@@ -30,7 +30,7 @@ jobs:
           fi
 
   lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Generate a token
         id: generate-token
@@ -62,7 +62,7 @@ jobs:
           commit_message: "chore(lint): fix linting errors"
 
   format:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Generate a token
         id: generate-token
@@ -97,7 +97,7 @@ jobs:
 
   test_client:
     needs: [lint, format]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
     steps:
