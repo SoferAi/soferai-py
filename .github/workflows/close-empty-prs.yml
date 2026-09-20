@@ -15,32 +15,62 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const prs = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open'
-            });
-
-            for (const pr of prs.data) {
-              const files = await github.rest.pulls.listFiles({
+            const closePr = async (pr, body) => {
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: pr.number
+                issue_number: pr.number,
+                body: body
               });
 
-              if (files.data.length === 0) {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr.number,
-                  body: 'This PR is being closed automatically because it contains no changes.'
-                });
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                state: 'closed'
+              });
+            };
 
-                await github.rest.pulls.update({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: pr.number,
-                  state: 'closed'
-                });
+            const openPrs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const closed = new Set();
+
+            // Every Fern regeneration PR is a full snapshot of the generated SDK
+            // against one OpenAPI spec revision, so when more than one is open only
+            // the newest can ever be merged: the older ones are superseded. They are
+            // generated on a schedule and never harvested, so without this they
+            // accumulate indefinitely and hide the state of the publish path.
+            const fernPrs = openPrs
+              .filter((pr) => pr.user && pr.user.login === 'fern-api[bot]')
+              .sort((a, b) => b.number - a.number);
+
+            for (const pr of fernPrs.slice(1)) {
+              await closePr(
+                pr,
+                `This PR is being closed automatically because it is superseded by the newer SDK regeneration PR #${fernPrs[0].number}.`
+              );
+              closed.add(pr.number);
+            }
+
+            // Any remaining PR that contains no changes is useless, so close it too.
+            for (const pr of openPrs) {
+              if (closed.has(pr.number)) {
+                continue;
+              }
+
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100
+              });
+
+              if (files.length === 0) {
+                await closePr(pr, 'This PR is being closed automatically because it contains no changes.');
               }
             }
