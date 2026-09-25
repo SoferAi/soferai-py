@@ -11,7 +11,13 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..transcribe.errors.authentication_error import AuthenticationError
 from ..transcribe.errors.rate_limit_error import RateLimitError
+from .errors.insufficient_knowledge_base_search_balance import InsufficientKnowledgeBaseSearchBalance
+from .errors.invalid_knowledge_base_search import InvalidKnowledgeBaseSearch
+from .errors.knowledge_base_search_provider_error import KnowledgeBaseSearchProviderError
+from .errors.knowledge_base_search_timeout import KnowledgeBaseSearchTimeout
+from .errors.knowledge_base_search_unavailable import KnowledgeBaseSearchUnavailable
 from .types.add_knowledge_base_document_response import AddKnowledgeBaseDocumentResponse
+from .types.knowledge_base_search_chunk import KnowledgeBaseSearchChunk
 from .types.remove_knowledge_base_document_response import RemoveKnowledgeBaseDocumentResponse
 
 # this is used as the default value for optional parameters
@@ -26,7 +32,9 @@ class RawMaishivClient:
         self, *, document_id: str, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[AddKnowledgeBaseDocumentResponse]:
         """
-        Add a document to the knowledge base.
+        Add an owned document to the user's knowledge base, shared with the website.
+        All accounts can add unlimited documents; website subscription tiers do not
+        impose a knowledge-base file-count limit. API retrievals are billed separately.
 
         Parameters
         ----------
@@ -107,6 +115,117 @@ class RawMaishivClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def search_knowledge_base_chunks(
+        self, *, query: str, n: typing.Optional[int] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[typing.List[KnowledgeBaseSearchChunk]]:
+        """
+        Retrieve up to n passages from the authenticated user's Maishiv knowledge base,
+        without generating an answer. Only owned documents are returned. Times are
+        nullable seconds and are provided only for a unique, reliable audio alignment.
+        Each completed search costs $0.01 from the user's prepaid API balance,
+        regardless of n or the number of matches. Zero-match searches are billable.
+        Invalid requests, missing knowledge bases, and failed searches are not charged.
+        Website subscriptions and daily question allowances do not apply.
+
+        Parameters
+        ----------
+        query : str
+            Search query, trimmed before use; must contain 1 to 8000 characters after trimming.
+
+        n : typing.Optional[int]
+            Maximum passages to return; an integer from 1 to 50. Defaults to 10 when omitted or null.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[typing.List[KnowledgeBaseSearchChunk]]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/maishiv/knowledge-base/search",
+            method="POST",
+            json={
+                "query": query,
+                "n": n,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[KnowledgeBaseSearchChunk],
+                    parse_obj_as(
+                        type_=typing.List[KnowledgeBaseSearchChunk],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            if _response.status_code == 400:
+                raise InvalidKnowledgeBaseSearch(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 402:
+                raise InsufficientKnowledgeBaseSearchBalance(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 502:
+                raise KnowledgeBaseSearchProviderError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise KnowledgeBaseSearchUnavailable(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 504:
+                raise KnowledgeBaseSearchTimeout(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
     def remove_from_knowledge_base(
         self, document_id: str, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[RemoveKnowledgeBaseDocumentResponse]:
@@ -158,7 +277,9 @@ class AsyncRawMaishivClient:
         self, *, document_id: str, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[AddKnowledgeBaseDocumentResponse]:
         """
-        Add a document to the knowledge base.
+        Add an owned document to the user's knowledge base, shared with the website.
+        All accounts can add unlimited documents; website subscription tiers do not
+        impose a knowledge-base file-count limit. API retrievals are billed separately.
 
         Parameters
         ----------
@@ -234,6 +355,117 @@ class AsyncRawMaishivClient:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
                 raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def search_knowledge_base_chunks(
+        self, *, query: str, n: typing.Optional[int] = OMIT, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[typing.List[KnowledgeBaseSearchChunk]]:
+        """
+        Retrieve up to n passages from the authenticated user's Maishiv knowledge base,
+        without generating an answer. Only owned documents are returned. Times are
+        nullable seconds and are provided only for a unique, reliable audio alignment.
+        Each completed search costs $0.01 from the user's prepaid API balance,
+        regardless of n or the number of matches. Zero-match searches are billable.
+        Invalid requests, missing knowledge bases, and failed searches are not charged.
+        Website subscriptions and daily question allowances do not apply.
+
+        Parameters
+        ----------
+        query : str
+            Search query, trimmed before use; must contain 1 to 8000 characters after trimming.
+
+        n : typing.Optional[int]
+            Maximum passages to return; an integer from 1 to 50. Defaults to 10 when omitted or null.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[typing.List[KnowledgeBaseSearchChunk]]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/maishiv/knowledge-base/search",
+            method="POST",
+            json={
+                "query": query,
+                "n": n,
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    typing.List[KnowledgeBaseSearchChunk],
+                    parse_obj_as(
+                        type_=typing.List[KnowledgeBaseSearchChunk],  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            if _response.status_code == 400:
+                raise InvalidKnowledgeBaseSearch(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 402:
+                raise InsufficientKnowledgeBaseSearchBalance(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 502:
+                raise KnowledgeBaseSearchProviderError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 503:
+                raise KnowledgeBaseSearchUnavailable(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 504:
+                raise KnowledgeBaseSearchTimeout(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
