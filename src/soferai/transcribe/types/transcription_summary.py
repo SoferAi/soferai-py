@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .status import Status
 from .transcription_id import TranscriptionId
