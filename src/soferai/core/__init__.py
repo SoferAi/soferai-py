@@ -77,6 +77,7 @@ def __dir__():
 
 
 __all__ = [
+    "IS_PYDANTIC_V2",
     "ApiError",
     "AsyncClientWrapper",
     "AsyncHttpClient",
@@ -86,7 +87,6 @@ __all__ = [
     "File",
     "HttpClient",
     "HttpResponse",
-    "IS_PYDANTIC_V2",
     "RequestOptions",
     "SyncClientWrapper",
     "UniversalBaseModel",
