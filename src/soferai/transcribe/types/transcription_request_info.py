@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .language import Language
 from .letters_language import LettersLanguage
