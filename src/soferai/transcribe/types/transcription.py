@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .timestamp import Timestamp
 from .transcription_info import TranscriptionInfo
