@@ -12,12 +12,10 @@ from .environment import SoferAIEnvironment
 
 if typing.TYPE_CHECKING:
     from .balance.client import AsyncBalanceClient, BalanceClient
-    from .batch_transcribe.client import AsyncBatchTranscribeClient, BatchTranscribeClient
     from .categories.client import AsyncCategoriesClient, CategoriesClient
     from .health.client import AsyncHealthClient, HealthClient
     from .link.client import AsyncLinkClient, LinkClient
     from .maishiv.client import AsyncMaishivClient, MaishivClient
-    from .ocr.client import AsyncOcrClient, OcrClient
     from .timestamps.client import AsyncTimestampsClient, TimestampsClient
     from .transcribe.client import AsyncTranscribeClient, TranscribeClient
     from .transformations.client import AsyncTransformationsClient, TransformationsClient
@@ -90,12 +88,10 @@ class SoferAI:
             timeout=_defaulted_timeout,
         )
         self._balance: typing.Optional[BalanceClient] = None
-        self._batch_transcribe: typing.Optional[BatchTranscribeClient] = None
         self._categories: typing.Optional[CategoriesClient] = None
         self._health: typing.Optional[HealthClient] = None
         self._link: typing.Optional[LinkClient] = None
         self._maishiv: typing.Optional[MaishivClient] = None
-        self._ocr: typing.Optional[OcrClient] = None
         self._timestamps: typing.Optional[TimestampsClient] = None
         self._transcribe: typing.Optional[TranscribeClient] = None
         self._transformations: typing.Optional[TransformationsClient] = None
@@ -108,14 +104,6 @@ class SoferAI:
 
             self._balance = BalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
-
-    @property
-    def batch_transcribe(self):
-        if self._batch_transcribe is None:
-            from .batch_transcribe.client import BatchTranscribeClient
-
-            self._batch_transcribe = BatchTranscribeClient(client_wrapper=self._client_wrapper)
-        return self._batch_transcribe
 
     @property
     def categories(self):
@@ -148,14 +136,6 @@ class SoferAI:
 
             self._maishiv = MaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
-
-    @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import OcrClient
-
-            self._ocr = OcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
 
     @property
     def timestamps(self):
@@ -256,12 +236,10 @@ class AsyncSoferAI:
             timeout=_defaulted_timeout,
         )
         self._balance: typing.Optional[AsyncBalanceClient] = None
-        self._batch_transcribe: typing.Optional[AsyncBatchTranscribeClient] = None
         self._categories: typing.Optional[AsyncCategoriesClient] = None
         self._health: typing.Optional[AsyncHealthClient] = None
         self._link: typing.Optional[AsyncLinkClient] = None
         self._maishiv: typing.Optional[AsyncMaishivClient] = None
-        self._ocr: typing.Optional[AsyncOcrClient] = None
         self._timestamps: typing.Optional[AsyncTimestampsClient] = None
         self._transcribe: typing.Optional[AsyncTranscribeClient] = None
         self._transformations: typing.Optional[AsyncTransformationsClient] = None
@@ -274,14 +252,6 @@ class AsyncSoferAI:
 
             self._balance = AsyncBalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
-
-    @property
-    def batch_transcribe(self):
-        if self._batch_transcribe is None:
-            from .batch_transcribe.client import AsyncBatchTranscribeClient
-
-            self._batch_transcribe = AsyncBatchTranscribeClient(client_wrapper=self._client_wrapper)
-        return self._batch_transcribe
 
     @property
     def categories(self):
@@ -314,14 +284,6 @@ class AsyncSoferAI:
 
             self._maishiv = AsyncMaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
-
-    @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import AsyncOcrClient
-
-            self._ocr = AsyncOcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
 
     @property
     def timestamps(self):
