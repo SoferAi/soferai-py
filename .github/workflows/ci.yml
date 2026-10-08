@@ -27,6 +27,8 @@ jobs:
             YEAR=${BASH_REMATCH[3]}
             NEW_TITLE="feat(fern): regeneration $MONTH $DAY, $YEAR"
             gh pr edit --title "$NEW_TITLE"
+          elif [[ $PR_TITLE == "SDK regeneration" ]]; then
+            gh pr edit --title "feat(fern): sdk regeneration"
           fi
 
   lint:
