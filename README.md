@@ -37,7 +37,7 @@ Instantiate and use the client with the following:
 import uuid
 
 from soferai import SoferAI
-from soferai.transcribe import TranscriptionRequestInfo
+from soferai.transcribe import BatchTranscriptionRequestInfo
 
 client = SoferAI(
     api_key="YOUR_API_KEY",
@@ -46,7 +46,7 @@ client.batch_transcribe.create_batch_transcription(
     batch_file_id=uuid.UUID(
         "f1234567-89ab-cdef-0123-456789abcdef",
     ),
-    info=TranscriptionRequestInfo(
+    info=BatchTranscriptionRequestInfo(
         model="v1",
         primary_language="en",
         hebrew_word_format=["en", "he"],
@@ -66,7 +66,7 @@ import asyncio
 import uuid
 
 from soferai import AsyncSoferAI
-from soferai.transcribe import TranscriptionRequestInfo
+from soferai.transcribe import BatchTranscriptionRequestInfo
 
 client = AsyncSoferAI(
     api_key="YOUR_API_KEY",
@@ -78,7 +78,7 @@ async def main() -> None:
         batch_file_id=uuid.UUID(
             "f1234567-89ab-cdef-0123-456789abcdef",
         ),
-        info=TranscriptionRequestInfo(
+        info=BatchTranscriptionRequestInfo(
             model="v1",
             primary_language="en",
             hebrew_word_format=["en", "he"],

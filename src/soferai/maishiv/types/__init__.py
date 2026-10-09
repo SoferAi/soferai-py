@@ -8,11 +8,15 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from .add_knowledge_base_document_request import AddKnowledgeBaseDocumentRequest
     from .add_knowledge_base_document_response import AddKnowledgeBaseDocumentResponse
+    from .knowledge_base_search_chunk import KnowledgeBaseSearchChunk
     from .remove_knowledge_base_document_response import RemoveKnowledgeBaseDocumentResponse
+    from .search_knowledge_base_chunks_request import SearchKnowledgeBaseChunksRequest
 _dynamic_imports: typing.Dict[str, str] = {
     "AddKnowledgeBaseDocumentRequest": ".add_knowledge_base_document_request",
     "AddKnowledgeBaseDocumentResponse": ".add_knowledge_base_document_response",
+    "KnowledgeBaseSearchChunk": ".knowledge_base_search_chunk",
     "RemoveKnowledgeBaseDocumentResponse": ".remove_knowledge_base_document_response",
+    "SearchKnowledgeBaseChunksRequest": ".search_knowledge_base_chunks_request",
 }
 
 
@@ -37,4 +41,10 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["AddKnowledgeBaseDocumentRequest", "AddKnowledgeBaseDocumentResponse", "RemoveKnowledgeBaseDocumentResponse"]
+__all__ = [
+    "AddKnowledgeBaseDocumentRequest",
+    "AddKnowledgeBaseDocumentResponse",
+    "KnowledgeBaseSearchChunk",
+    "RemoveKnowledgeBaseDocumentResponse",
+    "SearchKnowledgeBaseChunksRequest",
+]

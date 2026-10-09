@@ -12,19 +12,23 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..transcribe.errors.authentication_error import AuthenticationError
+from ..transcribe.errors.batch_item_not_found import BatchItemNotFound
 from ..transcribe.errors.batch_not_found import BatchNotFound
 from ..transcribe.errors.rate_limit_error import RateLimitError
 from ..transcribe.types.batch_audio_source import BatchAudioSource
 from ..transcribe.types.batch_file_content_type import BatchFileContentType
+from ..transcribe.types.batch_file_create_from_rss_response import BatchFileCreateFromRssResponse
 from ..transcribe.types.batch_file_detail import BatchFileDetail
 from ..transcribe.types.batch_file_metadata import BatchFileMetadata
 from ..transcribe.types.batch_file_upload_response import BatchFileUploadResponse
 from ..transcribe.types.batch_manifest_audio_source import BatchManifestAudioSource
 from ..transcribe.types.batch_status_response import BatchStatusResponse
+from ..transcribe.types.batch_transcription_request_info import BatchTranscriptionRequestInfo
 from ..transcribe.types.batch_transcription_response import BatchTranscriptionResponse
+from ..transcribe.types.list_batch_file_batches_response import ListBatchFileBatchesResponse
 from ..transcribe.types.list_batch_files_response import ListBatchFilesResponse
 from ..transcribe.types.processing_mode import ProcessingMode
-from ..transcribe.types.transcription_request_info import TranscriptionRequestInfo
+from ..transcribe.types.transcription_info import TranscriptionInfo
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -37,12 +41,11 @@ class RawBatchTranscribeClient:
     def create_batch_transcription(
         self,
         *,
-        info: TranscriptionRequestInfo,
+        info: BatchTranscriptionRequestInfo,
         processing_mode: typing.Optional[ProcessingMode] = OMIT,
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[BatchTranscriptionResponse]:
         """
@@ -50,20 +53,26 @@ class RawBatchTranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Express mode**: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
+        Speaker settings can be provided at the batch level or per item. Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`. If an item omits both speaker fields, it inherits the batch-level setting. If neither level provides a speaker setting, the transcription defaults to one speaker. Do not provide both `num_speakers` and `auto_detect_speakers` in the same object.
+
+        If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
+
         Parameters
         ----------
-        info : TranscriptionRequestInfo
-            Transcription settings applied to all files in the batch (model, language, etc.)
+        info : BatchTranscriptionRequestInfo
+            Transcription settings applied to all files in the batch (model, language, etc.).
+
+            Batch-level speaker settings are defaults. Per-item `num_speakers` or `auto_detect_speakers` settings in `audio_sources` or a batch manifest take precedence for that item.
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
+            - `express`: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
@@ -73,13 +82,14 @@ class RawBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+            Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`.
+
+            If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -99,10 +109,9 @@ class RawBatchTranscribeClient:
                     object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
-                    object_=info, annotation=TranscriptionRequestInfo, direction="write"
+                    object_=info, annotation=BatchTranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
-                "batch_id": batch_id,
             },
             request_options=request_options,
             omit=OMIT,
@@ -142,7 +151,7 @@ class RawBatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -150,10 +159,10 @@ class RawBatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
@@ -189,6 +198,78 @@ class RawBatchTranscribeClient:
                     BatchFileUploadResponse,
                     parse_obj_as(
                         type_=BatchFileUploadResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def create_batch_file_from_rss(
+        self,
+        *,
+        rss_url: str,
+        limit: typing.Optional[int] = OMIT,
+        offset: typing.Optional[int] = OMIT,
+        metadata: typing.Optional[BatchFileMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[BatchFileCreateFromRssResponse]:
+        """
+        Create a standard-mode batch manifest from a podcast RSS feed.
+
+        The feed is fetched and parsed for podcast episode audio enclosures. Each episode with an audio enclosure becomes one manifest item with `audio_url`, title, and a stable `client_item_id`. The returned `batch_file_id` can be used in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`.
+
+        By default, this imports up to the standard batch manifest limit. Use `limit` to import fewer episodes. If the feed has more episodes than one manifest can hold, call this endpoint again with the previous response's `next_offset`.
+
+        Need to find the RSS URL for a podcast? Try the [RSS.com Podcast RSS Feed Finder](https://rss.com/tools/find-my-feed/) and use the feed URL it returns.
+
+        Parameters
+        ----------
+        rss_url : str
+            Public RSS feed URL to fetch and parse for podcast episode audio enclosures.
+
+        limit : typing.Optional[int]
+            Optional maximum number of episodes to import. Defaults to the standard batch manifest limit.
+
+        offset : typing.Optional[int]
+            Number of podcast episode audio enclosures to skip before importing. Use `next_offset` from the previous response to fetch the next page.
+
+        metadata : typing.Optional[BatchFileMetadata]
+            Optional title and description for this manifest. If omitted, the podcast title from the feed is used when available.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[BatchFileCreateFromRssResponse]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files/from-rss",
+            method="POST",
+            json={
+                "rss_url": rss_url,
+                "limit": limit,
+                "offset": offset,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=BatchFileMetadata, direction="write"
+                ),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    BatchFileCreateFromRssResponse,
+                    parse_obj_as(
+                        type_=BatchFileCreateFromRssResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -247,6 +328,8 @@ class RawBatchTranscribeClient:
         """
         Get details about a specific batch file manifest, including its validation status. Check this after uploading to ensure your manifest is valid before starting a batch.
 
+        To find batches already created from this manifest, use [List Batches For Manifest](/api-reference/batch-transcribe/list-batch-file-batches).
+
         Parameters
         ----------
         batch_file_id : uuid.UUID
@@ -285,11 +368,78 @@ class RawBatchTranscribeClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def list_batch_file_batches(
+        self,
+        batch_file_id: uuid.UUID,
+        *,
+        limit: typing.Optional[int] = None,
+        offset: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[ListBatchFileBatchesResponse]:
+        """
+        Find batches created from a specific uploaded manifest, newest first. Only manifests and batches owned by the authenticated user are returned.
+
+        Use `total_count` to check whether this manifest has ever been used to create a batch. An unused manifest returns `total_count: 0` and an empty `batches` list. A missing manifest or one owned by another user returns 404.
+
+        Each batch includes its current status and transcription counts. `RECEIVED` and `PROCESSING` indicate queued or active work; `COMPLETED` and `FAILED` indicate finished work. A completed batch can contain failed items. Use [Get Batch Status](/api-reference/batch-transcribe/get-batch-status) with a returned `batch_id` for individual transcription details.
+
+        Results match the exact `batch_file_id`, not other uploads with identical contents. This is a read-only lookup, not an atomic duplicate-submission guard.
+
+        Parameters
+        ----------
+        batch_file_id : uuid.UUID
+            The manifest ID returned by uploading a batch file or creating one from RSS.
+
+        limit : typing.Optional[int]
+            Number of batches per page. Defaults to 20; must be between 1 and 100.
+
+        offset : typing.Optional[int]
+            Number of batches to skip. Defaults to 0; must be non-negative.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[ListBatchFileBatchesResponse]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch-files/{jsonable_encoder(batch_file_id)}/batches",
+            method="GET",
+            params={
+                "limit": limit,
+                "offset": offset,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ListBatchFileBatchesResponse,
+                    parse_obj_as(
+                        type_=ListBatchFileBatchesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise BatchNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
     def get_batch_status(
         self, batch_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[BatchStatusResponse]:
         """
         Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
+
+        If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
 
         Parameters
         ----------
@@ -329,6 +479,62 @@ class RawBatchTranscribeClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    def get_batch_transcription_by_client_item_id(
+        self, batch_id: uuid.UUID, *, client_item_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[TranscriptionInfo]:
+        """
+        Resolve a batch item's `client_item_id` to the resulting transcription.
+
+        `client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+        The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+
+        Parameters
+        ----------
+        batch_id : uuid.UUID
+            The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+
+        client_item_id : str
+            The caller-defined client_item_id to resolve within this batch.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[TranscriptionInfo]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch/{jsonable_encoder(batch_id)}/items/by-client-item-id",
+            method="GET",
+            params={
+                "client_item_id": client_item_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionInfo,
+                    parse_obj_as(
+                        type_=TranscriptionInfo,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise BatchNotFound(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise BatchItemNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
 
 class AsyncRawBatchTranscribeClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -337,12 +543,11 @@ class AsyncRawBatchTranscribeClient:
     async def create_batch_transcription(
         self,
         *,
-        info: TranscriptionRequestInfo,
+        info: BatchTranscriptionRequestInfo,
         processing_mode: typing.Optional[ProcessingMode] = OMIT,
         batch_file_id: typing.Optional[uuid.UUID] = OMIT,
         audio_sources: typing.Optional[typing.Sequence[BatchAudioSource]] = OMIT,
         batch_title: typing.Optional[str] = OMIT,
-        batch_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[BatchTranscriptionResponse]:
         """
@@ -350,20 +555,26 @@ class AsyncRawBatchTranscribeClient:
 
         **Choose a processing mode:**
 
-        - **Express mode**: Transcriptions start immediately. Max 10 files. Higher cost. Pass `audio_sources` directly in the request. Pricing for v1 is $1.20/hour.
-        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $0.90/hour.
+        - **Express mode**: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
+        - **Standard mode**: Transcriptions processed within 24 hours. Max 500 files. Lower cost. First upload a manifest via [Upload Batch Manifest File](/api-reference/batch-transcribe/upload-batch-file), then pass the `batch_file_id` here. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
 
         All files in the batch share the same transcription settings (model, language, etc.) defined in `info`.
 
+        Speaker settings can be provided at the batch level or per item. Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`. If an item omits both speaker fields, it inherits the batch-level setting. If neither level provides a speaker setting, the transcription defaults to one speaker. Do not provide both `num_speakers` and `auto_detect_speakers` in the same object.
+
+        If you include a `client_item_id` on each item, it must be unique within the batch. You can later resolve a `client_item_id` back to the canonical transcription ID with [Get Batch Transcription By Client Item ID](/api-reference/batch-transcribe/get-batch-transcription-by-client-item-id).
+
         Parameters
         ----------
-        info : TranscriptionRequestInfo
-            Transcription settings applied to all files in the batch (model, language, etc.)
+        info : BatchTranscriptionRequestInfo
+            Transcription settings applied to all files in the batch (model, language, etc.).
+
+            Batch-level speaker settings are defaults. Per-item `num_speakers` or `auto_detect_speakers` settings in `audio_sources` or a batch manifest take precedence for that item.
 
         processing_mode : typing.Optional[ProcessingMode]
             Choose how the batch is processed:
-            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $0.90/hour.
-            - `express`: Higher cost, starts immediately. Max 10 files. Use with `audio_sources`. Pricing for v1 is $1.20/hour.
+            - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
+            - `express`: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
 
         batch_file_id : typing.Optional[uuid.UUID]
             **For standard mode only.** ID of a previously uploaded batch manifest.
@@ -373,13 +584,14 @@ class AsyncRawBatchTranscribeClient:
         audio_sources : typing.Optional[typing.Sequence[BatchAudioSource]]
             **For express mode only.** List of audio URLs to transcribe (max 10).
 
-            Each item needs an `audio_url` and can optionally include a `title`.
+            Each item needs an `audio_url` and can optionally include a `title`, `client_item_id`, `num_speakers`, or `auto_detect_speakers`.
+
+            Per-item `num_speakers` or `auto_detect_speakers` settings take precedence over the batch-level speaker settings in `info`.
+
+            If you provide `client_item_id`, it must be unique within the batch and can be used later to look up the resulting transcription.
 
         batch_title : typing.Optional[str]
             Default title prefix for transcriptions. Individual items can override this. Items without titles become "{batch_title} - Item 1", "{batch_title} - Item 2", etc.
-
-        batch_id : typing.Optional[uuid.UUID]
-            Custom UUID for this batch. Auto-generated if not provided.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -399,10 +611,9 @@ class AsyncRawBatchTranscribeClient:
                     object_=audio_sources, annotation=typing.Sequence[BatchAudioSource], direction="write"
                 ),
                 "info": convert_and_respect_annotation_metadata(
-                    object_=info, annotation=TranscriptionRequestInfo, direction="write"
+                    object_=info, annotation=BatchTranscriptionRequestInfo, direction="write"
                 ),
                 "batch_title": batch_title,
-                "batch_id": batch_id,
             },
             request_options=request_options,
             omit=OMIT,
@@ -442,7 +653,7 @@ class AsyncRawBatchTranscribeClient:
         1. Upload your manifest here to get a `batch_file_id`
         2. Use that ID in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`
 
-        The manifest is a list of audio sources (max 500), each with a URL and optional title. You can provide it as a JSON array or JSONL format.
+        The manifest is a list of audio sources (max 500), each with a URL and optional title or `client_item_id`. If you provide `client_item_id`, it must be unique within the manifest. You can provide it as a JSON array or JSONL format. If you need higher limits, contact support@sofer.ai.
 
         Parameters
         ----------
@@ -450,10 +661,10 @@ class AsyncRawBatchTranscribeClient:
             Format of your manifest data
 
         json_items : typing.Optional[typing.Sequence[BatchManifestAudioSource]]
-            **For JSON format.** Array of audio sources to transcribe (max 500).
+            **For JSON format.** Array of audio sources to transcribe (max 500). If you need higher limits, contact support@sofer.ai.
 
         jsonl : typing.Optional[str]
-            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines).
+            **For JSONL format.** One audio source per line as JSON, separated by newlines (max 500 lines). If you need higher limits, contact support@sofer.ai.
 
             Example: `{"audio_url": "https://..."}\n{"audio_url": "https://..."}`
 
@@ -489,6 +700,78 @@ class AsyncRawBatchTranscribeClient:
                     BatchFileUploadResponse,
                     parse_obj_as(
                         type_=BatchFileUploadResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def create_batch_file_from_rss(
+        self,
+        *,
+        rss_url: str,
+        limit: typing.Optional[int] = OMIT,
+        offset: typing.Optional[int] = OMIT,
+        metadata: typing.Optional[BatchFileMetadata] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[BatchFileCreateFromRssResponse]:
+        """
+        Create a standard-mode batch manifest from a podcast RSS feed.
+
+        The feed is fetched and parsed for podcast episode audio enclosures. Each episode with an audio enclosure becomes one manifest item with `audio_url`, title, and a stable `client_item_id`. The returned `batch_file_id` can be used in [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription) with `processing_mode: "standard"`.
+
+        By default, this imports up to the standard batch manifest limit. Use `limit` to import fewer episodes. If the feed has more episodes than one manifest can hold, call this endpoint again with the previous response's `next_offset`.
+
+        Need to find the RSS URL for a podcast? Try the [RSS.com Podcast RSS Feed Finder](https://rss.com/tools/find-my-feed/) and use the feed URL it returns.
+
+        Parameters
+        ----------
+        rss_url : str
+            Public RSS feed URL to fetch and parse for podcast episode audio enclosures.
+
+        limit : typing.Optional[int]
+            Optional maximum number of episodes to import. Defaults to the standard batch manifest limit.
+
+        offset : typing.Optional[int]
+            Number of podcast episode audio enclosures to skip before importing. Use `next_offset` from the previous response to fetch the next page.
+
+        metadata : typing.Optional[BatchFileMetadata]
+            Optional title and description for this manifest. If omitted, the podcast title from the feed is used when available.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[BatchFileCreateFromRssResponse]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v1/transcriptions/batch-files/from-rss",
+            method="POST",
+            json={
+                "rss_url": rss_url,
+                "limit": limit,
+                "offset": offset,
+                "metadata": convert_and_respect_annotation_metadata(
+                    object_=metadata, annotation=BatchFileMetadata, direction="write"
+                ),
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    BatchFileCreateFromRssResponse,
+                    parse_obj_as(
+                        type_=BatchFileCreateFromRssResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -547,6 +830,8 @@ class AsyncRawBatchTranscribeClient:
         """
         Get details about a specific batch file manifest, including its validation status. Check this after uploading to ensure your manifest is valid before starting a batch.
 
+        To find batches already created from this manifest, use [List Batches For Manifest](/api-reference/batch-transcribe/list-batch-file-batches).
+
         Parameters
         ----------
         batch_file_id : uuid.UUID
@@ -585,11 +870,78 @@ class AsyncRawBatchTranscribeClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
+    async def list_batch_file_batches(
+        self,
+        batch_file_id: uuid.UUID,
+        *,
+        limit: typing.Optional[int] = None,
+        offset: typing.Optional[int] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[ListBatchFileBatchesResponse]:
+        """
+        Find batches created from a specific uploaded manifest, newest first. Only manifests and batches owned by the authenticated user are returned.
+
+        Use `total_count` to check whether this manifest has ever been used to create a batch. An unused manifest returns `total_count: 0` and an empty `batches` list. A missing manifest or one owned by another user returns 404.
+
+        Each batch includes its current status and transcription counts. `RECEIVED` and `PROCESSING` indicate queued or active work; `COMPLETED` and `FAILED` indicate finished work. A completed batch can contain failed items. Use [Get Batch Status](/api-reference/batch-transcribe/get-batch-status) with a returned `batch_id` for individual transcription details.
+
+        Results match the exact `batch_file_id`, not other uploads with identical contents. This is a read-only lookup, not an atomic duplicate-submission guard.
+
+        Parameters
+        ----------
+        batch_file_id : uuid.UUID
+            The manifest ID returned by uploading a batch file or creating one from RSS.
+
+        limit : typing.Optional[int]
+            Number of batches per page. Defaults to 20; must be between 1 and 100.
+
+        offset : typing.Optional[int]
+            Number of batches to skip. Defaults to 0; must be non-negative.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[ListBatchFileBatchesResponse]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch-files/{jsonable_encoder(batch_file_id)}/batches",
+            method="GET",
+            params={
+                "limit": limit,
+                "offset": offset,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    ListBatchFileBatchesResponse,
+                    parse_obj_as(
+                        type_=ListBatchFileBatchesResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise BatchNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
     async def get_batch_status(
         self, batch_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[BatchStatusResponse]:
         """
         Check the progress of a batch transcription. Returns counts of completed, failed, and pending transcriptions, plus details for each individual transcription.
+
+        If a batch item was submitted with `client_item_id`, that value is echoed back in each transcription entry.
 
         Parameters
         ----------
@@ -620,6 +972,62 @@ class AsyncRawBatchTranscribeClient:
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 404:
                 raise BatchNotFound(headers=dict(_response.headers))
+            if _response.status_code == 401:
+                raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 429:
+                raise RateLimitError(headers=dict(_response.headers))
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def get_batch_transcription_by_client_item_id(
+        self, batch_id: uuid.UUID, *, client_item_id: str, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[TranscriptionInfo]:
+        """
+        Resolve a batch item's `client_item_id` to the resulting transcription.
+
+        `client_item_id` values are unique only within a batch, so this lookup is scoped by `batch_id`.
+
+        The response is a standard [TranscriptionInfo](/api-reference/transcribe/get-transcription-status) object. Its `id` field is the canonical transcription ID for the batch item.
+
+        Parameters
+        ----------
+        batch_id : uuid.UUID
+            The batch ID returned from [Create Batch Transcription](/api-reference/batch-transcribe/create-batch-transcription)
+
+        client_item_id : str
+            The caller-defined client_item_id to resolve within this batch.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[TranscriptionInfo]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v1/transcriptions/batch/{jsonable_encoder(batch_id)}/items/by-client-item-id",
+            method="GET",
+            params={
+                "client_item_id": client_item_id,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    TranscriptionInfo,
+                    parse_obj_as(
+                        type_=TranscriptionInfo,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 404:
+                raise BatchNotFound(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise BatchItemNotFound(headers=dict(_response.headers))
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
