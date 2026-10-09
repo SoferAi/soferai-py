@@ -6,7 +6,6 @@ import os
 import typing
 
 import httpx
-
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import SoferAIEnvironment
 
@@ -14,13 +13,14 @@ if typing.TYPE_CHECKING:
     from .balance.client import AsyncBalanceClient, BalanceClient
     from .batch_transcribe.client import AsyncBatchTranscribeClient, BatchTranscribeClient
     from .categories.client import AsyncCategoriesClient, CategoriesClient
+    from .documents.client import AsyncDocumentsClient, DocumentsClient
+    from .folders.client import AsyncFoldersClient, FoldersClient
     from .health.client import AsyncHealthClient, HealthClient
     from .link.client import AsyncLinkClient, LinkClient
     from .maishiv.client import AsyncMaishivClient, MaishivClient
-    from .ocr.client import AsyncOcrClient, OcrClient
     from .timestamps.client import AsyncTimestampsClient, TimestampsClient
     from .transcribe.client import AsyncTranscribeClient, TranscribeClient
-    from .transformations.client import AsyncTransformationsClient, TransformationsClient
+    from .translation_styles.client import AsyncTranslationStylesClient, TranslationStylesClient
     from .utils.client import AsyncUtilsClient, UtilsClient
 
 
@@ -92,19 +92,20 @@ class SoferAI:
         self._balance: typing.Optional[BalanceClient] = None
         self._batch_transcribe: typing.Optional[BatchTranscribeClient] = None
         self._categories: typing.Optional[CategoriesClient] = None
+        self._documents: typing.Optional[DocumentsClient] = None
+        self._folders: typing.Optional[FoldersClient] = None
         self._health: typing.Optional[HealthClient] = None
         self._link: typing.Optional[LinkClient] = None
         self._maishiv: typing.Optional[MaishivClient] = None
-        self._ocr: typing.Optional[OcrClient] = None
         self._timestamps: typing.Optional[TimestampsClient] = None
         self._transcribe: typing.Optional[TranscribeClient] = None
-        self._transformations: typing.Optional[TransformationsClient] = None
+        self._translation_styles: typing.Optional[TranslationStylesClient] = None
         self._utils: typing.Optional[UtilsClient] = None
 
     @property
     def balance(self):
         if self._balance is None:
-            from .balance.client import BalanceClient
+            from .balance.client import BalanceClient  # noqa: E402
 
             self._balance = BalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
@@ -112,7 +113,7 @@ class SoferAI:
     @property
     def batch_transcribe(self):
         if self._batch_transcribe is None:
-            from .batch_transcribe.client import BatchTranscribeClient
+            from .batch_transcribe.client import BatchTranscribeClient  # noqa: E402
 
             self._batch_transcribe = BatchTranscribeClient(client_wrapper=self._client_wrapper)
         return self._batch_transcribe
@@ -120,15 +121,31 @@ class SoferAI:
     @property
     def categories(self):
         if self._categories is None:
-            from .categories.client import CategoriesClient
+            from .categories.client import CategoriesClient  # noqa: E402
 
             self._categories = CategoriesClient(client_wrapper=self._client_wrapper)
         return self._categories
 
     @property
+    def documents(self):
+        if self._documents is None:
+            from .documents.client import DocumentsClient  # noqa: E402
+
+            self._documents = DocumentsClient(client_wrapper=self._client_wrapper)
+        return self._documents
+
+    @property
+    def folders(self):
+        if self._folders is None:
+            from .folders.client import FoldersClient  # noqa: E402
+
+            self._folders = FoldersClient(client_wrapper=self._client_wrapper)
+        return self._folders
+
+    @property
     def health(self):
         if self._health is None:
-            from .health.client import HealthClient
+            from .health.client import HealthClient  # noqa: E402
 
             self._health = HealthClient(client_wrapper=self._client_wrapper)
         return self._health
@@ -136,7 +153,7 @@ class SoferAI:
     @property
     def link(self):
         if self._link is None:
-            from .link.client import LinkClient
+            from .link.client import LinkClient  # noqa: E402
 
             self._link = LinkClient(client_wrapper=self._client_wrapper)
         return self._link
@@ -144,23 +161,15 @@ class SoferAI:
     @property
     def maishiv(self):
         if self._maishiv is None:
-            from .maishiv.client import MaishivClient
+            from .maishiv.client import MaishivClient  # noqa: E402
 
             self._maishiv = MaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
 
     @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import OcrClient
-
-            self._ocr = OcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
-
-    @property
     def timestamps(self):
         if self._timestamps is None:
-            from .timestamps.client import TimestampsClient
+            from .timestamps.client import TimestampsClient  # noqa: E402
 
             self._timestamps = TimestampsClient(client_wrapper=self._client_wrapper)
         return self._timestamps
@@ -168,23 +177,23 @@ class SoferAI:
     @property
     def transcribe(self):
         if self._transcribe is None:
-            from .transcribe.client import TranscribeClient
+            from .transcribe.client import TranscribeClient  # noqa: E402
 
             self._transcribe = TranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
 
     @property
-    def transformations(self):
-        if self._transformations is None:
-            from .transformations.client import TransformationsClient
+    def translation_styles(self):
+        if self._translation_styles is None:
+            from .translation_styles.client import TranslationStylesClient  # noqa: E402
 
-            self._transformations = TransformationsClient(client_wrapper=self._client_wrapper)
-        return self._transformations
+            self._translation_styles = TranslationStylesClient(client_wrapper=self._client_wrapper)
+        return self._translation_styles
 
     @property
     def utils(self):
         if self._utils is None:
-            from .utils.client import UtilsClient
+            from .utils.client import UtilsClient  # noqa: E402
 
             self._utils = UtilsClient(client_wrapper=self._client_wrapper)
         return self._utils
@@ -258,19 +267,20 @@ class AsyncSoferAI:
         self._balance: typing.Optional[AsyncBalanceClient] = None
         self._batch_transcribe: typing.Optional[AsyncBatchTranscribeClient] = None
         self._categories: typing.Optional[AsyncCategoriesClient] = None
+        self._documents: typing.Optional[AsyncDocumentsClient] = None
+        self._folders: typing.Optional[AsyncFoldersClient] = None
         self._health: typing.Optional[AsyncHealthClient] = None
         self._link: typing.Optional[AsyncLinkClient] = None
         self._maishiv: typing.Optional[AsyncMaishivClient] = None
-        self._ocr: typing.Optional[AsyncOcrClient] = None
         self._timestamps: typing.Optional[AsyncTimestampsClient] = None
         self._transcribe: typing.Optional[AsyncTranscribeClient] = None
-        self._transformations: typing.Optional[AsyncTransformationsClient] = None
+        self._translation_styles: typing.Optional[AsyncTranslationStylesClient] = None
         self._utils: typing.Optional[AsyncUtilsClient] = None
 
     @property
     def balance(self):
         if self._balance is None:
-            from .balance.client import AsyncBalanceClient
+            from .balance.client import AsyncBalanceClient  # noqa: E402
 
             self._balance = AsyncBalanceClient(client_wrapper=self._client_wrapper)
         return self._balance
@@ -278,7 +288,7 @@ class AsyncSoferAI:
     @property
     def batch_transcribe(self):
         if self._batch_transcribe is None:
-            from .batch_transcribe.client import AsyncBatchTranscribeClient
+            from .batch_transcribe.client import AsyncBatchTranscribeClient  # noqa: E402
 
             self._batch_transcribe = AsyncBatchTranscribeClient(client_wrapper=self._client_wrapper)
         return self._batch_transcribe
@@ -286,15 +296,31 @@ class AsyncSoferAI:
     @property
     def categories(self):
         if self._categories is None:
-            from .categories.client import AsyncCategoriesClient
+            from .categories.client import AsyncCategoriesClient  # noqa: E402
 
             self._categories = AsyncCategoriesClient(client_wrapper=self._client_wrapper)
         return self._categories
 
     @property
+    def documents(self):
+        if self._documents is None:
+            from .documents.client import AsyncDocumentsClient  # noqa: E402
+
+            self._documents = AsyncDocumentsClient(client_wrapper=self._client_wrapper)
+        return self._documents
+
+    @property
+    def folders(self):
+        if self._folders is None:
+            from .folders.client import AsyncFoldersClient  # noqa: E402
+
+            self._folders = AsyncFoldersClient(client_wrapper=self._client_wrapper)
+        return self._folders
+
+    @property
     def health(self):
         if self._health is None:
-            from .health.client import AsyncHealthClient
+            from .health.client import AsyncHealthClient  # noqa: E402
 
             self._health = AsyncHealthClient(client_wrapper=self._client_wrapper)
         return self._health
@@ -302,7 +328,7 @@ class AsyncSoferAI:
     @property
     def link(self):
         if self._link is None:
-            from .link.client import AsyncLinkClient
+            from .link.client import AsyncLinkClient  # noqa: E402
 
             self._link = AsyncLinkClient(client_wrapper=self._client_wrapper)
         return self._link
@@ -310,23 +336,15 @@ class AsyncSoferAI:
     @property
     def maishiv(self):
         if self._maishiv is None:
-            from .maishiv.client import AsyncMaishivClient
+            from .maishiv.client import AsyncMaishivClient  # noqa: E402
 
             self._maishiv = AsyncMaishivClient(client_wrapper=self._client_wrapper)
         return self._maishiv
 
     @property
-    def ocr(self):
-        if self._ocr is None:
-            from .ocr.client import AsyncOcrClient
-
-            self._ocr = AsyncOcrClient(client_wrapper=self._client_wrapper)
-        return self._ocr
-
-    @property
     def timestamps(self):
         if self._timestamps is None:
-            from .timestamps.client import AsyncTimestampsClient
+            from .timestamps.client import AsyncTimestampsClient  # noqa: E402
 
             self._timestamps = AsyncTimestampsClient(client_wrapper=self._client_wrapper)
         return self._timestamps
@@ -334,23 +352,23 @@ class AsyncSoferAI:
     @property
     def transcribe(self):
         if self._transcribe is None:
-            from .transcribe.client import AsyncTranscribeClient
+            from .transcribe.client import AsyncTranscribeClient  # noqa: E402
 
             self._transcribe = AsyncTranscribeClient(client_wrapper=self._client_wrapper)
         return self._transcribe
 
     @property
-    def transformations(self):
-        if self._transformations is None:
-            from .transformations.client import AsyncTransformationsClient
+    def translation_styles(self):
+        if self._translation_styles is None:
+            from .translation_styles.client import AsyncTranslationStylesClient  # noqa: E402
 
-            self._transformations = AsyncTransformationsClient(client_wrapper=self._client_wrapper)
-        return self._transformations
+            self._translation_styles = AsyncTranslationStylesClient(client_wrapper=self._client_wrapper)
+        return self._translation_styles
 
     @property
     def utils(self):
         if self._utils is None:
-            from .utils.client import AsyncUtilsClient
+            from .utils.client import AsyncUtilsClient  # noqa: E402
 
             self._utils = AsyncUtilsClient(client_wrapper=self._client_wrapper)
         return self._utils
