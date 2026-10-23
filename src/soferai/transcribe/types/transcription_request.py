@@ -3,7 +3,6 @@
 import typing
 
 import pydantic
-
 from ...core.pydantic_utilities import UniversalBaseModel
 from .transcription_request_info import TranscriptionRequestInfo
 
@@ -11,7 +10,13 @@ from .transcription_request_info import TranscriptionRequestInfo
 class TranscriptionRequest(UniversalBaseModel):
     audio_url: typing.Optional[str] = pydantic.Field(default=None)
     """
-    URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
+    A direct audio download URL or a page URL from an officially supported site.
+    Supported site links are automatically resolved using the Link API's extraction logic,
+    and the original URL is saved on the transcription. See [Get supported sites](/api-reference/link/get-supported-sites)
+    for the current list. If extraction fails, the request returns the corresponding Link API error.
+    Direct download URLs continue to work without extraction. Other streaming or preview links are not supported.
+    Automatic extraction is available only for single transcriptions, not batch requests.
+    Either audio_url or audio_file must be provided, but not both.
     """
 
     audio_file: typing.Optional[str] = pydantic.Field(default=None)
