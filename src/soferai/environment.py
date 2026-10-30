@@ -5,5 +5,3 @@ import enum
 
 class SoferAIEnvironment(enum.Enum):
     PRODUCTION = "https://api.sofer.ai"
-    STAGING = "https://api-staging.sofer.ai"
-    DEVELOPMENT = "http://localhost:8001"
