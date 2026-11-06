@@ -11,6 +11,8 @@ from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
+from ..link.errors.link_error import LinkError
+from ..link.errors.link_not_found import LinkNotFound
 from .errors.authentication_error import AuthenticationError
 from .errors.rate_limit_error import RateLimitError
 from .errors.transcription_not_found import TranscriptionNotFound
@@ -45,7 +47,13 @@ class RawTranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
+            A direct audio download URL or a page URL from an officially supported site.
+            Supported site links are automatically resolved using the Link API's extraction logic,
+            and the original URL is saved on the transcription. See [Get supported sites](/api-reference/link/get-supported-sites)
+            for the current list. If extraction fails, the request returns the corresponding Link API error.
+            Direct download URLs continue to work without extraction. Other streaming or preview links are not supported.
+            Automatic extraction is available only for single transcriptions, not batch requests.
+            Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -114,6 +122,10 @@ class RawTranscribeClient:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
                 raise RateLimitError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise LinkNotFound(headers=dict(_response.headers))
+            if _response.status_code == 500:
+                raise LinkError(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -179,7 +191,12 @@ class RawTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -278,7 +295,13 @@ class AsyncRawTranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
+            A direct audio download URL or a page URL from an officially supported site.
+            Supported site links are automatically resolved using the Link API's extraction logic,
+            and the original URL is saved on the transcription. See [Get supported sites](/api-reference/link/get-supported-sites)
+            for the current list. If extraction fails, the request returns the corresponding Link API error.
+            Direct download URLs continue to work without extraction. Other streaming or preview links are not supported.
+            Automatic extraction is available only for single transcriptions, not batch requests.
+            Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -347,6 +370,10 @@ class AsyncRawTranscribeClient:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
                 raise RateLimitError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise LinkNotFound(headers=dict(_response.headers))
+            if _response.status_code == 500:
+                raise LinkError(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -412,7 +439,12 @@ class AsyncRawTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.

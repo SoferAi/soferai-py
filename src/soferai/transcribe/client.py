@@ -48,7 +48,13 @@ class TranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
+            A direct audio download URL or a page URL from an officially supported site.
+            Supported site links are automatically resolved using the Link API's extraction logic,
+            and the original URL is saved on the transcription. See [Get supported sites](/api-reference/link/get-supported-sites)
+            for the current list. If extraction fails, the request returns the corresponding Link API error.
+            Direct download URLs continue to work without extraction. Other streaming or preview links are not supported.
+            Automatic extraction is available only for single transcriptions, not batch requests.
+            Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -159,7 +165,12 @@ class TranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -248,7 +259,13 @@ class AsyncTranscribeClient:
             Transcription parameters
 
         audio_url : typing.Optional[str]
-            URL to a downloadable audio file. Must be a direct link to the file (not a streaming or preview link). If the URL is not directly downloadable, consider using our Link API to extract a downloadable link from supported sites. Either audio_url or audio_file must be provided, but not both.
+            A direct audio download URL or a page URL from an officially supported site.
+            Supported site links are automatically resolved using the Link API's extraction logic,
+            and the original URL is saved on the transcription. See [Get supported sites](/api-reference/link/get-supported-sites)
+            for the current list. If extraction fails, the request returns the corresponding Link API error.
+            Direct download URLs continue to work without extraction. Other streaming or preview links are not supported.
+            Automatic extraction is available only for single transcriptions, not batch requests.
+            Either audio_url or audio_file must be provided, but not both.
 
         audio_file : typing.Optional[str]
             Base64 encoded audio file content. Either audio_url or audio_file must be provided, but not both.
@@ -374,7 +391,12 @@ class AsyncTranscribeClient:
             ID of the transcription. Use the ID returned from the Create Transcription endpoint.
 
         filter_hebrew_word_format : typing.Optional[str]
-            Optionally filter the response to a single Hebrew word format. If set to 'en', the response text will have Hebrew characters removed and timestamps will exclude words tagged with 'he'. If set to 'he', italicized transliterations are removed from the text and timestamps will exclude words tagged only with 'en'. If set to 'hybrid', the response includes both transliteration and Hebrew characters for each word.
+            Optionally choose a Hebrew-word rendering for the response. If set to `en`,
+            Hebrew characters are removed and timestamps exclude words tagged only with
+            `he`. If set to `he`, italicized transliterations are removed and timestamps
+            exclude words tagged only with `en`. If set to `hybrid`, the stored mixed
+            rendering is returned without `en`/`he` filtering; it does not duplicate every
+            Hebrew word in both formats.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
