@@ -1,0 +1,10 @@
+{
+  "repository": "SoferAi/app",
+  "commit": "9ea8e32b4db8d27ac10bae2745f24e7f172ec7cc",
+  "schema_sha256": "a868f27f52e280b773542280d5488a0acba9c5fa07a0ea9b4edd29c1fb0532aa",
+  "ocr_modes": [
+    "standard",
+    "enhanced",
+    "handwriting"
+  ]
+}
