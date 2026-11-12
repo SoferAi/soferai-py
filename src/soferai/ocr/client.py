@@ -5,9 +5,11 @@ import uuid
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..document_types.types.document_id import DocumentId
 from .raw_client import AsyncRawOcrClient, RawOcrClient
-from .types.ocr_job_response import OcrJobResponse
-from .types.ocr_job_status import OcrJobStatus
+from .types.ocr_document_response import OcrDocumentResponse
+from .types.ocr_document_status import OcrDocumentStatus
+from .types.ocr_mode import OcrMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -28,46 +30,56 @@ class OcrClient:
         """
         return self._raw_client
 
-    def create_ocr_job(
+    def create_ocr_document(
         self,
         *,
-        storage_path: str,
-        job_id: typing.Optional[uuid.UUID] = OMIT,
-        file_name: typing.Optional[str] = OMIT,
-        content_type: typing.Optional[str] = OMIT,
-        file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
+        file: str,
+        file_name: str,
+        content_type: str,
+        mode: typing.Optional[OcrMode] = OMIT,
+        title: typing.Optional[str] = OMIT,
+        folder_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> OcrJobResponse:
+    ) -> OcrDocumentResponse:
         """
-        Create an OCR job for a file already uploaded to Supabase Storage.
+        Upload a base64-encoded PDF or image and start OCR. The returned `document_id`
+        is the only public identifier: it works with this OCR endpoint and every
+        `/documents/{document_id}` endpoint.
+
+        Choose Standard, Enhanced, or Handwriting OCR with `mode` (defaults to `standard`).
+        PDFs and images up to 20 MB (before base64 encoding) are supported.
+        PDF pages are counted server-side and images count as one page. Prices are
+        $0.025, $0.125, and $0.25 per page respectively, matching the purchased-credit rates. The estimated API
+        balance charge is reserved before OCR starts; only successfully extracted
+        pages are charged, and the unused reservation is released. Poll
+        `GET /v1/ocr/{document_id}` for progress and page HTML.
 
         Parameters
         ----------
-        storage_path : str
-            Path to the uploaded file within the OCR storage bucket.
+        file : str
+            Base64-encoded PDF or image bytes.
 
-        job_id : typing.Optional[uuid.UUID]
-            Optional job id. Provide this when you pre-allocate a storage path using the job id.
+        file_name : str
+            Original file name including extension.
 
-        file_name : typing.Optional[str]
-            Original file name.
+        content_type : str
+            Supported MIME type (application/pdf, image/bmp, image/gif, image/jpeg, image/png, image/tiff, or image/webp). Images count as one page; encrypted PDFs are unsupported.
 
-        content_type : typing.Optional[str]
-            MIME type of the uploaded file (e.g., application/pdf, image/png).
+        mode : typing.Optional[OcrMode]
+            OCR type. Defaults to standard ($0.025/page). Enhanced costs $0.125/page; Handwriting costs $0.25/page and does not include image-to-text highlighting. Only successfully extracted pages are charged.
 
-        file_kind : typing.Optional[str]
-            Optional hint for file type (pdf or image).
+        title : typing.Optional[str]
+            Display title. Defaults to the file name without its extension.
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+        folder_id : typing.Optional[uuid.UUID]
+            Optional owned document folder. Null or omitted creates the OCR document at root.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        OcrJobResponse
+        OcrDocumentResponse
 
         Examples
         --------
@@ -76,38 +88,40 @@ class OcrClient:
         client = SoferAI(
             api_key="YOUR_API_KEY",
         )
-        client.ocr.create_ocr_job(
-            storage_path="storage_path",
+        client.ocr.create_ocr_document(
+            file="file",
+            file_name="file_name",
+            content_type="content_type",
         )
         """
-        _response = self._raw_client.create_ocr_job(
-            storage_path=storage_path,
-            job_id=job_id,
+        _response = self._raw_client.create_ocr_document(
+            file=file,
             file_name=file_name,
             content_type=content_type,
-            file_kind=file_kind,
-            model=model,
+            mode=mode,
+            title=title,
+            folder_id=folder_id,
             request_options=request_options,
         )
         return _response.data
 
-    def get_ocr_job(
-        self, job_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> OcrJobStatus:
+    def get_ocr_document(
+        self, document_id: DocumentId, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OcrDocumentStatus:
         """
-        Get OCR job status and extracted text for each page.
+        Get OCR processing status and extracted pages for an owned OCR document.
 
         Parameters
         ----------
-        job_id : uuid.UUID
-            OCR job id.
+        document_id : DocumentId
+            OCR document ID returned by public OCR creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        OcrJobStatus
+        OcrDocumentStatus
 
         Examples
         --------
@@ -118,13 +132,13 @@ class OcrClient:
         client = SoferAI(
             api_key="YOUR_API_KEY",
         )
-        client.ocr.get_ocr_job(
-            job_id=uuid.UUID(
+        client.ocr.get_ocr_document(
+            document_id=uuid.UUID(
                 "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
             ),
         )
         """
-        _response = self._raw_client.get_ocr_job(job_id, request_options=request_options)
+        _response = self._raw_client.get_ocr_document(document_id, request_options=request_options)
         return _response.data
 
 
@@ -143,46 +157,56 @@ class AsyncOcrClient:
         """
         return self._raw_client
 
-    async def create_ocr_job(
+    async def create_ocr_document(
         self,
         *,
-        storage_path: str,
-        job_id: typing.Optional[uuid.UUID] = OMIT,
-        file_name: typing.Optional[str] = OMIT,
-        content_type: typing.Optional[str] = OMIT,
-        file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
+        file: str,
+        file_name: str,
+        content_type: str,
+        mode: typing.Optional[OcrMode] = OMIT,
+        title: typing.Optional[str] = OMIT,
+        folder_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> OcrJobResponse:
+    ) -> OcrDocumentResponse:
         """
-        Create an OCR job for a file already uploaded to Supabase Storage.
+        Upload a base64-encoded PDF or image and start OCR. The returned `document_id`
+        is the only public identifier: it works with this OCR endpoint and every
+        `/documents/{document_id}` endpoint.
+
+        Choose Standard, Enhanced, or Handwriting OCR with `mode` (defaults to `standard`).
+        PDFs and images up to 20 MB (before base64 encoding) are supported.
+        PDF pages are counted server-side and images count as one page. Prices are
+        $0.025, $0.125, and $0.25 per page respectively, matching the purchased-credit rates. The estimated API
+        balance charge is reserved before OCR starts; only successfully extracted
+        pages are charged, and the unused reservation is released. Poll
+        `GET /v1/ocr/{document_id}` for progress and page HTML.
 
         Parameters
         ----------
-        storage_path : str
-            Path to the uploaded file within the OCR storage bucket.
+        file : str
+            Base64-encoded PDF or image bytes.
 
-        job_id : typing.Optional[uuid.UUID]
-            Optional job id. Provide this when you pre-allocate a storage path using the job id.
+        file_name : str
+            Original file name including extension.
 
-        file_name : typing.Optional[str]
-            Original file name.
+        content_type : str
+            Supported MIME type (application/pdf, image/bmp, image/gif, image/jpeg, image/png, image/tiff, or image/webp). Images count as one page; encrypted PDFs are unsupported.
 
-        content_type : typing.Optional[str]
-            MIME type of the uploaded file (e.g., application/pdf, image/png).
+        mode : typing.Optional[OcrMode]
+            OCR type. Defaults to standard ($0.025/page). Enhanced costs $0.125/page; Handwriting costs $0.25/page and does not include image-to-text highlighting. Only successfully extracted pages are charged.
 
-        file_kind : typing.Optional[str]
-            Optional hint for file type (pdf or image).
+        title : typing.Optional[str]
+            Display title. Defaults to the file name without its extension.
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+        folder_id : typing.Optional[uuid.UUID]
+            Optional owned document folder. Null or omitted creates the OCR document at root.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        OcrJobResponse
+        OcrDocumentResponse
 
         Examples
         --------
@@ -196,41 +220,43 @@ class AsyncOcrClient:
 
 
         async def main() -> None:
-            await client.ocr.create_ocr_job(
-                storage_path="storage_path",
+            await client.ocr.create_ocr_document(
+                file="file",
+                file_name="file_name",
+                content_type="content_type",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.create_ocr_job(
-            storage_path=storage_path,
-            job_id=job_id,
+        _response = await self._raw_client.create_ocr_document(
+            file=file,
             file_name=file_name,
             content_type=content_type,
-            file_kind=file_kind,
-            model=model,
+            mode=mode,
+            title=title,
+            folder_id=folder_id,
             request_options=request_options,
         )
         return _response.data
 
-    async def get_ocr_job(
-        self, job_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> OcrJobStatus:
+    async def get_ocr_document(
+        self, document_id: DocumentId, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> OcrDocumentStatus:
         """
-        Get OCR job status and extracted text for each page.
+        Get OCR processing status and extracted pages for an owned OCR document.
 
         Parameters
         ----------
-        job_id : uuid.UUID
-            OCR job id.
+        document_id : DocumentId
+            OCR document ID returned by public OCR creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        OcrJobStatus
+        OcrDocumentStatus
 
         Examples
         --------
@@ -245,8 +271,8 @@ class AsyncOcrClient:
 
 
         async def main() -> None:
-            await client.ocr.get_ocr_job(
-                job_id=uuid.UUID(
+            await client.ocr.get_ocr_document(
+                document_id=uuid.UUID(
                     "d5e9c84f-c2b2-4bf4-b4b0-7ffd7a9ffc32",
                 ),
             )
@@ -254,5 +280,5 @@ class AsyncOcrClient:
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get_ocr_job(job_id, request_options=request_options)
+        _response = await self._raw_client.get_ocr_document(document_id, request_options=request_options)
         return _response.data
