@@ -20,7 +20,7 @@ jobs:
   verify-live-api:
     name: Verify the API is ready for this SDK
     needs: verify
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v6
         with:
@@ -40,7 +40,7 @@ jobs:
 
   release-please:
     needs: [verify, verify-live-api]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -63,7 +63,7 @@ jobs:
     name: Publish verified distributions to PyPI
     needs: [verify, release-please]
     if: ${{ needs.release-please.outputs.release_created == 'true' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     environment: pypi
     permissions:
       id-token: write
@@ -77,7 +77,7 @@ jobs:
   verify-published:
     name: Verify the package customers install
     needs: [release-please, pypi-publish]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       RELEASE_VERSION: ${{ needs.release-please.outputs.version }}
       SKIP_CLIENT_TESTS: "true"
