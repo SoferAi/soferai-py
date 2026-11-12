@@ -27,6 +27,14 @@ tests/custom/test_client.py
 tests/conftest.py
 
 .basedpyright/baseline.json
+
+# Keep release verification and API provenance across regenerations.
+scripts/
+tests/contracts/
+tests/test_release_verification.py
+.github/workflows/sdk-freshness.yml
+docs/sdk-releases.md
+src/soferai/api_source.json
 .fern/replay.lock
 .fern/replay.yml
 .gitattributes

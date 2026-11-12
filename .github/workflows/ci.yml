@@ -1,142 +1,87 @@
 name: ci
 
+"on":
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
 
-"on": [push]
+permissions:
+  contents: read
 
 env:
-  PYTHON_VERSION: 3.9
+  SKIP_CLIENT_TESTS: "true"
 
 jobs:
-  rename-pr:
-    runs-on: ubuntu-24.04
-    permissions:
-      pull-requests: write
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-
-      - name: Rename PR if needed
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PR_TITLE=$(gh pr view --json title -q .title || echo '')
-          if [[ $PR_TITLE =~ Fern[[:space:]]Regeneration[[:space:]]--[[:space:]]([A-Za-z]+)[[:space:]]([0-9]{1,2}),[[:space:]]([0-9]{4})$ ]]; then
-            MONTH=$(echo ${BASH_REMATCH[1]} | tr '[:upper:]' '[:lower:]')
-            DAY=${BASH_REMATCH[2]}
-            YEAR=${BASH_REMATCH[3]}
-            NEW_TITLE="feat(fern): regeneration $MONTH $DAY, $YEAR"
-            gh pr edit --title "$NEW_TITLE"
-          fi
-
-  lint:
+  quality:
     runs-on: ubuntu-24.04
     steps:
-      - name: Generate a token
-        id: generate-token
-        uses: actions/create-github-app-token@v2
+      - uses: actions/checkout@v6
         with:
-          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
-
-      - name: Checkout repo
-        uses: actions/checkout@v6
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
         with:
-          token: ${{ steps.generate-token.outputs.token }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
+          python-version: "3.12"
           enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
-      - name: Lint
-        run: uv run ruff check . --fix
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore(lint): fix linting errors"
-
-  format:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Generate a token
-        id: generate-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
-          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
-
-      - name: Checkout repo
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ steps.generate-token.outputs.token }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
-      - name: Format
-        run: uv run ruff format .
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore(fmt): format code"
-
+      - run: uv sync --frozen --all-extras --dev
+      - run: uv run --frozen ruff check .
+      - run: uv run --frozen ruff format --check scripts tests/contracts tests/custom tests/conftest.py tests/test_release_verification.py
 
   test_client:
-    needs: [lint, format]
+    needs: quality
     runs-on: ubuntu-24.04
-    env:
-      SOFERAI_API_KEY: ${{ secrets.SOFERAI_API_KEY }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v6
         with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
           enable-cache: true
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
-      - name: Test
-        run: uv run pytest -vvv -s -rP --disable-warnings .
+      - run: uv sync --frozen --all-extras --dev
+      - name: Test serialization, public contracts, and release verification without live API calls
+        run: uv run --frozen pytest -q
 
   test_platforms:
-    needs: [lint, format]
+    needs: quality
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
         os: ["ubuntu-22.04", "macos-14", "windows-2022"]
     runs-on: ${{ matrix.os }}
-    env:
-      SKIP_CLIENT_TESTS: true
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v6
         with:
-          enable-cache: true
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - run: uv sync --frozen --all-extras --dev
+      - run: uv run --frozen pytest -q
 
-      - name: Install the project
-        run: uv sync --all-extras --dev
-
-      - name: Test
-        run: uv run pytest -rP --disable-warnings .
+  build_package:
+    needs: [test_client, test_platforms]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv build
+      - name: Verify the built wheel from a fresh environment
+        env:
+          PYTHONPATH: ""
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/soferai-wheel"
+          uv pip install --python "$RUNNER_TEMP/soferai-wheel/bin/python" dist/*.whl pytest==8.3.4 pytest-asyncio==0.24.0
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/soferai-wheel/bin/python" -m pytest -c /dev/null --import-mode=importlib "$GITHUB_WORKSPACE/tests/contracts" -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdk-distributions
+          path: dist/
+          if-no-files-found: error

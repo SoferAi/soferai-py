@@ -20,6 +20,23 @@ jobs:
           app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
+      - name: Normalize Fern's generated PR title
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              ...context.repo, pull_number: context.issue.number
+            });
+            const generated = pr.head.repo.full_name === context.payload.repository.full_name &&
+              pr.head.ref.startsWith('fern-bot/');
+            if (generated && (pr.title === 'SDK regeneration' || /^Fern Regeneration -- /.test(pr.title))) {
+              await github.rest.pulls.update({
+                ...context.repo, pull_number: pr.number,
+                title: 'feat(api): regenerate Python SDK'
+              });
+            }
+
       - uses: CondeNast/conventional-pull-request-action@v0.2.0
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

@@ -116,6 +116,14 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [lint.per-file-ignores]
 "tests/*" = ["S101", "RUF012", "E712", "E711"]
+# Fern preserves the API's public `format` and `type` parameter names.
+# Keep builtin-shadowing checks enabled outside these generated clients.
+"src/soferai/documents/{client,raw_client}.py" = ["A002"]
+"src/soferai/folders/{client,raw_client}.py" = ["A002"]
+# Generated import ordering, exports, and type-ignore comments belong to Fern.
+# All semantic/security lint rules still apply to generated source.
+"src/soferai/**" = ["I001", "RUF022", "RUF100"]
+"tests/utils/**" = ["I001"]
 
 
 [format]
