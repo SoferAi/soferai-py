@@ -10,10 +10,17 @@ from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.jsonable_encoder import jsonable_encoder
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..document_types.types.document_id import DocumentId
+from ..documents.errors.folder_not_found import FolderNotFound
 from ..transcribe.errors.authentication_error import AuthenticationError
-from .errors.ocr_job_not_found import OcrJobNotFound
-from .types.ocr_job_response import OcrJobResponse
-from .types.ocr_job_status import OcrJobStatus
+from ..transcribe.errors.insufficient_api_balance import InsufficientApiBalance
+from .errors.ocr_document_not_found import OcrDocumentNotFound
+from .errors.ocr_file_too_large import OcrFileTooLarge
+from .errors.ocr_invalid_file import OcrInvalidFile
+from .errors.ocr_pricing_not_configured import OcrPricingNotConfigured
+from .types.ocr_document_response import OcrDocumentResponse
+from .types.ocr_document_status import OcrDocumentStatus
+from .types.ocr_mode import OcrMode
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -23,57 +30,67 @@ class RawOcrClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def create_ocr_job(
+    def create_ocr_document(
         self,
         *,
-        storage_path: str,
-        job_id: typing.Optional[uuid.UUID] = OMIT,
-        file_name: typing.Optional[str] = OMIT,
-        content_type: typing.Optional[str] = OMIT,
-        file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
+        file: str,
+        file_name: str,
+        content_type: str,
+        mode: typing.Optional[OcrMode] = OMIT,
+        title: typing.Optional[str] = OMIT,
+        folder_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[OcrJobResponse]:
+    ) -> HttpResponse[OcrDocumentResponse]:
         """
-        Create an OCR job for a file already uploaded to Supabase Storage.
+        Upload a base64-encoded PDF or image and start OCR. The returned `document_id`
+        is the only public identifier: it works with this OCR endpoint and every
+        `/documents/{document_id}` endpoint.
+
+        Choose Standard, Enhanced, or Handwriting OCR with `mode` (defaults to `standard`).
+        PDFs and images up to 20 MB (before base64 encoding) are supported.
+        PDF pages are counted server-side and images count as one page. Prices are
+        $0.025, $0.125, and $0.25 per page respectively, matching the purchased-credit rates. The estimated API
+        balance charge is reserved before OCR starts; only successfully extracted
+        pages are charged, and the unused reservation is released. Poll
+        `GET /v1/ocr/{document_id}` for progress and page HTML.
 
         Parameters
         ----------
-        storage_path : str
-            Path to the uploaded file within the OCR storage bucket.
+        file : str
+            Base64-encoded PDF or image bytes.
 
-        job_id : typing.Optional[uuid.UUID]
-            Optional job id. Provide this when you pre-allocate a storage path using the job id.
+        file_name : str
+            Original file name including extension.
 
-        file_name : typing.Optional[str]
-            Original file name.
+        content_type : str
+            Supported MIME type (application/pdf, image/bmp, image/gif, image/jpeg, image/png, image/tiff, or image/webp). Images count as one page; encrypted PDFs are unsupported.
 
-        content_type : typing.Optional[str]
-            MIME type of the uploaded file (e.g., application/pdf, image/png).
+        mode : typing.Optional[OcrMode]
+            OCR type. Defaults to standard ($0.025/page). Enhanced costs $0.125/page; Handwriting costs $0.25/page and does not include image-to-text highlighting. Only successfully extracted pages are charged.
 
-        file_kind : typing.Optional[str]
-            Optional hint for file type (pdf or image).
+        title : typing.Optional[str]
+            Display title. Defaults to the file name without its extension.
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+        folder_id : typing.Optional[uuid.UUID]
+            Optional owned document folder. Null or omitted creates the OCR document at root.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[OcrJobResponse]
+        HttpResponse[OcrDocumentResponse]
         """
         _response = self._client_wrapper.httpx_client.request(
-            "v1/ocr/jobs",
+            "v1/ocr/",
             method="POST",
             json={
-                "job_id": job_id,
-                "storage_path": storage_path,
+                "mode": mode,
+                "title": title,
+                "folder_id": folder_id,
+                "file": file,
                 "file_name": file_name,
                 "content_type": content_type,
-                "file_kind": file_kind,
-                "model": model,
             },
             request_options=request_options,
             omit=OMIT,
@@ -81,57 +98,67 @@ class RawOcrClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OcrJobResponse,
+                    OcrDocumentResponse,
                     parse_obj_as(
-                        type_=OcrJobResponse,  # type: ignore
+                        type_=OcrDocumentResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise FolderNotFound(headers=dict(_response.headers))
+            if _response.status_code == 400:
+                raise OcrInvalidFile(headers=dict(_response.headers))
+            if _response.status_code == 413:
+                raise OcrFileTooLarge(headers=dict(_response.headers))
+            if _response.status_code == 503:
+                raise OcrPricingNotConfigured(headers=dict(_response.headers))
+            if _response.status_code == 402:
+                raise InsufficientApiBalance(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def get_ocr_job(
-        self, job_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[OcrJobStatus]:
+    def get_ocr_document(
+        self, document_id: DocumentId, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[OcrDocumentStatus]:
         """
-        Get OCR job status and extracted text for each page.
+        Get OCR processing status and extracted pages for an owned OCR document.
 
         Parameters
         ----------
-        job_id : uuid.UUID
-            OCR job id.
+        document_id : DocumentId
+            OCR document ID returned by public OCR creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[OcrJobStatus]
+        HttpResponse[OcrDocumentStatus]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"v1/ocr/jobs/{jsonable_encoder(job_id)}",
+            f"v1/ocr/{jsonable_encoder(document_id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OcrJobStatus,
+                    OcrDocumentStatus,
                     parse_obj_as(
-                        type_=OcrJobStatus,  # type: ignore
+                        type_=OcrDocumentStatus,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise OcrJobNotFound(headers=dict(_response.headers))
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise OcrDocumentNotFound(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -142,57 +169,67 @@ class AsyncRawOcrClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def create_ocr_job(
+    async def create_ocr_document(
         self,
         *,
-        storage_path: str,
-        job_id: typing.Optional[uuid.UUID] = OMIT,
-        file_name: typing.Optional[str] = OMIT,
-        content_type: typing.Optional[str] = OMIT,
-        file_kind: typing.Optional[str] = OMIT,
-        model: typing.Optional[str] = OMIT,
+        file: str,
+        file_name: str,
+        content_type: str,
+        mode: typing.Optional[OcrMode] = OMIT,
+        title: typing.Optional[str] = OMIT,
+        folder_id: typing.Optional[uuid.UUID] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[OcrJobResponse]:
+    ) -> AsyncHttpResponse[OcrDocumentResponse]:
         """
-        Create an OCR job for a file already uploaded to Supabase Storage.
+        Upload a base64-encoded PDF or image and start OCR. The returned `document_id`
+        is the only public identifier: it works with this OCR endpoint and every
+        `/documents/{document_id}` endpoint.
+
+        Choose Standard, Enhanced, or Handwriting OCR with `mode` (defaults to `standard`).
+        PDFs and images up to 20 MB (before base64 encoding) are supported.
+        PDF pages are counted server-side and images count as one page. Prices are
+        $0.025, $0.125, and $0.25 per page respectively, matching the purchased-credit rates. The estimated API
+        balance charge is reserved before OCR starts; only successfully extracted
+        pages are charged, and the unused reservation is released. Poll
+        `GET /v1/ocr/{document_id}` for progress and page HTML.
 
         Parameters
         ----------
-        storage_path : str
-            Path to the uploaded file within the OCR storage bucket.
+        file : str
+            Base64-encoded PDF or image bytes.
 
-        job_id : typing.Optional[uuid.UUID]
-            Optional job id. Provide this when you pre-allocate a storage path using the job id.
+        file_name : str
+            Original file name including extension.
 
-        file_name : typing.Optional[str]
-            Original file name.
+        content_type : str
+            Supported MIME type (application/pdf, image/bmp, image/gif, image/jpeg, image/png, image/tiff, or image/webp). Images count as one page; encrypted PDFs are unsupported.
 
-        content_type : typing.Optional[str]
-            MIME type of the uploaded file (e.g., application/pdf, image/png).
+        mode : typing.Optional[OcrMode]
+            OCR type. Defaults to standard ($0.025/page). Enhanced costs $0.125/page; Handwriting costs $0.25/page and does not include image-to-text highlighting. Only successfully extracted pages are charged.
 
-        file_kind : typing.Optional[str]
-            Optional hint for file type (pdf or image).
+        title : typing.Optional[str]
+            Display title. Defaults to the file name without its extension.
 
-        model : typing.Optional[str]
-            OCR mode to use. "normal" for standard documents, "enhanced" for difficult texts like Rashi script or low quality scans.
+        folder_id : typing.Optional[uuid.UUID]
+            Optional owned document folder. Null or omitted creates the OCR document at root.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[OcrJobResponse]
+        AsyncHttpResponse[OcrDocumentResponse]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "v1/ocr/jobs",
+            "v1/ocr/",
             method="POST",
             json={
-                "job_id": job_id,
-                "storage_path": storage_path,
+                "mode": mode,
+                "title": title,
+                "folder_id": folder_id,
+                "file": file,
                 "file_name": file_name,
                 "content_type": content_type,
-                "file_kind": file_kind,
-                "model": model,
             },
             request_options=request_options,
             omit=OMIT,
@@ -200,57 +237,67 @@ class AsyncRawOcrClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OcrJobResponse,
+                    OcrDocumentResponse,
                     parse_obj_as(
-                        type_=OcrJobResponse,  # type: ignore
+                        type_=OcrDocumentResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise FolderNotFound(headers=dict(_response.headers))
+            if _response.status_code == 400:
+                raise OcrInvalidFile(headers=dict(_response.headers))
+            if _response.status_code == 413:
+                raise OcrFileTooLarge(headers=dict(_response.headers))
+            if _response.status_code == 503:
+                raise OcrPricingNotConfigured(headers=dict(_response.headers))
+            if _response.status_code == 402:
+                raise InsufficientApiBalance(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def get_ocr_job(
-        self, job_id: uuid.UUID, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[OcrJobStatus]:
+    async def get_ocr_document(
+        self, document_id: DocumentId, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[OcrDocumentStatus]:
         """
-        Get OCR job status and extracted text for each page.
+        Get OCR processing status and extracted pages for an owned OCR document.
 
         Parameters
         ----------
-        job_id : uuid.UUID
-            OCR job id.
+        document_id : DocumentId
+            OCR document ID returned by public OCR creation.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[OcrJobStatus]
+        AsyncHttpResponse[OcrDocumentStatus]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"v1/ocr/jobs/{jsonable_encoder(job_id)}",
+            f"v1/ocr/{jsonable_encoder(document_id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    OcrJobStatus,
+                    OcrDocumentStatus,
                     parse_obj_as(
-                        type_=OcrJobStatus,  # type: ignore
+                        type_=OcrDocumentStatus,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 404:
-                raise OcrJobNotFound(headers=dict(_response.headers))
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
+            if _response.status_code == 404:
+                raise OcrDocumentNotFound(headers=dict(_response.headers))
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)

@@ -16,7 +16,7 @@ tasks:
     desc: Run the Ruff linter on the entire codebase
     dir: '{{.TASKFILE_DIR}}'
     cmds:
-      - uv run ruff format .
+      - uv run ruff format scripts tests/contracts tests/custom tests/conftest.py tests/test_release_verification.py
 
   # Task to lint the codebase
   lint:

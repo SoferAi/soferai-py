@@ -1,70 +1,100 @@
-# yamllint disable rule:line-length
-"on":
-    push:
-      branches:
-        - main
-  
-permissions:
-    contents: write
-    pull-requests: write
-
 name: release-please
 
-# env is a set of environment variables that are available to all jobs in the workflow.
-env:
-  RUFF_OUTPUT_FORMAT: github
-  PYTHON_VERSION: "3.12"
+"on":
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python-sdk-release
+  cancel-in-progress: false
 
 jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ci.yml
+
+  verify-live-api:
+    name: Verify the API is ready for this SDK
+    needs: verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-distributions
+          path: dist/
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+      - name: Read-only check of live public request schemas and routes
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/soferai-live-check"
+          uv pip install --python "$RUNNER_TEMP/soferai-live-check/bin/python" dist/*.whl
+          "$RUNNER_TEMP/soferai-live-check/bin/python" scripts/check_live_api.py
+
   release-please:
+    needs: [verify, verify-live-api]
     runs-on: ubuntu-24.04
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
-      major: ${{ steps.release.outputs.major }}
-      minor: ${{ steps.release.outputs.minor }}
-      patch: ${{ steps.release.outputs.patch }}
-
+      version: ${{ steps.release.outputs.version }}
     steps:
-    - name: Generate a token
-      id: generate-token
-      uses: actions/create-github-app-token@v2
-      with:
-        app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
-        private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
-
-    - uses: googleapis/release-please-action@v4
-      id: release
-      with:
-        token: ${{ steps.generate-token.outputs.token }}
-        release-type: python
-        # Setting target-branch allows us to track multiple release branches
-        # (should we need to maintain a 1.x or similar branch.)
-        target-branch: ${{ github.ref_name }}
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          release-type: python
+          target-branch: main
 
   pypi-publish:
-    name: upload release to PyPI
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    name: Publish verified distributions to PyPI
+    needs: [verify, release-please]
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
     runs-on: ubuntu-24.04
-    # Specifying a GitHub environment is optional, but strongly encouraged
     environment: pypi
     permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
     steps:
-    # retrieve your distributions here
-    - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdk-distributions
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
 
-    - uses: actions/setup-python@v6
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: "Install uv"
-      run: curl -LsSf https://astral.sh/uv/install.sh | sh
-
-    - name: Build with uv
-      run: uv build
-
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+  verify-published:
+    name: Verify the package customers install
+    needs: [release-please, pypi-publish]
+    runs-on: ubuntu-24.04
+    env:
+      RELEASE_VERSION: ${{ needs.release-please.outputs.version }}
+      SKIP_CLIENT_TESTS: "true"
+      PYTHONPATH: ""
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+      - name: Verify exact published payload, wheel checksum, and API source
+        run: python scripts/check_published.py --version "$RELEASE_VERSION" --no-handoffs --attempts 12 --delay 10
+      - name: Install from public PyPI and exercise sync and async requests
+        run: |
+          uv venv --python 3.12 "$RUNNER_TEMP/soferai-published"
+          uv pip install --python "$RUNNER_TEMP/soferai-published/bin/python" --index-url https://pypi.org/simple "soferai==$RELEASE_VERSION" pytest==8.3.4 pytest-asyncio==0.24.0
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/soferai-published/bin/python" -m pytest -c /dev/null --import-mode=importlib "$GITHUB_WORKSPACE/tests/contracts" -q

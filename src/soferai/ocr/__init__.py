@@ -6,14 +6,18 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .types import OcrJobCreateRequest, OcrJobResponse, OcrJobStatus, OcrPage
-    from .errors import OcrJobNotFound
+    from .types import OcrDocumentCreateRequest, OcrDocumentResponse, OcrDocumentStatus, OcrMode, OcrPage
+    from .errors import OcrDocumentNotFound, OcrFileTooLarge, OcrInvalidFile, OcrPricingNotConfigured
 _dynamic_imports: typing.Dict[str, str] = {
-    "OcrJobCreateRequest": ".types",
-    "OcrJobNotFound": ".errors",
-    "OcrJobResponse": ".types",
-    "OcrJobStatus": ".types",
+    "OcrDocumentCreateRequest": ".types",
+    "OcrDocumentNotFound": ".errors",
+    "OcrDocumentResponse": ".types",
+    "OcrDocumentStatus": ".types",
+    "OcrFileTooLarge": ".errors",
+    "OcrInvalidFile": ".errors",
+    "OcrMode": ".types",
     "OcrPage": ".types",
+    "OcrPricingNotConfigured": ".errors",
 }
 
 
@@ -38,4 +42,14 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["OcrJobCreateRequest", "OcrJobNotFound", "OcrJobResponse", "OcrJobStatus", "OcrPage"]
+__all__ = [
+    "OcrDocumentCreateRequest",
+    "OcrDocumentNotFound",
+    "OcrDocumentResponse",
+    "OcrDocumentStatus",
+    "OcrFileTooLarge",
+    "OcrInvalidFile",
+    "OcrMode",
+    "OcrPage",
+    "OcrPricingNotConfigured",
+]

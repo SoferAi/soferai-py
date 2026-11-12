@@ -1,0 +1,37 @@
+name: Python SDK freshness
+
+"on":
+  schedule:
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+jobs:
+  check-publication:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Create read-only token for the private API source
+        id: monitor-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
+          owner: SoferAi
+          repositories: app
+          permission-contents: read
+      - name: Check published source, API provenance, and pending release handoffs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          API_SOURCE_TOKEN: ${{ steps.monitor-token.outputs.token }}
+        run: python scripts/check_published.py --grace-hours 24
