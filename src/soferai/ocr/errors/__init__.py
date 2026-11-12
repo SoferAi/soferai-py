@@ -6,8 +6,16 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .ocr_job_not_found import OcrJobNotFound
-_dynamic_imports: typing.Dict[str, str] = {"OcrJobNotFound": ".ocr_job_not_found"}
+    from .ocr_document_not_found import OcrDocumentNotFound
+    from .ocr_file_too_large import OcrFileTooLarge
+    from .ocr_invalid_file import OcrInvalidFile
+    from .ocr_pricing_not_configured import OcrPricingNotConfigured
+_dynamic_imports: typing.Dict[str, str] = {
+    "OcrDocumentNotFound": ".ocr_document_not_found",
+    "OcrFileTooLarge": ".ocr_file_too_large",
+    "OcrInvalidFile": ".ocr_invalid_file",
+    "OcrPricingNotConfigured": ".ocr_pricing_not_configured",
+}
 
 
 def __getattr__(attr_name: str) -> typing.Any:
@@ -31,4 +39,4 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["OcrJobNotFound"]
+__all__ = ["OcrDocumentNotFound", "OcrFileTooLarge", "OcrInvalidFile", "OcrPricingNotConfigured"]

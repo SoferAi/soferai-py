@@ -9,12 +9,28 @@ if typing.TYPE_CHECKING:
     from .types import (
         AddKnowledgeBaseDocumentRequest,
         AddKnowledgeBaseDocumentResponse,
+        KnowledgeBaseSearchChunk,
         RemoveKnowledgeBaseDocumentResponse,
+        SearchKnowledgeBaseChunksRequest,
+    )
+    from .errors import (
+        InsufficientKnowledgeBaseSearchBalance,
+        InvalidKnowledgeBaseSearch,
+        KnowledgeBaseSearchProviderError,
+        KnowledgeBaseSearchTimeout,
+        KnowledgeBaseSearchUnavailable,
     )
 _dynamic_imports: typing.Dict[str, str] = {
     "AddKnowledgeBaseDocumentRequest": ".types",
     "AddKnowledgeBaseDocumentResponse": ".types",
+    "InsufficientKnowledgeBaseSearchBalance": ".errors",
+    "InvalidKnowledgeBaseSearch": ".errors",
+    "KnowledgeBaseSearchChunk": ".types",
+    "KnowledgeBaseSearchProviderError": ".errors",
+    "KnowledgeBaseSearchTimeout": ".errors",
+    "KnowledgeBaseSearchUnavailable": ".errors",
     "RemoveKnowledgeBaseDocumentResponse": ".types",
+    "SearchKnowledgeBaseChunksRequest": ".types",
 }
 
 
@@ -39,4 +55,15 @@ def __dir__():
     return sorted(lazy_attrs)
 
 
-__all__ = ["AddKnowledgeBaseDocumentRequest", "AddKnowledgeBaseDocumentResponse", "RemoveKnowledgeBaseDocumentResponse"]
+__all__ = [
+    "AddKnowledgeBaseDocumentRequest",
+    "AddKnowledgeBaseDocumentResponse",
+    "InsufficientKnowledgeBaseSearchBalance",
+    "InvalidKnowledgeBaseSearch",
+    "KnowledgeBaseSearchChunk",
+    "KnowledgeBaseSearchProviderError",
+    "KnowledgeBaseSearchTimeout",
+    "KnowledgeBaseSearchUnavailable",
+    "RemoveKnowledgeBaseDocumentResponse",
+    "SearchKnowledgeBaseChunksRequest",
+]
