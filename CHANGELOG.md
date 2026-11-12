@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/SoferAi/soferai-py/compare/v1.2.0...v2.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** replace legacy OCR job methods with the public document-ID interface. Verify built and published SDK packages, live API compatibility, and release provenance.
+
+### Features
+
+* **api:** refresh Python SDK and verify published releases ([f613a8c](https://github.com/SoferAi/soferai-py/commit/f613a8c8b7c0f71be883ebaede374b2b9f809e90))
+
 ## [1.2.0](https://github.com/SoferAi/soferai-py/compare/v1.1.0...v1.2.0) (2026-03-04)
 
 
