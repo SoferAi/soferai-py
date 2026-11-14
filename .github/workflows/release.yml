@@ -29,7 +29,7 @@ jobs:
         with:
           name: sdk-distributions
           path: dist/
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.12"
       - name: Read-only check of live public request schemas and routes
@@ -87,7 +87,7 @@ jobs:
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.12"
       - name: Verify exact published payload, wheel checksum, and API source
