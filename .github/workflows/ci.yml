@@ -80,7 +80,7 @@ jobs:
           uv pip install --python "$RUNNER_TEMP/soferai-wheel/bin/python" dist/*.whl pytest==8.3.4 pytest-asyncio==0.24.0
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/soferai-wheel/bin/python" -m pytest -c /dev/null --import-mode=importlib "$GITHUB_WORKSPACE/tests/contracts" -q
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdk-distributions
           path: dist/
