@@ -40,7 +40,17 @@ class TranscribeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
         """
-        Create a new transcription
+        Create a new transcription.
+
+        Production individual v1 submissions are limited to 50 files per UTC hour
+        and 300 files per UTC day, shared across the account's API keys. Failed
+        jobs still count as accepted submissions. Rate-limited transcription and
+        batch operations also share a 5-request-per-minute allowance per API key.
+        For bulk collections, use standard batch processing with its separate
+        daily quota and lower v1 pricing. Limits may differ by API environment or
+        account configuration. Support can assign custom hourly and daily file
+        allowances; quota errors report the effective account limit. See
+        [API limits and errors](/api-limits-and-errors).
 
         Parameters
         ----------
@@ -71,7 +81,7 @@ class TranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -80,8 +90,8 @@ class TranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
@@ -251,7 +261,17 @@ class AsyncTranscribeClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> TranscriptionId:
         """
-        Create a new transcription
+        Create a new transcription.
+
+        Production individual v1 submissions are limited to 50 files per UTC hour
+        and 300 files per UTC day, shared across the account's API keys. Failed
+        jobs still count as accepted submissions. Rate-limited transcription and
+        batch operations also share a 5-request-per-minute allowance per API key.
+        For bulk collections, use standard batch processing with its separate
+        daily quota and lower v1 pricing. Limits may differ by API environment or
+        account configuration. Support can assign custom hourly and daily file
+        allowances; quota errors report the effective account limit. See
+        [API limits and errors](/api-limits-and-errors).
 
         Parameters
         ----------
@@ -282,7 +302,7 @@ class AsyncTranscribeClient:
 
             # Read and encode audio file
             with open("audio.mp3", "rb") as f:
-                base64_audio = base64.b64encode(f.read()).decode("utf-8")
+                base64_audio = base64.b64encode(f.read()).decode('utf-8')
 
             # Create transcription request
             response = client.transcribe.create_transcription(
@@ -291,8 +311,8 @@ class AsyncTranscribeClient:
                     "model": "v1",
                     "primary_language": "en",
                     "hebrew_word_format": ["he"],
-                    "title": "My Shiur Transcription",
-                },
+                    "title": "My Shiur Transcription"
+                }
             )
 
             print(f"Transcription ID: {response}")
