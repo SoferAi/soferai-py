@@ -20,7 +20,7 @@ class BatchTranscriptionRequest(UniversalBaseModel):
     processing_mode: typing.Optional[ProcessingMode] = pydantic.Field(default=None)
     """
     Choose how the batch is processed:
-    - `standard` (default): Lower cost, processed within 24 hours. Max 500 files. Use with `batch_file_id`. Pricing for v1 batch standard is $1.00/hour. If you need higher limits, contact support@sofer.ai.
+    - `standard` (default): Lower cost, processed within 24 hours. Production allows up to 1,000 files per manifest and 5,000 files per UTC day per account. Use with `batch_file_id`. Pricing for v1 batch standard is $1.00/hour. Limits may differ by environment or configuration; see [API limits and errors](/api-limits-and-errors).
     - `express`: Submit up to 10 files at once with `audio_sources`. Express batches may take longer than individual transcription requests, but make it easier to submit multiple files together. Pricing for v1 is $1.50/hour.
     """
 

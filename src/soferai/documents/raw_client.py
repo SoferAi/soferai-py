@@ -112,7 +112,16 @@ class RawDocumentsClient:
             if _response.status_code == 404:
                 raise FolderNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -184,7 +193,16 @@ class RawDocumentsClient:
             if _response.status_code == 400:
                 raise InvalidCursor(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -229,7 +247,16 @@ class RawDocumentsClient:
             if _response.status_code == 404:
                 raise DocumentNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -297,7 +324,16 @@ class RawDocumentsClient:
             if _response.status_code == 400:
                 raise InvalidDocument(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -386,7 +422,16 @@ class RawDocumentsClient:
             if _response.status_code == 402:
                 raise InsufficientApiBalance(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -451,7 +496,16 @@ class RawDocumentsClient:
             if _response.status_code == 404:
                 raise DocumentNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -540,7 +594,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 404:
                 raise FolderNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -612,7 +675,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 400:
                 raise InvalidCursor(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -657,7 +729,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 404:
                 raise DocumentNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -725,7 +806,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 400:
                 raise InvalidDocument(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -814,7 +904,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 402:
                 raise InsufficientApiBalance(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -879,7 +978,16 @@ class AsyncRawDocumentsClient:
             if _response.status_code == 404:
                 raise DocumentNotFound(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
