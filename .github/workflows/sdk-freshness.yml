@@ -23,7 +23,7 @@ jobs:
           python-version: "3.12"
       - name: Create read-only token for the private API source
         id: monitor-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.SOFERAI_BOT_CLIENT_ID }}
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
