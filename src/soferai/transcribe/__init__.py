@@ -24,6 +24,7 @@ if typing.TYPE_CHECKING:
         BatchTranscriptionRequest,
         BatchTranscriptionRequestInfo,
         BatchTranscriptionResponse,
+        BetaTimestamp,
         Language,
         LettersLanguage,
         ListBatchFileBatchesResponse,
@@ -37,6 +38,7 @@ if typing.TYPE_CHECKING:
         TranscriptionRequest,
         TranscriptionRequestInfo,
         TranscriptionSummary,
+        TranscriptionTimestamp,
         TransliterationStyle,
     )
     from .errors import (
@@ -68,6 +70,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchTranscriptionRequest": ".types",
     "BatchTranscriptionRequestInfo": ".types",
     "BatchTranscriptionResponse": ".types",
+    "BetaTimestamp": ".types",
     "InsufficientApiBalance": ".errors",
     "Language": ".types",
     "LettersLanguage": ".types",
@@ -84,6 +87,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TranscriptionRequest": ".types",
     "TranscriptionRequestInfo": ".types",
     "TranscriptionSummary": ".types",
+    "TranscriptionTimestamp": ".types",
     "TransliterationStyle": ".types",
 }
 
@@ -130,6 +134,7 @@ __all__ = [
     "BatchTranscriptionRequest",
     "BatchTranscriptionRequestInfo",
     "BatchTranscriptionResponse",
+    "BetaTimestamp",
     "InsufficientApiBalance",
     "Language",
     "LettersLanguage",
@@ -146,5 +151,6 @@ __all__ = [
     "TranscriptionRequest",
     "TranscriptionRequestInfo",
     "TranscriptionSummary",
+    "TranscriptionTimestamp",
     "TransliterationStyle",
 ]

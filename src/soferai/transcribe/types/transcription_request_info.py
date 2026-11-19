@@ -7,7 +7,6 @@ import pydantic
 from ...core.pydantic_utilities import UniversalBaseModel
 from .language import Language
 from .letters_language import LettersLanguage
-from .transcription_id import TranscriptionId
 from .transliteration_style import TransliterationStyle
 
 
@@ -24,11 +23,6 @@ class TranscriptionRequestInfo(UniversalBaseModel):
     Priced at 1.50 USD per hour of audio transcribed.
     - v0: Not generally recommended. Cheaper, but less accurate.
     Priced at 1.00 USD per hour.
-    """
-
-    id: typing.Optional[TranscriptionId] = pydantic.Field(default=None)
-    """
-    ID of the transcription. Any valid UUID version is accepted and preserved. If omitted, a UUIDv4 will be generated. An existing ID returns a conflict for external API requests.
     """
 
     title: typing.Optional[str] = pydantic.Field(default=None)
