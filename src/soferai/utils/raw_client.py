@@ -70,7 +70,16 @@ class RawUtilsClient:
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
@@ -131,7 +140,16 @@ class AsyncRawUtilsClient:
             if _response.status_code == 401:
                 raise AuthenticationError(headers=dict(_response.headers))
             if _response.status_code == 429:
-                raise RateLimitError(headers=dict(_response.headers))
+                raise RateLimitError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        str,
+                        parse_obj_as(
+                            type_=str,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)

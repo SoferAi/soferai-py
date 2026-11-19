@@ -23,6 +23,7 @@ if typing.TYPE_CHECKING:
     from .batch_transcription_request import BatchTranscriptionRequest
     from .batch_transcription_request_info import BatchTranscriptionRequestInfo
     from .batch_transcription_response import BatchTranscriptionResponse
+    from .beta_timestamp import BetaTimestamp
     from .language import Language
     from .letters_language import LettersLanguage
     from .list_batch_file_batches_response import ListBatchFileBatchesResponse
@@ -36,6 +37,7 @@ if typing.TYPE_CHECKING:
     from .transcription_request import TranscriptionRequest
     from .transcription_request_info import TranscriptionRequestInfo
     from .transcription_summary import TranscriptionSummary
+    from .transcription_timestamp import TranscriptionTimestamp
     from .transliteration_style import TransliterationStyle
 _dynamic_imports: typing.Dict[str, str] = {
     "BatchAudioSource": ".batch_audio_source",
@@ -55,6 +57,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "BatchTranscriptionRequest": ".batch_transcription_request",
     "BatchTranscriptionRequestInfo": ".batch_transcription_request_info",
     "BatchTranscriptionResponse": ".batch_transcription_response",
+    "BetaTimestamp": ".beta_timestamp",
     "Language": ".language",
     "LettersLanguage": ".letters_language",
     "ListBatchFileBatchesResponse": ".list_batch_file_batches_response",
@@ -68,6 +71,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TranscriptionRequest": ".transcription_request",
     "TranscriptionRequestInfo": ".transcription_request_info",
     "TranscriptionSummary": ".transcription_summary",
+    "TranscriptionTimestamp": ".transcription_timestamp",
     "TransliterationStyle": ".transliteration_style",
 }
 
@@ -111,6 +115,7 @@ __all__ = [
     "BatchTranscriptionRequest",
     "BatchTranscriptionRequestInfo",
     "BatchTranscriptionResponse",
+    "BetaTimestamp",
     "Language",
     "LettersLanguage",
     "ListBatchFileBatchesResponse",
@@ -124,5 +129,6 @@ __all__ = [
     "TranscriptionRequest",
     "TranscriptionRequestInfo",
     "TranscriptionSummary",
+    "TranscriptionTimestamp",
     "TransliterationStyle",
 ]

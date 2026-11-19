@@ -4,8 +4,8 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import UniversalBaseModel
-from .timestamp import Timestamp
 from .transcription_info import TranscriptionInfo
+from .transcription_timestamp import TranscriptionTimestamp
 
 
 class Transcription(UniversalBaseModel):
@@ -14,9 +14,14 @@ class Transcription(UniversalBaseModel):
     This field contains the transcription text. For English-primary audio, the default `hybrid` format uses italicized English transliteration for short Hebrew phrases and Hebrew letters for longer phrases. With only `en` or `he`, Hebrew words use that format. If both `en` and `he` are requested, Hebrew words appear in both formats with the English transliteration in <i>italics</i>. If the primary language is Hebrew, the text is in Hebrew. If the primary language is French, the text is in French with Hebrew, Yiddish, and Aramaic words in Hebrew letters.
     """
 
-    timestamps: typing.Optional[typing.List[Timestamp]] = pydantic.Field(default=None)
+    timestamps: typing.Optional[typing.List[TranscriptionTimestamp]] = pydantic.Field(default=None)
     """
-    Timestamps object for the transcription. See the `timestamps` object for more details.
+    Word timestamps. Private Yiddish beta timing is optional for eligible new individual and Express uploads, and may arrive after COMPLETED. Unsupported words stay in text and are omitted from this sparse list. Standard batch remains text-only for Yiddish.
+    """
+
+    word_timing_status: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Private Yiddish beta enrichment status, when applicable: PENDING, PARTIAL or UNAVAILABLE. Timing failure does not change transcription completion or billing. PARTIAL does not imply measured accuracy or complete coverage; inspect each timestamp's timing_kind.
     """
 
     info: TranscriptionInfo = pydantic.Field()
