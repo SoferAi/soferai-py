@@ -21,7 +21,7 @@ jobs:
           private-key: ${{ secrets.SOFERAI_BOT_PRIVATE_SIGNING_KEY }}
 
       - name: Normalize Fern's generated PR title
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           script: |
