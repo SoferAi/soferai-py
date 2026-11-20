@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.15"
       - name: Create read-only token for the private API source
         id: monitor-token
         uses: actions/create-github-app-token@v2
