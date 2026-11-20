@@ -22,7 +22,7 @@ jobs:
     needs: verify
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/download-artifact@v4
@@ -83,7 +83,7 @@ jobs:
       SKIP_CLIENT_TESTS: "true"
       PYTHONPATH: ""
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
           persist-credentials: false
